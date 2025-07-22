@@ -1,0 +1,29 @@
+{
+  "name": "neotalent-frontend",
+  "version": "1.0.0",
+  "description": "NeoTalent Calorie Tracker Frontend",
+  "main": "src/main.js",
+  "scripts": {
+    "dev": "live-server public --port=8080 --host=localhost",
+    "build": "npm run copy-assets && npm run minify-js && npm run minify-css",
+    "copy-assets": "cp -r src/assets/* public/ 2>/dev/null || true",
+    "minify-js": "terser src/main.js -o public/js/app.min.js --source-map",
+    "minify-css": "cleancss -o public/css/styles.min.css public/css/styles.css",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "serve": "live-server public"
+  },
+  "keywords": ["nutrition", "calorie-tracker", "frontend", "spa"],
+  "author": "NeoTalent Team",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "terser": "^5.19.2",
+    "clean-css-cli": "^5.6.2",
+    "eslint": "^8.45.0"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
