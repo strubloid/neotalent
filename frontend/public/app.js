@@ -321,7 +321,10 @@ class CalorieTracker {
 
     clearErrors() {
         this.foodInput.classList.remove('is-invalid');
-        document.getElementById('foodInputError').textContent = '';
+        const errorElement = document.getElementById('foodInputError');
+        if (errorElement) {
+            errorElement.textContent = '';
+        }
     }
 
     showResults() {

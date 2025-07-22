@@ -33,7 +33,7 @@ class AppConfig {
             maxSearchHistoryPerSession: parseInt(process.env.MAX_SEARCH_HISTORY) || 50,
             maxFoodInputLength: parseInt(process.env.MAX_FOOD_INPUT_LENGTH) || 500,
             sessionCookieMaxAge: parseInt(process.env.SESSION_COOKIE_MAX_AGE) || 7 * 24 * 60 * 60 * 1000, // 7 days
-            frontendPath: process.env.FRONTEND_PATH || '../frontend/public'
+            frontendPath: process.env.FRONTEND_PATH || '../../frontend/public'
         };
     }
 

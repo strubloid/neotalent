@@ -114,7 +114,8 @@ class NutritionController {
      */
     async getBreadcrumbs(req, res) {
         try {
-            const sessionId = req.session?.sessionId;
+            // Get or create session ID (same as in analyzeNutrition)
+            const sessionId = this.searchHistoryService.getOrCreateSessionId(req);
             const limit = Math.min(parseInt(req.query.limit) || 5, 10);
             
             const breadcrumbs = this.searchHistoryService.getRecentSearches(sessionId, limit);
@@ -144,6 +145,7 @@ class NutritionController {
     async getSearchById(req, res) {
         try {
             const { id } = req.params;
+            // Get session ID (don't create new one, just get existing)
             const sessionId = req.session?.sessionId;
             
             const search = this.searchHistoryService.getSearchById(sessionId, id);

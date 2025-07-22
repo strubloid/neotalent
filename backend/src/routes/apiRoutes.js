@@ -1,7 +1,11 @@
 const express = require('express');
 const nutritionRoutes = require('./nutritionRoutes');
+const NutritionController = require('../controllers/NutritionController');
 
 const router = express.Router();
+
+// Create a single instance of the nutrition controller
+const nutritionController = new NutritionController();
 
 /**
  * Health check endpoint
@@ -45,16 +49,16 @@ router.get('/info', (req, res) => {
 router.use('/nutrition', nutritionRoutes);
 
 // Legacy route compatibility (to maintain existing frontend compatibility)
-router.use('/calories', nutritionRoutes);
-router.use('/breadcrumbs', (req, res) => {
-    // Redirect to new endpoint
-    req.url = '/nutrition/breadcrumbs';
-    nutritionRoutes(req, res);
+router.post('/calories', (req, res, next) => {
+    nutritionController.analyzeNutrition(req, res, next);
 });
-router.use('/searches', (req, res) => {
-    // Redirect to new endpoint
-    req.url = req.url.replace('/searches', '/nutrition/search');
-    nutritionRoutes(req, res);
+
+router.get('/breadcrumbs', (req, res) => {
+    nutritionController.getBreadcrumbs(req, res);
+});
+
+router.get('/searches/:id', (req, res) => {
+    nutritionController.getSearchById(req, res);
 });
 
 module.exports = router;
