@@ -19,66 +19,75 @@ const App = () => {
   useEffect(() => {
     const loadBreadcrumbs = async () => {
       try {
-        // Test API connection first
-        const response = await fetch('/api/breadcrumbs');
-        const data = await response.json();
-        
-        if (data.success && data.breadcrumbs) {
-          // Convert the breadcrumb format if needed
-          const formattedBreadcrumbs = data.breadcrumbs.map((item: any) => ({
-            searchId: `search_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            query: item.name || 'Recent Search',
-            summary: `Navigation: ${item.path}`,
-            timestamp: new Date().toISOString()
-          }));
-          setBreadcrumbs(formattedBreadcrumbs);
-        } else {
-          // Fallback to sample data if API doesn't return breadcrumbs in expected format
-          const sampleBreadcrumbs: BreadcrumbItem[] = [
-            {
-              searchId: 'search_1_abc123',
-              query: 'Apple and peanut butter',
-              summary: 'Total: 350 calories - Apple (95 cal) + Peanut butter (255 cal)',
-              timestamp: new Date(Date.now() - 86400000).toISOString(), // Yesterday
-            },
-            {
-              searchId: 'search_2_def456',
-              query: 'Chicken salad sandwich',
-              summary: 'Total: 420 calories - Whole wheat bread, grilled chicken, vegetables',
-              timestamp: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
-            },
-            {
-              searchId: 'search_3_ghi789',
-              query: 'Greek yogurt with berries',
-              summary: 'Total: 180 calories - Greek yogurt (130 cal) + Mixed berries (50 cal)',
-              timestamp: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
-            }
-          ];
-          setBreadcrumbs(sampleBreadcrumbs);
-        }
+        // For now, start with empty breadcrumbs
+        // Real breadcrumbs will be added when users actually search for food
+        setBreadcrumbs([]);
       } catch (error) {
         console.error('Error loading breadcrumbs:', error);
-        // Fallback to sample data on error
-        const sampleBreadcrumbs: BreadcrumbItem[] = [
-          {
-            searchId: 'search_1_abc123',
-            query: 'Apple and peanut butter',
-            summary: 'Total: 350 calories - Apple (95 cal) + Peanut butter (255 cal)',
-            timestamp: new Date(Date.now() - 86400000).toISOString(),
-          }
-        ];
-        setBreadcrumbs(sampleBreadcrumbs);
+        setBreadcrumbs([]);
       } finally {
         setLoading(false);
       }
     };
 
-    // Simulate loading delay and then load data
-    setTimeout(loadBreadcrumbs, 1000);
+    // Load immediately
+    loadBreadcrumbs();
   }, []);
 
   const handleBreadcrumbClick = (searchId: string) => {
-    alert(`Clicked on search: ${searchId}\n\nThis will load the search results in a real implementation.`);
+    // Find the breadcrumb item that was clicked
+    const clickedBreadcrumb = breadcrumbs.find(b => b.searchId === searchId);
+    
+    if (clickedBreadcrumb) {
+      // If we already have this result stored, display it directly
+      if (nutritionResult && nutritionResult.searchId === searchId) {
+        // Result is already displayed, just scroll to it
+        const resultsElement = document.querySelector('.container.mt-5');
+        if (resultsElement) {
+          resultsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        return;
+      }
+
+      // Try to recreate the nutrition result from the breadcrumb data
+      // In a real app, you'd fetch this from a backend API
+      const recreatedResult: NutritionResult = {
+        searchId: clickedBreadcrumb.searchId,
+        query: clickedBreadcrumb.query,
+        // Extract calories from summary (format: "Total: XXX calories - ...")
+        totalCalories: parseInt(clickedBreadcrumb.summary.match(/Total: (\d+) calories/)?.[1] || '0'),
+        // Estimate macros based on typical food composition
+        totalProtein: Math.round(parseInt(clickedBreadcrumb.summary.match(/Total: (\d+) calories/)?.[1] || '0') * 0.15 / 4),
+        totalCarbs: Math.round(parseInt(clickedBreadcrumb.summary.match(/Total: (\d+) calories/)?.[1] || '0') * 0.50 / 4),
+        totalFat: Math.round(parseInt(clickedBreadcrumb.summary.match(/Total: (\d+) calories/)?.[1] || '0') * 0.35 / 9),
+        breakdown: [
+          {
+            food: clickedBreadcrumb.query,
+            calories: parseInt(clickedBreadcrumb.summary.match(/Total: (\d+) calories/)?.[1] || '0'),
+            protein: Math.round(parseInt(clickedBreadcrumb.summary.match(/Total: (\d+) calories/)?.[1] || '0') * 0.15 / 4),
+            carbs: Math.round(parseInt(clickedBreadcrumb.summary.match(/Total: (\d+) calories/)?.[1] || '0') * 0.50 / 4),
+            fat: Math.round(parseInt(clickedBreadcrumb.summary.match(/Total: (\d+) calories/)?.[1] || '0') * 0.35 / 9),
+            quantity: '1 serving (estimated)'
+          }
+        ],
+        summary: `Previous analysis of "${clickedBreadcrumb.query}" - ${clickedBreadcrumb.summary}`,
+        timestamp: clickedBreadcrumb.timestamp
+      };
+
+      // Set the nutrition result to display the ResultsCard
+      setNutritionResult(recreatedResult);
+      
+      // Clear any analysis errors
+      setAnalysisError('');
+
+      // Scroll to results after a short delay to allow rendering
+      setTimeout(() => {
+        const resultsElement = document.querySelector('.container.mt-5');
+        if (resultsElement) {
+          resultsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
   };
 
   const handleClearHistory = () => {
