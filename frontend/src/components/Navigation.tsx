@@ -78,13 +78,21 @@ const Navigation = ({ user, isAuthenticated, onLogout, onDeleteAccount }: Naviga
             ) : (
               <>
                 <li className="nav-item">
-                  <button className="btn btn-outline-light me-2">
+                  <button 
+                    className="btn btn-outline-light me-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#loginModal"
+                  >
                     <i className="bi bi-box-arrow-in-right me-1"></i>
                     Login
                   </button>
                 </li>
                 <li className="nav-item">
-                  <button className="btn btn-light">
+                  <button 
+                    className="btn btn-light"
+                    data-bs-toggle="modal"
+                    data-bs-target="#registerModal"
+                  >
                     <i className="bi bi-person-plus me-1"></i>
                     Register
                   </button>

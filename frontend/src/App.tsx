@@ -4,6 +4,7 @@ import Navigation from './components/Navigation';
 import BreadcrumbsSection from './components/BreadcrumbsSection';
 import CalorieForm from './components/CalorieForm';
 import ResultsCard from './components/ResultsCard';
+import AuthModals from './components/AuthModals';
 import { User, BreadcrumbItem, NutritionResult } from './types';
 
 const App = () => {
@@ -30,8 +31,29 @@ const App = () => {
       }
     };
 
-    // Load immediately
-    loadBreadcrumbs();
+    // Check authentication status on app load
+    const checkAuthStatus = async () => {
+      try {
+        const response = await fetch('/api/auth/status', {
+          method: 'GET',
+          credentials: 'include',
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.user) {
+            setUser(data.user);
+            setIsAuthenticated(true);
+          }
+        }
+      } catch (error) {
+        console.error('Error checking auth status:', error);
+        // Not a critical error, continue without auth
+      }
+    };
+
+    // Load both in parallel
+    Promise.all([loadBreadcrumbs(), checkAuthStatus()]);
   }, []);
 
   const handleBreadcrumbClick = (searchId: string) => {
@@ -154,6 +176,58 @@ const App = () => {
     }
   };
 
+  const handleLogin = async (credentials: { username: string; password: string }) => {
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(credentials),
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.user) {
+        setUser(data.user);
+        setIsAuthenticated(true);
+        console.log('Login successful:', data.user);
+      } else {
+        throw new Error(data.error || 'Login failed');
+      }
+    } catch (error: any) {
+      console.error('Login error:', error);
+      throw error;
+    }
+  };
+
+  const handleRegister = async (userData: { username: string; password: string; nickname: string }) => {
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(userData),
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.user) {
+        setUser(data.user);
+        setIsAuthenticated(true);
+        console.log('Registration successful:', data.user);
+      } else {
+        throw new Error(data.error || 'Registration failed');
+      }
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      throw error;
+    }
+  };
+
   const handleNewAnalysis = () => {
     setNutritionResult(null);
     setAnalysisError('');
@@ -264,6 +338,12 @@ const App = () => {
           </div>
         </footer>
       </main>
+
+      {/* Authentication Modals */}
+      <AuthModals
+        onLogin={handleLogin}
+        onRegister={handleRegister}
+      />
     </div>
   );
 };
