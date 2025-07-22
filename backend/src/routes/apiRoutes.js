@@ -61,4 +61,8 @@ router.get('/searches/:id', (req, res) => {
     nutritionController.getSearchById(req, res);
 });
 
+router.delete('/history', (req, res) => {
+    nutritionController.clearHistory(req, res);
+});
+
 module.exports = router;

@@ -266,6 +266,36 @@ class NutritionController {
             });
         }
     }
+
+    /**
+     * Clear search history
+     * @param {Object} req - Express request
+     * @param {Object} res - Express response
+     */
+    async clearHistory(req, res) {
+        try {
+            // Get session ID
+            const sessionId = req.session?.sessionId;
+            
+            if (sessionId) {
+                this.searchHistoryService.clearHistory(sessionId);
+            }
+
+            res.json({
+                success: true,
+                message: 'Search history cleared',
+                timestamp: new Date().toISOString()
+            });
+        } catch (error) {
+            console.error('Clear history error:', error);
+            
+            res.status(500).json({
+                success: false,
+                error: 'Failed to clear history',
+                timestamp: new Date().toISOString()
+            });
+        }
+    }
 }
 
 module.exports = NutritionController;

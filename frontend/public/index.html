@@ -42,10 +42,16 @@
                 <!-- Breadcrumbs -->
                 <div class="card shadow-sm mb-4 d-none" id="breadcrumbsCard">
                     <div class="card-header bg-white border-0 py-3">
-                        <h5 class="card-title mb-0">
-                            <i class="bi bi-clock-history me-2 text-primary"></i>
-                            Recent Searches
-                        </h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-clock-history me-2 text-primary"></i>
+                                Recent Searches
+                            </h5>
+                            <button class="btn btn-outline-danger btn-sm" id="clearHistoryBtn" title="Clear all recent searches">
+                                <i class="bi bi-trash me-1"></i>
+                                Clear All
+                            </button>
+                        </div>
                     </div>
                     <div class="card-body py-2">
                         <div class="d-flex flex-wrap gap-2" id="breadcrumbsList">

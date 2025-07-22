@@ -9,6 +9,7 @@ class CalorieTracker {
         this.charCount = document.getElementById('charCount');
         this.breadcrumbsCard = document.getElementById('breadcrumbsCard');
         this.breadcrumbsList = document.getElementById('breadcrumbsList');
+        this.clearHistoryBtn = document.getElementById('clearHistoryBtn');
 
         // Use current origin for API calls
         this.apiBaseUrl = window.location.origin;
@@ -51,6 +52,11 @@ class CalorieTracker {
                 e.preventDefault();
                 this.loadPreviousSearch(breadcrumbItem.dataset.searchId, breadcrumbItem);
             }
+        });
+
+        // Clear history button
+        this.clearHistoryBtn.addEventListener('click', () => {
+            this.clearSearchHistory();
         });
     }
 
@@ -140,6 +146,36 @@ class CalorieTracker {
         }
     }
 
+    async clearSearchHistory() {
+        try {
+            // Show confirmation dialog
+            if (!confirm('Are you sure you want to clear all recent searches? This action cannot be undone.')) {
+                return;
+            }
+
+            const response = await fetch(`${this.apiBaseUrl}/api/history`, {
+                method: 'DELETE',
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success) {
+                    this.hideBreadcrumbs();
+                    // Show success message briefly
+                    this.showSuccessMessage('Search history cleared successfully');
+                } else {
+                    this.showError('Failed to clear search history');
+                }
+            } else {
+                this.showError('Failed to clear search history');
+            }
+        } catch (error) {
+            console.error('Failed to clear search history:', error);
+            this.showError('Failed to clear search history');
+        }
+    }
+
     async loadPreviousSearch(searchId, breadcrumbElement = null) {
         try {
             if (breadcrumbElement) {
@@ -182,22 +218,97 @@ class CalorieTracker {
     }
 
     displayBreadcrumbs(breadcrumbs) {
-        const breadcrumbsHTML = breadcrumbs.map(item => `
-            <div class="breadcrumb-item" title="${this.escapeHtml(item.query)}" data-search-id="${item.id}" style="cursor: pointer;">
-                <div class="d-flex align-items-center">
-                    <span class="me-2">${this.truncateText(item.query, 30)}</span>
-                    <span class="calories">${item.totalCalories}cal</span>
+        if (!breadcrumbs || breadcrumbs.length === 0) {
+            this.hideBreadcrumbs();
+            return;
+        }
+
+        // Group breadcrumbs by time periods
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+
+        const groups = {
+            today: [],
+            yesterday: [],
+            older: []
+        };
+
+        breadcrumbs.forEach(item => {
+            const itemDate = new Date(item.timestamp);
+            if (itemDate >= today) {
+                groups.today.push(item);
+            } else if (itemDate >= yesterday) {
+                groups.yesterday.push(item);
+            } else {
+                groups.older.push(item);
+            }
+        });
+
+        let breadcrumbsHTML = '';
+
+        // Display Today's searches
+        if (groups.today.length > 0) {
+            breadcrumbsHTML += `
+                <div class="breadcrumb-group mb-3">
+                    <h6 class="text-muted mb-2 fw-semibold">
+                        <i class="bi bi-calendar-day me-1"></i>Today
+                    </h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        ${groups.today.map(item => this.createBreadcrumbItem(item)).join('')}
+                    </div>
                 </div>
-                <small class="text-muted d-block">${this.formatTimeAgo(item.timestamp)}</small>
+            `;
+        }
+
+        // Display Yesterday's searches
+        if (groups.yesterday.length > 0) {
+            breadcrumbsHTML += `
+                <div class="breadcrumb-group mb-3">
+                    <h6 class="text-muted mb-2 fw-semibold">
+                        <i class="bi bi-calendar-minus me-1"></i>Yesterday
+                    </h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        ${groups.yesterday.map(item => this.createBreadcrumbItem(item)).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Display Older searches
+        if (groups.older.length > 0) {
+            breadcrumbsHTML += `
+                <div class="breadcrumb-group mb-3">
+                    <h6 class="text-muted mb-2 fw-semibold">
+                        <i class="bi bi-calendar2 me-1"></i>Older
+                    </h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        ${groups.older.map(item => this.createBreadcrumbItem(item)).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        this.breadcrumbsList.innerHTML = breadcrumbsHTML;
+        this.showBreadcrumbs();
+    }
+
+    createBreadcrumbItem(item) {
+        return `
+            <div class="breadcrumb-item modern-breadcrumb" title="${this.escapeHtml(item.query)}" data-search-id="${item.id}">
+                <div class="breadcrumb-content">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="search-text">${this.truncateText(item.query, 25)}</span>
+                        <span class="calories-badge">${item.totalCalories}cal</span>
+                    </div>
+                    <small class="time-text">${this.formatTimeAgo(item.timestamp)}</small>
+                </div>
                 <div class="breadcrumb-loading d-none">
                     <span class="spinner-border spinner-border-sm me-2" role="status"></span>
                     Loading...
                 </div>
             </div>
-        `).join('');
-
-        this.breadcrumbsList.innerHTML = breadcrumbsHTML;
-        this.showBreadcrumbs();
+        `;
     }
 
     showBreadcrumbs() {
@@ -317,6 +428,24 @@ class CalorieTracker {
     hideError() {
         this.errorAlert.classList.add('d-none');
         this.clearErrors();
+    }
+
+    showSuccessMessage(message) {
+        // Create a temporary success alert
+        const successAlert = document.createElement('div');
+        successAlert.className = 'alert alert-success alert-dismissible fade show';
+        successAlert.innerHTML = `
+            <i class="bi bi-check-circle-fill me-2"></i>
+            ${message}
+        `;
+        
+        // Insert after the breadcrumbs card
+        this.breadcrumbsCard.parentNode.insertBefore(successAlert, this.breadcrumbsCard.nextSibling);
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            successAlert.remove();
+        }, 3000);
     }
 
     clearErrors() {
