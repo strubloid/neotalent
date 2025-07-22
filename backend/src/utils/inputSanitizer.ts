@@ -3,11 +3,18 @@
  */
 
 /**
- * Sanitize user input to prevent injection attacks
- * @param {string} input - Raw user input
- * @returns {string} - Sanitized input
+ * Number sanitization options interface
  */
-function sanitizeInput(input) {
+interface SanitizeNumberOptions {
+    min?: number;
+    max?: number;
+    defaultValue?: number | null;
+}
+
+/**
+ * Sanitize user input to prevent injection attacks
+ */
+export function sanitizeInput(input: any): string {
     if (typeof input !== 'string') {
         return '';
     }
@@ -21,10 +28,8 @@ function sanitizeInput(input) {
 
 /**
  * Sanitize text for safe HTML display
- * @param {string} text - Text to sanitize
- * @returns {string} - HTML-safe text
  */
-function sanitizeForHTML(text) {
+export function sanitizeForHTML(text: any): string {
     if (typeof text !== 'string') {
         return '';
     }
@@ -40,11 +45,8 @@ function sanitizeForHTML(text) {
 
 /**
  * Validate and sanitize numeric input
- * @param {any} value - Value to validate
- * @param {Object} options - Validation options
- * @returns {number|null} - Sanitized number or null if invalid
  */
-function sanitizeNumber(value, options = {}) {
+export function sanitizeNumber(value: any, options: SanitizeNumberOptions = {}): number | null {
     const {
         min = Number.MIN_SAFE_INTEGER,
         max = Number.MAX_SAFE_INTEGER,
@@ -66,10 +68,8 @@ function sanitizeNumber(value, options = {}) {
 
 /**
  * Sanitize and validate email format
- * @param {string} email - Email to validate
- * @returns {string|null} - Sanitized email or null if invalid
  */
-function sanitizeEmail(email) {
+export function sanitizeEmail(email: any): string | null {
     if (typeof email !== 'string') {
         return null;
     }
@@ -82,10 +82,8 @@ function sanitizeEmail(email) {
 
 /**
  * Remove excessive whitespace and normalize line breaks
- * @param {string} text - Text to normalize
- * @returns {string} - Normalized text
  */
-function normalizeWhitespace(text) {
+export function normalizeWhitespace(text: any): string {
     if (typeof text !== 'string') {
         return '';
     }
@@ -100,11 +98,8 @@ function normalizeWhitespace(text) {
 
 /**
  * Validate and sanitize URL
- * @param {string} url - URL to validate
- * @param {Array} allowedProtocols - Allowed protocols (default: ['http:', 'https:'])
- * @returns {string|null} - Sanitized URL or null if invalid
  */
-function sanitizeURL(url, allowedProtocols = ['http:', 'https:']) {
+export function sanitizeURL(url: any, allowedProtocols: string[] = ['http:', 'https:']): string | null {
     if (typeof url !== 'string') {
         return null;
     }
@@ -124,10 +119,8 @@ function sanitizeURL(url, allowedProtocols = ['http:', 'https:']) {
 
 /**
  * Sanitize filename for safe file operations
- * @param {string} filename - Filename to sanitize
- * @returns {string} - Sanitized filename
  */
-function sanitizeFilename(filename) {
+export function sanitizeFilename(filename: any): string {
     if (typeof filename !== 'string') {
         return 'untitled';
     }
@@ -139,7 +132,8 @@ function sanitizeFilename(filename) {
         .substring(0, 255) || 'untitled'; // Ensure valid filename
 }
 
-module.exports = {
+// Default export for backwards compatibility
+export default {
     sanitizeInput,
     sanitizeForHTML,
     sanitizeNumber,

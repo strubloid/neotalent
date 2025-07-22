@@ -1,20 +1,27 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const session = require('express-session');
-const path = require('path');
-require('dotenv').config();
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import session from 'express-session';
+import path from 'path';
+import dotenv from 'dotenv';
 
-// Import configuration and middleware
-const appConfig = require('./config/appConfig');
-const ErrorHandler = require('./middleware/ErrorHandler');
-const SecurityMiddleware = require('./middleware/SecurityMiddleware');
-const apiRoutes = require('./routes/apiRoutes');
+// Import TypeScript modules
+import appConfig from './config/appConfig';
+import databaseManager from './config/database';
+import ErrorHandler from './middleware/ErrorHandler';
+import SecurityMiddleware from './middleware/SecurityMiddleware';
+import apiRoutes from './routes/apiRoutes';
+
+dotenv.config();
 
 /**
  * NeoTalent Calorie Tracker Backend Server
  */
 class Server {
+    private app: express.Application;
+    private port: number;
+    private environment: string;
+
     constructor() {
         this.app = express();
         this.port = appConfig.server.port;
@@ -28,7 +35,7 @@ class Server {
     /**
      * Initialize middleware
      */
-    initializeMiddleware() {
+    private initializeMiddleware(): void {
         // Trust proxy for accurate IP addresses
         this.app.set('trust proxy', 1);
 
@@ -53,8 +60,8 @@ class Server {
         // Body parsing
         this.app.use(express.json({ 
             limit: '10mb',
-            verify: (req, res, buf) => {
-                req.rawBody = buf;
+            verify: (req: express.Request, res: express.Response, buf: Buffer) => {
+                (req as any).rawBody = buf;
             }
         }));
         this.app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -84,12 +91,12 @@ class Server {
     /**
      * Initialize routes
      */
-    initializeRoutes() {
+    private initializeRoutes(): void {
         // API routes
         this.app.use('/api', apiRoutes);
 
         // Serve frontend for SPA
-        this.app.get('*', (req, res) => {
+        this.app.get('*', (req: express.Request, res: express.Response) => {
             const frontendPath = path.resolve(__dirname, appConfig.app.frontendPath);
             res.sendFile(path.join(frontendPath, 'index.html'));
         });
@@ -98,7 +105,7 @@ class Server {
     /**
      * Initialize error handling
      */
-    initializeErrorHandling() {
+    private initializeErrorHandling(): void {
         // 404 handler
         this.app.use('*', ErrorHandler.notFound);
 
@@ -109,10 +116,13 @@ class Server {
     /**
      * Start the server
      */
-    async start() {
+    public async start(): Promise<any> {
         try {
             // Validate configuration
             appConfig.validateConfig();
+
+            // Connect to database
+            await databaseManager.connect();
 
             // Start server
             const server = this.app.listen(this.port, () => {
@@ -121,6 +131,7 @@ class Server {
                 console.log(`🌐 Server running on port ${this.port}`);
                 console.log(`🔗 API available at: http://localhost:${this.port}/api`);
                 console.log(`📊 Health check: http://localhost:${this.port}/api/health`);
+                console.log(`🔐 Auth endpoints: http://localhost:${this.port}/api/auth`);
                 
                 if (this.environment === 'development') {
                     console.log(`🎯 Test OpenAI: http://localhost:${this.port}/api/nutrition/test`);
@@ -132,7 +143,7 @@ class Server {
 
             return server;
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ Failed to start server:', error.message);
             process.exit(1);
         }
@@ -141,11 +152,20 @@ class Server {
     /**
      * Setup graceful shutdown
      */
-    setupGracefulShutdown(server) {
-        const gracefulShutdown = (signal) => {
+    private setupGracefulShutdown(server: any): void {
+        const gracefulShutdown = async (signal: string) => {
             console.log(`\n📧 Received ${signal}. Starting graceful shutdown...`);
             
-            server.close(() => {
+            server.close(async () => {
+                console.log('🔌 HTTP server closed');
+                
+                // Disconnect from database
+                try {
+                    await databaseManager.disconnect();
+                } catch (error: any) {
+                    console.error('❌ Error disconnecting from database:', error);
+                }
+                
                 console.log('✅ Server closed successfully');
                 process.exit(0);
             });
@@ -178,4 +198,4 @@ if (require.main === module) {
     server.start();
 }
 
-module.exports = Server;
+export default Server;

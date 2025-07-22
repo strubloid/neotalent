@@ -1,5 +1,29 @@
-const Joi = require('joi');
-const appConfig = require('../config/appConfig');
+import Joi from 'joi';
+import appConfig from '../config/appConfig';
+
+/**
+ * Validation Result Interface
+ */
+interface ValidationResult {
+    error?: Joi.ValidationError;
+    value: any;
+}
+
+/**
+ * Nutrition Request Data Interface
+ */
+interface NutritionRequestData {
+    food: string;
+}
+
+/**
+ * Pagination Parameters Interface
+ */
+interface PaginationParams {
+    page?: number;
+    per_page?: number;
+    limit?: number;
+}
 
 /**
  * Validation schema for nutrition analysis request
@@ -7,11 +31,11 @@ const appConfig = require('../config/appConfig');
 const nutritionRequestSchema = Joi.object({
     food: Joi.string()
         .min(1)
-        .max(appConfig.app.maxFoodInputLength)
+        .max(appConfig.app.maxFoodInputLength || 500)
         .required()
         .messages({
             'string.empty': 'Food input is required',
-            'string.max': `Food input must be less than ${appConfig.app.maxFoodInputLength} characters`,
+            'string.max': `Food input must be less than ${appConfig.app.maxFoodInputLength || 500} characters`,
             'any.required': 'Food input is required'
         })
 });
@@ -27,43 +51,44 @@ const paginationSchema = Joi.object({
 
 /**
  * Validate nutrition analysis request
- * @param {Object} data - Request body data
- * @returns {Object} - Joi validation result
  */
-function validateNutritionRequest(data) {
+function validateNutritionRequest(data: NutritionRequestData): ValidationResult {
     return nutritionRequestSchema.validate(data);
 }
 
 /**
  * Validate pagination parameters
- * @param {Object} data - Query parameters
- * @returns {Object} - Joi validation result
  */
-function validatePaginationParams(data) {
+function validatePaginationParams(data: PaginationParams): ValidationResult {
     return paginationSchema.validate(data);
 }
 
 /**
  * Validate search ID parameter
- * @param {string} searchId - Search ID to validate
- * @returns {Object} - Validation result
  */
-function validateSearchId(searchId) {
+function validateSearchId(searchId: string): ValidationResult {
     const schema = Joi.string().pattern(/^search_\d+_[a-z0-9]+$/).required();
     return schema.validate(searchId);
 }
 
 /**
  * Validate session ID parameter
- * @param {string} sessionId - Session ID to validate
- * @returns {Object} - Validation result
  */
-function validateSessionId(sessionId) {
+function validateSessionId(sessionId: string): ValidationResult {
     const schema = Joi.string().pattern(/^session_\d+_[a-z0-9]+$/).required();
     return schema.validate(sessionId);
 }
 
-module.exports = {
+export {
+    validateNutritionRequest,
+    validatePaginationParams,
+    validateSearchId,
+    validateSessionId,
+    nutritionRequestSchema,
+    paginationSchema
+};
+
+export default {
     validateNutritionRequest,
     validatePaginationParams,
     validateSearchId,

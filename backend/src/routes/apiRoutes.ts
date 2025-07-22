@@ -1,8 +1,8 @@
-const express = require('express');
-const nutritionRoutes = require('./nutritionRoutes');
-const NutritionController = require('../controllers/NutritionController');
+import { Router, Request, Response } from 'express';
+import NutritionController from '../controllers/NutritionController';
+// import nutritionRoutes from './nutritionRoutes';
 
-const router = express.Router();
+const router = Router();
 
 // Create a single instance of the nutrition controller
 const nutritionController = new NutritionController();
@@ -13,7 +13,7 @@ const nutritionController = new NutritionController();
  * @desc    Application health check
  * @access  Public
  */
-router.get('/health', (req, res) => {
+router.get('/health', (req: Request, res: Response) => {
     res.json({
         success: true,
         status: 'OK',
@@ -30,7 +30,7 @@ router.get('/health', (req, res) => {
  * @desc    API information and documentation
  * @access  Public
  */
-router.get('/info', (req, res) => {
+router.get('/info', (req: Request, res: Response) => {
     res.json({
         success: true,
         name: 'NeoTalent Calorie Tracker API',
@@ -45,24 +45,29 @@ router.get('/info', (req, res) => {
     });
 });
 
-// Mount nutrition routes
-router.use('/nutrition', nutritionRoutes);
+// Mount nutrition routes (commented out until converted)
+// router.use('/nutrition', nutritionRoutes);
 
 // Legacy route compatibility (to maintain existing frontend compatibility)
-router.post('/calories', (req, res, next) => {
+router.post('/calories', (req: Request, res: Response, next) => {
     nutritionController.analyzeNutrition(req, res, next);
 });
 
-router.get('/breadcrumbs', (req, res) => {
+router.get('/breadcrumbs', (req: Request, res: Response) => {
     nutritionController.getBreadcrumbs(req, res);
 });
 
-router.get('/searches/:id', (req, res) => {
+router.get('/searches/:id', (req: Request, res: Response) => {
     nutritionController.getSearchById(req, res);
 });
 
-router.delete('/history', (req, res) => {
+router.delete('/history', (req: Request, res: Response) => {
     nutritionController.clearHistory(req, res);
 });
 
-module.exports = router;
+// Test endpoint for OpenAI
+router.get('/nutrition/test', (req: Request, res: Response) => {
+    nutritionController.testConnection(req, res);
+});
+
+export default router;

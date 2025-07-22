@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: neotalent-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: neotalent
+      MONGO_INITDB_ROOT_PASSWORD: neotalent123
+      MONGO_INITDB_DATABASE: neotalent
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - neotalent-network
+
+  # Backend Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: neotalent-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      MONGODB_URI: mongodb://neotalent:neotalent123@mongodb:27017/neotalent?authSource=admin
+      SESSION_SECRET: neotalent-docker-secret-key-2024
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      RATE_LIMIT_WINDOW_MS: 900000
+      RATE_LIMIT_MAX_REQUESTS: 100
+      CORS_ORIGIN: http://localhost:3000
+    env_file:
+      - .env.docker
+    depends_on:
+      - mongodb
+    networks:
+      - neotalent-network
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: neotalent-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    environment:
+      NODE_ENV: production
+    depends_on:
+      - backend
+    networks:
+      - neotalent-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  neotalent-network:
+    driver: bridge
