@@ -49,6 +49,15 @@ class CalorieTracker {
                 this.analyzeFood();
             }
         });
+
+        // Breadcrumb click handling using event delegation
+        this.breadcrumbsList.addEventListener('click', (e) => {
+            const breadcrumbItem = e.target.closest('.breadcrumb-item');
+            if (breadcrumbItem && breadcrumbItem.dataset.searchId) {
+                e.preventDefault();
+                this.loadPreviousSearch(breadcrumbItem.dataset.searchId, breadcrumbItem);
+            }
+        });
     }
 
     updateCharCount() {
@@ -138,9 +147,14 @@ class CalorieTracker {
         }
     }
 
-    async loadPreviousSearch(searchId) {
+    async loadPreviousSearch(searchId, breadcrumbElement = null) {
         try {
-            this.setLoadingState(true);
+            // Show loading state on the specific breadcrumb if provided
+            if (breadcrumbElement) {
+                this.setBreadcrumbLoadingState(breadcrumbElement, true);
+            } else {
+                this.setLoadingState(true);
+            }
             this.hideError();
 
             const response = await fetch(`${this.apiBaseUrl}/api/searches/${searchId}`, {
@@ -172,18 +186,27 @@ class CalorieTracker {
             console.error('Failed to load previous search:', error);
             this.showError('Failed to load previous search');
         } finally {
-            this.setLoadingState(false);
+            // Hide loading state
+            if (breadcrumbElement) {
+                this.setBreadcrumbLoadingState(breadcrumbElement, false);
+            } else {
+                this.setLoadingState(false);
+            }
         }
     }
 
     displayBreadcrumbs(breadcrumbs) {
         const breadcrumbsHTML = breadcrumbs.map(item => `
-            <div class="breadcrumb-item" onclick="calorieTracker.loadPreviousSearch('${item.id}')" title="${this.escapeHtml(item.query)}">
+            <div class="breadcrumb-item" title="${this.escapeHtml(item.query)}" data-search-id="${item.id}" style="cursor: pointer;">
                 <div class="d-flex align-items-center">
                     <span class="me-2">${this.truncateText(item.query, 30)}</span>
                     <span class="calories">${item.totalCalories}cal</span>
                 </div>
                 <small class="text-muted d-block">${this.formatTimeAgo(item.timestamp)}</small>
+                <div class="breadcrumb-loading d-none">
+                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                    Loading...
+                </div>
             </div>
         `).join('');
 
@@ -276,6 +299,34 @@ class CalorieTracker {
             btnLoading.classList.add('d-none');
             this.analyzeBtn.disabled = false;
             this.foodInput.disabled = false;
+        }
+    }
+
+    setBreadcrumbLoadingState(breadcrumbElement, isLoading) {
+        if (!breadcrumbElement) return;
+
+        const content = breadcrumbElement.querySelector('.d-flex');
+        const timeElement = breadcrumbElement.querySelector('.text-muted');
+        const loadingElement = breadcrumbElement.querySelector('.breadcrumb-loading');
+
+        if (isLoading) {
+            // Hide content and show loading
+            if (content) content.style.display = 'none';
+            if (timeElement) timeElement.style.display = 'none';
+            if (loadingElement) loadingElement.classList.remove('d-none');
+            
+            // Disable the breadcrumb
+            breadcrumbElement.style.pointerEvents = 'none';
+            breadcrumbElement.style.opacity = '0.7';
+        } else {
+            // Show content and hide loading
+            if (content) content.style.display = '';
+            if (timeElement) timeElement.style.display = '';
+            if (loadingElement) loadingElement.classList.add('d-none');
+            
+            // Re-enable the breadcrumb
+            breadcrumbElement.style.pointerEvents = '';
+            breadcrumbElement.style.opacity = '';
         }
     }
 
