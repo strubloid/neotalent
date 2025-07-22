@@ -50,11 +50,40 @@
     background-color: #dc3545 !important;
 }
 
+/* Breadcrumb styles */
+.breadcrumb-item {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    text-decoration: none;
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.breadcrumb-item:hover {
+    background: #e9ecef;
+    border-color: #0d6efd;
+    color: #0d6efd;
+    transform: translateY(-1px);
+}
+
+.breadcrumb-item .calories {
+    color: #0d6efd;
+    font-weight: 600;
+}
+
 /* Loading animation */
 @keyframes pulse {
     0% { opacity: 1; }
     50% { opacity: 0.5; }
     100% { opacity: 1; }
+}
+
+.loading {
+    animation: pulse 1.5s ease-in-out infinite;
 }
 
 .loading {

@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const session = require('express-session');
 const path = require('path');
 require('dotenv').config();
 
@@ -34,12 +35,28 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
+
+// Session middleware
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-secret-key-change-me-in-production',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // Set to true in production with HTTPS
+    httpOnly: true,
+    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+  }
+}));
+
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
 app.use('/api/calories', calorieRoutes);
+
+// API routes for breadcrumbs and history (same router)
+app.use('/api', calorieRoutes);
 
 // Serve the main page
 app.get('/', (req, res) => {

@@ -7,9 +7,21 @@ class CalorieTracker {
         this.resultsCard = document.getElementById('resultsCard');
         this.newAnalysisBtn = document.getElementById('newAnalysisBtn');
         this.charCount = document.getElementById('charCount');
+        this.breadcrumbsCard = document.getElementById('breadcrumbsCard');
+        this.breadcrumbsList = document.getElementById('breadcrumbsList');
 
+        // Use Elixir backend if available, fallback to Node.js
+        this.apiBaseUrl = this.detectBackend();
+        
         this.initializeEventListeners();
         this.updateCharCount();
+        this.loadBreadcrumbs();
+    }
+
+    detectBackend() {
+        // For now, always use the current origin (Node.js backend)
+        // In production, you could implement actual backend detection
+        return window.location.origin;
     }
 
     initializeEventListeners() {
@@ -74,11 +86,12 @@ class CalorieTracker {
             this.hideError();
             this.hideResults();
 
-            const response = await fetch('/api/calories', {
+            const response = await fetch(`${this.apiBaseUrl}/api/calories`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include', // Include cookies for session
                 body: JSON.stringify({ food: foodText })
             });
 
@@ -89,7 +102,9 @@ class CalorieTracker {
             }
 
             if (result.success && result.data) {
-                this.displayResults(result.data, foodText);
+                this.displayResults(result.data, foodText, result.search_id);
+                // Refresh breadcrumbs after successful analysis
+                this.loadBreadcrumbs();
             } else {
                 throw new Error('Invalid response format');
             }
@@ -102,7 +117,89 @@ class CalorieTracker {
         }
     }
 
-    displayResults(data, originalQuery) {
+    async loadBreadcrumbs() {
+        try {
+            const response = await fetch(`${this.apiBaseUrl}/api/breadcrumbs`, {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success && result.data.length > 0) {
+                    this.displayBreadcrumbs(result.data);
+                } else {
+                    this.hideBreadcrumbs();
+                }
+            }
+        } catch (error) {
+            console.warn('Failed to load breadcrumbs:', error);
+            this.hideBreadcrumbs();
+        }
+    }
+
+    async loadPreviousSearch(searchId) {
+        try {
+            this.setLoadingState(true);
+            this.hideError();
+
+            const response = await fetch(`${this.apiBaseUrl}/api/searches/${searchId}`, {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success && result.data) {
+                    // Fill the input with the previous query
+                    this.foodInput.value = result.data.query;
+                    this.updateCharCount();
+                    
+                    // Display the previous results
+                    this.displayResults(result.data, result.data.query, searchId);
+                    
+                    // Scroll to results
+                    setTimeout(() => {
+                        this.resultsCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                } else {
+                    this.showError('Failed to load previous search');
+                }
+            } else {
+                this.showError('Search not found');
+            }
+        } catch (error) {
+            console.error('Failed to load previous search:', error);
+            this.showError('Failed to load previous search');
+        } finally {
+            this.setLoadingState(false);
+        }
+    }
+
+    displayBreadcrumbs(breadcrumbs) {
+        const breadcrumbsHTML = breadcrumbs.map(item => `
+            <div class="breadcrumb-item" onclick="calorieTracker.loadPreviousSearch('${item.id}')" title="${this.escapeHtml(item.query)}">
+                <div class="d-flex align-items-center">
+                    <span class="me-2">${this.truncateText(item.query, 30)}</span>
+                    <span class="calories">${item.totalCalories}cal</span>
+                </div>
+                <small class="text-muted d-block">${this.formatTimeAgo(item.timestamp)}</small>
+            </div>
+        `).join('');
+
+        this.breadcrumbsList.innerHTML = breadcrumbsHTML;
+        this.showBreadcrumbs();
+    }
+
+    showBreadcrumbs() {
+        this.breadcrumbsCard.classList.remove('d-none');
+    }
+
+    hideBreadcrumbs() {
+        this.breadcrumbsCard.classList.add('d-none');
+    }
+
+    displayResults(data, originalQuery, searchId) {
         // Update total calories
         document.getElementById('totalCalories').textContent = data.totalCalories || 0;
         
@@ -124,6 +221,11 @@ class CalorieTracker {
 
         // Update breakdown
         this.displayBreakdown(data.breakdown || []);
+
+        // Store search ID for potential future use
+        if (searchId) {
+            this.resultsCard.setAttribute('data-search-id', searchId);
+        }
 
         // Show results
         this.showResults();
@@ -215,8 +317,27 @@ class CalorieTracker {
         this.updateCharCount();
         this.foodInput.focus();
         
+        // Refresh breadcrumbs
+        this.loadBreadcrumbs();
+        
         // Scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    truncateText(text, maxLength) {
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength) + '...';
+    }
+
+    formatTimeAgo(timestamp) {
+        const now = new Date();
+        const time = new Date(timestamp);
+        const diffInMinutes = Math.floor((now - time) / (1000 * 60));
+
+        if (diffInMinutes < 1) return 'Just now';
+        if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+        if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
+        return `${Math.floor(diffInMinutes / 1440)}d ago`;
     }
 
     getErrorMessage(error) {
@@ -251,7 +372,7 @@ class CalorieTracker {
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
-    new CalorieTracker();
+    window.calorieTracker = new CalorieTracker();
     
     // Add some visual feedback
     console.log('🚀 NeoTalent Calorie Tracker initialized');
