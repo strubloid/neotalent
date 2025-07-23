@@ -12,7 +12,9 @@ import ErrorHandler from './middleware/ErrorHandler';
 // import SecurityMiddleware from './middleware/SecurityMiddleware';
 import apiRoutes from './routes/apiRoutes';
 
-dotenv.config();
+// Load environment variables from backend directory first, then parent directory
+dotenv.config({ path: path.join(__dirname, '../.env') });
+dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 /**
  * NeoTalent Calorie Tracker Backend Server

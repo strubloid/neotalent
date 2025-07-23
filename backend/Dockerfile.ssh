@@ -22,7 +22,7 @@ RUN npm run build
 FROM node:18-alpine AS production
 
 # Install SSH server and required packages
-RUN apk add --no-cache openssh-server sudo python3 make g++ curl
+RUN apk add --no-cache openssh-server sudo python3 make g++ curl su-exec
 
 # Set working directory
 WORKDIR /app
@@ -49,12 +49,9 @@ RUN adduser -S nextjs -u 1002 -G nodejs
 # Copy built application
 COPY --from=builder --chown=nextjs:nodejs /app/dist ./dist
 
-# Create startup script
-RUN echo '#!/bin/sh\n/usr/sbin/sshd -D &\nexec su-exec nextjs:nodejs node dist/server.js' > /start.sh
+# Copy startup script
+COPY start.sh /start.sh
 RUN chmod +x /start.sh
-
-# Install su-exec for proper user switching
-RUN apk add --no-cache su-exec
 
 # Expose ports (SSH and Node.js)
 EXPOSE 22 3001

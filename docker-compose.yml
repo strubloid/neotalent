@@ -3,9 +3,7 @@ version: '3.8'
 services:
   # MongoDB Database with SSH access
   mongodb:
-    build:
-      context: .
-      dockerfile: Dockerfile.mongodb
+    image: mongo:7.0
     container_name: neotalent-mongodb
     restart: unless-stopped
     ports:
@@ -15,12 +13,22 @@ services:
       MONGO_INITDB_ROOT_USERNAME: neotalent
       MONGO_INITDB_ROOT_PASSWORD: neotalent123
       MONGO_INITDB_DATABASE: neotalent
-      SSH_USER: mongouser
-      SSH_PASSWORD: mongopass123
     volumes:
       - mongodb_data:/data/db
+      - ./scripts/mongodb-setup.sh:/docker-entrypoint-initdb.d/setup-ssh.sh:ro
     networks:
       - neotalent-network
+    command: >
+      bash -c "
+        apt-get update && 
+        apt-get install -y openssh-server sudo &&
+        useradd -rm -d /home/mongouser -s /bin/bash -g root -G sudo -u 1001 mongouser &&
+        echo 'mongouser:mongopass123' | chpasswd &&
+        mkdir -p /var/run/sshd &&
+        ssh-keygen -A &&
+        service ssh start &
+        exec docker-entrypoint.sh mongod
+      "
 
   # Backend Service with SSH access
   backend:
@@ -41,10 +49,8 @@ services:
       RATE_LIMIT_WINDOW_MS: 900000
       RATE_LIMIT_MAX_REQUESTS: 100
       CORS_ORIGIN: http://localhost:3000
-      SSH_USER: backenduser
-      SSH_PASSWORD: backendpass123
     env_file:
-      - .env.docker
+      - .env
     depends_on:
       - mongodb
     networks:
@@ -68,6 +74,7 @@ services:
 
 volumes:
   mongodb_data:
+    driver: local
 
 networks:
   neotalent-network:

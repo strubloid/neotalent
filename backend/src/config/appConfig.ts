@@ -76,7 +76,9 @@ class AppConfig {
             rateLimitMaxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'),
             corsOrigin: process.env.CORS_ORIGIN || '*'
         };
-
+        
+        console.log("process.env.OPENAI_API_KEY")
+        console.log(process.env.OPENAI_API_KEY)
         // External Services Configuration
         this.services = {
             openai: {

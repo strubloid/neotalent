@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # MongoDB Database
+  # MongoDB Database with SSH
   mongodb:
     build:
       context: .
@@ -26,13 +26,12 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.ssh
+      dockerfile: Dockerfile.dev
     container_name: neotalent-backend-dev
     restart: unless-stopped
     ports:
       - "3001:3001"
       - "9229:9229" # Node.js debugging port
-      - "2222:22"   # SSH port for Backend
     environment:
       NODE_ENV: development
       PORT: 3001
