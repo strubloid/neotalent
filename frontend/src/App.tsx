@@ -143,12 +143,19 @@ const App = () => {
           totalProtein: data.data.protein || 0,
           totalCarbs: data.data.carbs || 0,
           totalFat: data.data.fat || 0,
+          totalFiber: data.data.fiber || 0,
+          totalSugar: data.data.sugar || 0,
+          totalSodium: data.data.sodium || 0,
           breakdown: data.data.foodItems?.map((item: any) => ({
             food: item.name || 'Unknown food',
             calories: item.calories || 0,
             protein: item.protein || 0,
             carbs: item.carbs || 0,
             fat: item.fat || 0,
+            // Use individual item values or 0 if not available (don't use totals)
+            fiber: item.fiber || 0,
+            sugar: item.sugar || 0,
+            sodium: item.sodium || 0,
             quantity: item.quantity || '1 serving'
           })) || [],
           summary: `Analysis of "${foodText}" shows ${data.data.calories || 0} total calories with standard serving size. Confidence level: ${data.data.confidence || 0.5}.`,

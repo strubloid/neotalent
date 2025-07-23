@@ -136,6 +136,48 @@ const ResultsCard = ({ result, onNewAnalysis }: ResultsCardProps) => {
                     </div>
                   </div>
                 </div>
+
+                {/* Additional Nutrition Info */}
+                <div className="col-md-12 mb-4">
+                  <div className="card">
+                    <div className="card-header">
+                      <h6 className="mb-0">
+                        <i className="bi bi-info-square me-2"></i>
+                        Additional Nutrition Information
+                      </h6>
+                    </div>
+                    <div className="card-body">
+                      <div className="row text-center">
+                        {/* Fiber */}
+                        <div className="col-4">
+                          <div className="mb-2">
+                            <i className="bi bi-tree text-success fs-2"></i>
+                          </div>
+                          <h4 className="text-success">{result.totalFiber || 0}g</h4>
+                          <h6 className="text-muted">Fiber</h6>
+                        </div>
+
+                        {/* Sugar */}
+                        <div className="col-4">
+                          <div className="mb-2">
+                            <i className="bi bi-hexagon text-secondary fs-2"></i>
+                          </div>
+                          <h4 className="text-secondary">{result.totalSugar || 0}g</h4>
+                          <h6 className="text-muted">Sugar</h6>
+                        </div>
+
+                        {/* Sodium */}
+                        <div className="col-4">
+                          <div className="mb-2">
+                            <i className="bi bi-droplet-half text-dark fs-2"></i>
+                          </div>
+                          <h4 className="text-dark">{result.totalSodium || 0}mg</h4>
+                          <h6 className="text-muted">Sodium</h6>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Food Breakdown */}
@@ -160,6 +202,9 @@ const ResultsCard = ({ result, onNewAnalysis }: ResultsCardProps) => {
                                 <th className="text-end">Protein</th>
                                 <th className="text-end">Carbs</th>
                                 <th className="text-end">Fat</th>
+                                <th className="text-end">Fiber</th>
+                                <th className="text-end">Sugar</th>
+                                <th className="text-end">Sodium</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -178,6 +223,9 @@ const ResultsCard = ({ result, onNewAnalysis }: ResultsCardProps) => {
                                   <td className="text-end text-danger">{item.protein}g</td>
                                   <td className="text-end text-warning">{item.carbs}g</td>
                                   <td className="text-end text-info">{item.fat}g</td>
+                                  <td className="text-end text-success">{item.fiber || 0}g</td>
+                                  <td className="text-end text-secondary">{item.sugar || 0}g</td>
+                                  <td className="text-end text-dark">{item.sodium || 0}mg</td>
                                 </tr>
                               ))}
                             </tbody>

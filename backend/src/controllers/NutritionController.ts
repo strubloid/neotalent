@@ -170,12 +170,15 @@ Please provide a JSON response with the following structure:
             "calories": <calories for this item>,
             "protein": <protein for this item>,
             "carbs": <carbs for this item>,
-            "fat": <fat for this item>
+            "fat": <fat for this item>,
+            "fiber": <fiber for this item>,
+            "sugar": <sugar for this item>,
+            "sodium": <sodium for this item>
         }
     ]
 }
 
-Be as accurate as possible with nutritional estimates. If the description is vague, make reasonable assumptions and lower the confidence score accordingly.`;
+For each food item in the foodItems array, provide individual nutrition values (protein, carbs, fat, fiber, sugar, sodium). Make sure the totals are the sum of individual items. Be as accurate as possible with nutritional estimates. If the description is vague, make reasonable assumptions and lower the confidence score accordingly.`;
 
             const response = await this.client.chat.completions.create({
                 model: this.model,

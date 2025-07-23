@@ -7,6 +7,12 @@ import appConfig from '../config/appConfig';
 interface FoodItem {
     item: string;
     calories: number;
+    protein?: number;
+    carbs?: number;
+    fat?: number;
+    fiber?: number;
+    sugar?: number;
+    sodium?: number;
 }
 
 /**
@@ -26,6 +32,9 @@ interface NutritionData {
     servingSize: string;
     breakdown: FoodItem[];
     macros: Macros;
+    fiber?: number;
+    sugar?: number;
+    sodium?: number;
     confidence: 'high' | 'medium' | 'low';
 }
 
@@ -140,8 +149,11 @@ class OpenAIService {
 Please respond with ONLY a valid JSON object containing:
 - totalCalories (number): Total estimated calories
 - servingSize (string): Estimated serving size description
-- breakdown (array): Array of food items with their individual calories
+- breakdown (array): Array of food items with their individual nutrition details
 - macros (object): Protein, carbs, fat in grams
+- fiber (number): Total fiber in grams
+- sugar (number): Total sugar in grams
+- sodium (number): Total sodium in milligrams
 - confidence (string): Confidence level in this estimate (high/medium/low)
 
 Example format:
@@ -149,18 +161,39 @@ Example format:
   "totalCalories": 350,
   "servingSize": "1 medium apple with 2 tbsp peanut butter",
   "breakdown": [
-    {"item": "Medium apple", "calories": 95},
-    {"item": "2 tbsp peanut butter", "calories": 255}
+    {
+      "item": "Medium apple", 
+      "calories": 95,
+      "protein": 0.5,
+      "carbs": 25,
+      "fat": 0.3,
+      "fiber": 4,
+      "sugar": 19,
+      "sodium": 2
+    },
+    {
+      "item": "2 tbsp peanut butter", 
+      "calories": 255,
+      "protein": 8,
+      "carbs": 8,
+      "fat": 16,
+      "fiber": 2,
+      "sugar": 3,
+      "sodium": 140
+    }
   ],
   "macros": {
-    "protein": 8,
-    "carbs": 25,
-    "fat": 16
+    "protein": 8.5,
+    "carbs": 33,
+    "fat": 16.3
   },
+  "fiber": 6,
+  "sugar": 22,
+  "sodium": 142,
   "confidence": "high"
 }
 
-Provide realistic and accurate estimations based on common serving sizes.`;
+For each food item in the breakdown, provide individual nutrition values (protein, carbs, fat, fiber, sugar, sodium). Make sure the totals match the sum of individual items. Provide realistic and accurate estimations based on common serving sizes.`;
     }
 
     /**

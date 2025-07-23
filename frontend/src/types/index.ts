@@ -38,6 +38,9 @@ export interface NutritionResult {
   totalProtein: number;
   totalCarbs: number;
   totalFat: number;
+  totalFiber?: number;
+  totalSugar?: number;
+  totalSodium?: number;
   breakdown: FoodItem[];
   summary: string;
   timestamp: string;
@@ -49,6 +52,9 @@ export interface FoodItem {
   protein: number;
   carbs: number;
   fat: number;
+  fiber?: number;
+  sugar?: number;
+  sodium?: number;
   quantity?: string;
 }
 
