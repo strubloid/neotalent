@@ -1,31 +1,37 @@
 version: '3.8'
 
 services:
-  # MongoDB Database
+  # MongoDB Database with SSH access
   mongodb:
-    image: mongo:7.0
+    build:
+      context: .
+      dockerfile: Dockerfile.mongodb
     container_name: neotalent-mongodb
     restart: unless-stopped
     ports:
       - "27017:27017"
+      - "2221:22"  # SSH port for MongoDB
     environment:
       MONGO_INITDB_ROOT_USERNAME: neotalent
       MONGO_INITDB_ROOT_PASSWORD: neotalent123
       MONGO_INITDB_DATABASE: neotalent
+      SSH_USER: mongouser
+      SSH_PASSWORD: mongopass123
     volumes:
       - mongodb_data:/data/db
     networks:
       - neotalent-network
 
-  # Backend Service
+  # Backend Service with SSH access
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.ssh
     container_name: neotalent-backend
     restart: unless-stopped
     ports:
       - "3001:3001"
+      - "2222:22"  # SSH port for Backend
     environment:
       NODE_ENV: production
       PORT: 3001
@@ -35,6 +41,8 @@ services:
       RATE_LIMIT_WINDOW_MS: 900000
       RATE_LIMIT_MAX_REQUESTS: 100
       CORS_ORIGIN: http://localhost:3000
+      SSH_USER: backenduser
+      SSH_PASSWORD: backendpass123
     env_file:
       - .env.docker
     depends_on:

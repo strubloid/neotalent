@@ -1,0 +1,67 @@
+FROM node:18-alpine AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Install dependencies for native modules
+RUN apk add --no-cache python3 make g++
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Build TypeScript
+RUN npm run build
+
+# Production stage with SSH
+FROM node:18-alpine AS production
+
+# Install SSH server and required packages
+RUN apk add --no-cache openssh-server sudo python3 make g++ curl
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install only production dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Create SSH user for DbVisualizer access
+RUN adduser -D -s /bin/sh -u 1001 backenduser
+RUN echo 'backenduser:backendpass123' | chpasswd
+RUN echo 'backenduser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# Configure SSH
+RUN ssh-keygen -A
+RUN mkdir -p /var/run/sshd
+
+# Create non-root user for Node.js app
+RUN addgroup -g 1002 -S nodejs
+RUN adduser -S nextjs -u 1002 -G nodejs
+
+# Copy built application
+COPY --from=builder --chown=nextjs:nodejs /app/dist ./dist
+
+# Create startup script
+RUN echo '#!/bin/sh\n/usr/sbin/sshd -D &\nexec su-exec nextjs:nodejs node dist/server.js' > /start.sh
+RUN chmod +x /start.sh
+
+# Install su-exec for proper user switching
+RUN apk add --no-cache su-exec
+
+# Expose ports (SSH and Node.js)
+EXPOSE 22 3001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3001/api/health || exit 1
+
+# Start both SSH and Node.js
+CMD ["/start.sh"]

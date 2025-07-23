@@ -3,15 +3,20 @@ version: '3.8'
 services:
   # MongoDB Database
   mongodb:
-    image: mongo:7.0
+    build:
+      context: .
+      dockerfile: Dockerfile.mongodb
     container_name: neotalent-mongodb-dev
     restart: unless-stopped
     ports:
       - "27017:27017"
+      - "2221:22"  # SSH port for MongoDB
     environment:
       MONGO_INITDB_ROOT_USERNAME: neotalent
       MONGO_INITDB_ROOT_PASSWORD: neotalent123
       MONGO_INITDB_DATABASE: neotalent
+      SSH_USER: mongouser
+      SSH_PASSWORD: mongopass123
     volumes:
       - mongodb_dev_data:/data/db
     networks:
@@ -21,12 +26,13 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.ssh
     container_name: neotalent-backend-dev
     restart: unless-stopped
     ports:
       - "3001:3001"
       - "9229:9229" # Node.js debugging port
+      - "2222:22"   # SSH port for Backend
     environment:
       NODE_ENV: development
       PORT: 3001
