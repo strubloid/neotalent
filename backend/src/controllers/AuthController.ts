@@ -215,6 +215,131 @@ class AuthController {
             } : null
         });
     }
+
+    /**
+     * Get user's search history
+     * @route   GET /api/auth/search-history
+     * @desc    Get search history for authenticated user
+     * @access  Private
+     */
+    async getSearchHistory(req: AuthenticatedRequest, res: Response): Promise<void> {
+        try {
+            if (!req.session || !req.session.isAuthenticated) {
+                res.status(401).json({
+                    success: false,
+                    message: 'Authentication required'
+                });
+                return;
+            }
+
+            // For now, return search history from session or empty array
+            const searchHistory = req.session.searchHistory || [];
+            
+            res.json({
+                success: true,
+                searchHistory: searchHistory
+            });
+
+        } catch (error: any) {
+            console.error('Get search history error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Internal server error'
+            });
+        }
+    }
+
+    /**
+     * Add search to user's history
+     * @route   POST /api/auth/search-history
+     * @desc    Add a search to user's search history
+     * @access  Private
+     */
+    async addSearchHistory(req: AuthenticatedRequest, res: Response): Promise<void> {
+        try {
+            if (!req.session || !req.session.isAuthenticated) {
+                res.status(401).json({
+                    success: false,
+                    message: 'Authentication required'
+                });
+                return;
+            }
+
+            const { searchId, query, summary } = req.body;
+
+            if (!searchId || !query || !summary) {
+                res.status(400).json({
+                    success: false,
+                    message: 'Search ID, query, and summary are required'
+                });
+                return;
+            }
+
+            // Initialize search history if it doesn't exist
+            if (!req.session.searchHistory) {
+                req.session.searchHistory = [];
+            }
+
+            // Add new search to beginning of array
+            const newSearch = {
+                searchId,
+                query,
+                summary,
+                timestamp: new Date().toISOString()
+            };
+
+            req.session.searchHistory.unshift(newSearch);
+
+            // Keep only the 10 most recent searches
+            req.session.searchHistory = req.session.searchHistory.slice(0, 10);
+
+            res.json({
+                success: true,
+                message: 'Search added to history',
+                searchHistory: req.session.searchHistory
+            });
+
+        } catch (error: any) {
+            console.error('Add search history error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Internal server error'
+            });
+        }
+    }
+
+    /**
+     * Clear user's search history
+     * @route   DELETE /api/auth/search-history
+     * @desc    Clear all search history for authenticated user
+     * @access  Private
+     */
+    async clearSearchHistory(req: AuthenticatedRequest, res: Response): Promise<void> {
+        try {
+            if (!req.session || !req.session.isAuthenticated) {
+                res.status(401).json({
+                    success: false,
+                    message: 'Authentication required'
+                });
+                return;
+            }
+
+            // Clear search history from session
+            req.session.searchHistory = [];
+
+            res.json({
+                success: true,
+                message: 'Search history cleared successfully'
+            });
+
+        } catch (error: any) {
+            console.error('Clear search history error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Internal server error'
+            });
+        }
+    }
 }
 
 export default AuthController;

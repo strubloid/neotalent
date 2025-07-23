@@ -2,6 +2,16 @@ import mongoose, { Document, Schema, Model } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 /**
+ * Search History Item Interface
+ */
+export interface ISearchHistoryItem {
+    searchId: string;
+    query: string;
+    summary: string;
+    timestamp: Date;
+}
+
+/**
  * User Interface
  * Requirements: username, password, nickname only
  */
@@ -9,6 +19,7 @@ export interface IUser extends Document {
     username: string;
     password: string;
     nickname: string;
+    searchHistory?: ISearchHistoryItem[];
     comparePassword(candidatePassword: string): Promise<boolean>;
     createdAt: Date;
     updatedAt: Date;
@@ -45,7 +56,27 @@ const userSchema = new Schema<IUser>({
         required: [true, 'Nickname is required'],
         trim: true,
         maxlength: [100, 'Nickname cannot exceed 100 characters']
-    }
+    },
+    searchHistory: [{
+        searchId: {
+            type: String,
+            required: true
+        },
+        query: {
+            type: String,
+            required: true,
+            maxlength: [500, 'Search query cannot exceed 500 characters']
+        },
+        summary: {
+            type: String,
+            required: true,
+            maxlength: [1000, 'Search summary cannot exceed 1000 characters']
+        },
+        timestamp: {
+            type: Date,
+            default: Date.now
+        }
+    }]
 }, {
     timestamps: true,
     toJSON: {

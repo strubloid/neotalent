@@ -66,19 +66,19 @@ class Server {
         }));
         this.app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-        // Session configuration - TEMPORARILY DISABLED FOR TESTING
-        // this.app.use(session({
-        //     secret: tempAppConfig.security.sessionSecret,
-        //     resave: false,
-        //     saveUninitialized: false,
-        //     name: 'neotalent.sid',
-        //     cookie: {
-        //         secure: this.environment === 'production',
-        //         httpOnly: true,
-        //         maxAge: tempAppConfig.app.sessionCookieMaxAge,
-        //         sameSite: this.environment === 'production' ? 'strict' : 'lax'
-        //     }
-        // }));
+        // Session configuration
+        this.app.use(session({
+            secret: process.env.SESSION_SECRET || 'neotalent-dev-secret-key-change-in-production',
+            resave: false,
+            saveUninitialized: false,
+            name: 'neotalent.sid',
+            cookie: {
+                secure: this.environment === 'production',
+                httpOnly: true,
+                maxAge: 24 * 60 * 60 * 1000, // 24 hours
+                sameSite: this.environment === 'production' ? 'strict' : 'lax'
+            }
+        }));
 
         // Session validation - TEMPORARILY DISABLED
         // this.app.use('/api', SecurityMiddleware.validateSession());

@@ -20,9 +20,43 @@ const App = () => {
   useEffect(() => {
     const loadBreadcrumbs = async () => {
       try {
-        // For now, start with empty breadcrumbs
-        // Real breadcrumbs will be added when users actually search for food
-        setBreadcrumbs([]);
+        // Check authentication status first
+        const authResponse = await fetch('/api/auth/status', {
+          method: 'GET',
+          credentials: 'include',
+        });
+        
+        if (authResponse.ok) {
+          const authData = await authResponse.json();
+          if (authData.success && authData.user) {
+            setUser(authData.user);
+            setIsAuthenticated(true);
+            
+            // Load search history for authenticated user
+            try {
+              const historyResponse = await fetch('/api/auth/search-history', {
+                method: 'GET',
+                credentials: 'include',
+              });
+              
+              if (historyResponse.ok) {
+                const historyData = await historyResponse.json();
+                if (historyData.success && historyData.searchHistory) {
+                  setBreadcrumbs(historyData.searchHistory);
+                }
+              }
+            } catch (historyError) {
+              console.error('Error loading search history:', historyError);
+              setBreadcrumbs([]);
+            }
+          } else {
+            // Not authenticated, start with empty breadcrumbs
+            setBreadcrumbs([]);
+          }
+        } else {
+          // Not authenticated, start with empty breadcrumbs
+          setBreadcrumbs([]);
+        }
       } catch (error) {
         console.error('Error loading breadcrumbs:', error);
         setBreadcrumbs([]);
@@ -52,8 +86,8 @@ const App = () => {
       }
     };
 
-    // Load both in parallel
-    Promise.all([loadBreadcrumbs(), checkAuthStatus()]);
+    // Load breadcrumbs (which includes auth check and history loading)
+    loadBreadcrumbs();
   }, []);
 
   const handleBreadcrumbClick = (searchId: string) => {
@@ -112,9 +146,32 @@ const App = () => {
     }
   };
 
-  const handleClearHistory = () => {
+  const handleClearHistory = async () => {
     if (window.confirm('Are you sure you want to clear all search history?')) {
-      setBreadcrumbs([]);
+      if (isAuthenticated) {
+        // Clear from database for authenticated users
+        try {
+          const response = await fetch('/api/auth/search-history', {
+            method: 'DELETE',
+            credentials: 'include',
+          });
+
+          if (response.ok) {
+            setBreadcrumbs([]);
+          } else {
+            // If delete fails, still clear local state
+            setBreadcrumbs([]);
+            console.error('Failed to clear search history from server');
+          }
+        } catch (error) {
+          console.error('Error clearing search history:', error);
+          // Still clear local state
+          setBreadcrumbs([]);
+        }
+      } else {
+        // For non-authenticated users, just clear the local array
+        setBreadcrumbs([]);
+      }
     }
   };
 
@@ -171,7 +228,42 @@ const App = () => {
           summary: `Total: ${nutritionResult.totalCalories} calories - ${data.data.servingSize || 'estimated serving'}`,
           timestamp: nutritionResult.timestamp
         };
-        setBreadcrumbs(prev => [newBreadcrumb, ...prev.slice(0, 9)]); // Keep only 10 recent searches
+
+        // Save search history based on authentication status
+        if (isAuthenticated) {
+          // Save to database for authenticated users
+          try {
+            const response = await fetch('/api/auth/search-history', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include',
+              body: JSON.stringify({
+                searchId: newBreadcrumb.searchId,
+                query: newBreadcrumb.query,
+                summary: newBreadcrumb.summary
+              }),
+            });
+
+            if (response.ok) {
+              const historyData = await response.json();
+              if (historyData.success && historyData.searchHistory) {
+                setBreadcrumbs(historyData.searchHistory);
+              }
+            } else {
+              // If save fails, fall back to local storage
+              setBreadcrumbs(prev => [newBreadcrumb, ...prev.slice(0, 9)]);
+            }
+          } catch (error) {
+            console.error('Error saving search history:', error);
+            // Fall back to local storage
+            setBreadcrumbs(prev => [newBreadcrumb, ...prev.slice(0, 9)]);
+          }
+        } else {
+          // For non-authenticated users, store in session memory only
+          setBreadcrumbs(prev => [newBreadcrumb, ...prev.slice(0, 9)]);
+        }
       } else {
         setAnalysisError(data.error || 'Analysis failed. Please try again.');
       }
@@ -200,6 +292,23 @@ const App = () => {
         setUser(data.user);
         setIsAuthenticated(true);
         console.log('Login successful:', data.user);
+        
+        // Load search history for the newly authenticated user
+        try {
+          const historyResponse = await fetch('/api/auth/search-history', {
+            method: 'GET',
+            credentials: 'include',
+          });
+          
+          if (historyResponse.ok) {
+            const historyData = await historyResponse.json();
+            if (historyData.success && historyData.searchHistory) {
+              setBreadcrumbs(historyData.searchHistory);
+            }
+          }
+        } catch (historyError) {
+          console.error('Error loading search history after login:', historyError);
+        }
       } else {
         throw new Error(data.error || 'Login failed');
       }
@@ -240,9 +349,22 @@ const App = () => {
     setAnalysisError('');
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      // Call logout API to destroy session on server
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (error) {
+      console.error('Logout API error:', error);
+      // Continue with client-side logout even if API fails
+    }
+    
+    // Clear client-side state
     setUser(null);
     setIsAuthenticated(false);
+    setBreadcrumbs([]); // Clear search history from UI
     alert('Logged out successfully');
   };
 

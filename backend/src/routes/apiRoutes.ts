@@ -100,6 +100,18 @@ router.get('/auth/status', (req: Request, res: Response) => {
     authController.checkAuthStatus(req, res);
 });
 
+router.get('/auth/search-history', (req: Request, res: Response) => {
+    authController.getSearchHistory(req, res);
+});
+
+router.post('/auth/search-history', (req: Request, res: Response) => {
+    authController.addSearchHistory(req, res);
+});
+
+router.delete('/auth/search-history', (req: Request, res: Response) => {
+    authController.clearSearchHistory(req, res);
+});
+
 router.delete('/auth/account', (req: Request, res: Response) => {
     authController.deleteAccount(req, res);
 });
