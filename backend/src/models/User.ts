@@ -1,5 +1,26 @@
 import mongoose, { Document, Schema, Model } from 'mongoose';
-import bcrypt from 'bcrypt';
+import crypto from 'crypto';
+
+/**
+ * Password hashing utility using Node.js crypto (Docker-friendly)
+ */
+const hashPassword = (password: string): string => {
+    // Generate a salt
+    const salt = crypto.randomBytes(16).toString('hex');
+    // Hash password with salt using pbkdf2
+    const hash = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
+    return `${salt}:${hash}`;
+};
+
+const verifyPassword = (password: string, hashedPassword: string): boolean => {
+    try {
+        const [salt, hash] = hashedPassword.split(':');
+        const verifyHash = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
+        return hash === verifyHash;
+    } catch (error) {
+        return false;
+    }
+};
 
 /**
  * Search History Item Interface
@@ -95,9 +116,8 @@ userSchema.pre<IUser>('save', async function(next) {
     if (!this.isModified('password')) return next();
 
     try {
-        // Hash password with cost of 12
-        const salt = await bcrypt.genSalt(12);
-        this.password = await bcrypt.hash(this.password, salt);
+        // Hash password using crypto (Docker-friendly)
+        this.password = hashPassword(this.password);
         next();
     } catch (error: any) {
         next(error);
@@ -109,7 +129,8 @@ userSchema.pre<IUser>('save', async function(next) {
  */
 userSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
     try {
-        return await bcrypt.compare(candidatePassword, this.password);
+        // Use crypto-based password verification (Docker-friendly)
+        return verifyPassword(candidatePassword, this.password);
     } catch (error) {
         throw new Error('Password comparison failed');
     }

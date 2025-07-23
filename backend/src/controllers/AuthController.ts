@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import User from '../models/User';
 
 // Simplified AuthController without bcrypt dependency
 interface AuthenticatedRequest extends Request {
@@ -29,20 +30,49 @@ class AuthController {
                 return;
             }
 
-            // For now, just return success (no actual database storage)
+            // Check if user already exists
+            const existingUser = await User.findByUsername(username);
+            if (existingUser) {
+                res.status(409).json({
+                    success: false,
+                    message: 'Username already exists'
+                });
+                return;
+            }
+
+            // Create new user
+            const newUser = new User({
+                username,
+                password,
+                nickname,
+                searchHistory: []
+            });
+
+            const savedUser = await newUser.save();
+
             res.status(201).json({
                 success: true,
                 message: 'User registered successfully',
                 user: {
-                    id: `user_${Date.now()}`,
-                    username: username,
-                    nickname: nickname,
-                    createdAt: new Date().toISOString()
+                    id: savedUser._id,
+                    username: savedUser.username,
+                    nickname: savedUser.nickname,
+                    createdAt: savedUser.createdAt
                 }
             });
 
         } catch (error: any) {
             console.error('Registration error:', error);
+            
+            // Handle duplicate key error specifically
+            if (error.code === 11000) {
+                res.status(409).json({
+                    success: false,
+                    message: 'Username already exists'
+                });
+                return;
+            }
+            
             res.status(500).json({
                 success: false,
                 message: 'Internal server error during registration'
@@ -69,25 +99,44 @@ class AuthController {
                 return;
             }
 
-            // For now, accept any login (no actual authentication)
-            const mockUser = {
-                id: `user_${Date.now()}`,
-                username: username,
-                nickname: username.charAt(0).toUpperCase() + username.slice(1)
-            };
+            // Find user in database
+            const user = await User.findByUsername(username);
+            
+            if (!user) {
+                res.status(401).json({
+                    success: false,
+                    message: 'Invalid username or password'
+                });
+                return;
+            }
+
+            // Check password
+            const isValidPassword = await user.comparePassword(password);
+            
+            if (!isValidPassword) {
+                res.status(401).json({
+                    success: false,
+                    message: 'Invalid username or password'
+                });
+                return;
+            }
             
             // Create session if available
             if (req.session) {
-                req.session.userId = mockUser.id;
-                req.session.username = mockUser.username;
-                req.session.nickname = mockUser.nickname;
+                req.session.userId = (user._id as any).toString();
+                req.session.username = user.username;
+                req.session.nickname = user.nickname;
                 req.session.isAuthenticated = true;
             }
 
             res.json({
                 success: true,
                 message: 'Login successful',
-                user: mockUser
+                user: {
+                    id: user._id,
+                    username: user.username,
+                    nickname: user.nickname
+                }
             });
 
         } catch (error: any) {
@@ -224,7 +273,7 @@ class AuthController {
      */
     async getSearchHistory(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
-            if (!req.session || !req.session.isAuthenticated) {
+            if (!req.session || !req.session.isAuthenticated || !req.session.userId) {
                 res.status(401).json({
                     success: false,
                     message: 'Authentication required'
@@ -232,8 +281,19 @@ class AuthController {
                 return;
             }
 
-            // For now, return search history from session or empty array
-            const searchHistory = req.session.searchHistory || [];
+            // Find user in database and get their search history
+            const user = await User.findById(req.session.userId).select('searchHistory');
+            
+            if (!user) {
+                res.status(404).json({
+                    success: false,
+                    message: 'User not found'
+                });
+                return;
+            }
+
+            // Return search history from database
+            const searchHistory = user.searchHistory || [];
             
             res.json({
                 success: true,
@@ -257,7 +317,7 @@ class AuthController {
      */
     async addSearchHistory(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
-            if (!req.session || !req.session.isAuthenticated) {
+            if (!req.session || !req.session.isAuthenticated || !req.session.userId) {
                 res.status(401).json({
                     success: false,
                     message: 'Authentication required'
@@ -275,9 +335,20 @@ class AuthController {
                 return;
             }
 
+            // Find user in database
+            const user = await User.findById(req.session.userId);
+            
+            if (!user) {
+                res.status(404).json({
+                    success: false,
+                    message: 'User not found'
+                });
+                return;
+            }
+
             // Initialize search history if it doesn't exist
-            if (!req.session.searchHistory) {
-                req.session.searchHistory = [];
+            if (!user.searchHistory) {
+                user.searchHistory = [];
             }
 
             // Add new search to beginning of array
@@ -285,18 +356,21 @@ class AuthController {
                 searchId,
                 query,
                 summary,
-                timestamp: new Date().toISOString()
+                timestamp: new Date()
             };
 
-            req.session.searchHistory.unshift(newSearch);
+            user.searchHistory.unshift(newSearch);
 
             // Keep only the 10 most recent searches
-            req.session.searchHistory = req.session.searchHistory.slice(0, 10);
+            user.searchHistory = user.searchHistory.slice(0, 10);
+
+            // Save to database
+            await user.save();
 
             res.json({
                 success: true,
                 message: 'Search added to history',
-                searchHistory: req.session.searchHistory
+                searchHistory: user.searchHistory
             });
 
         } catch (error: any) {
@@ -316,7 +390,7 @@ class AuthController {
      */
     async clearSearchHistory(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
-            if (!req.session || !req.session.isAuthenticated) {
+            if (!req.session || !req.session.isAuthenticated || !req.session.userId) {
                 res.status(401).json({
                     success: false,
                     message: 'Authentication required'
@@ -324,8 +398,20 @@ class AuthController {
                 return;
             }
 
-            // Clear search history from session
-            req.session.searchHistory = [];
+            // Find user in database
+            const user = await User.findById(req.session.userId);
+            
+            if (!user) {
+                res.status(404).json({
+                    success: false,
+                    message: 'User not found'
+                });
+                return;
+            }
+
+            // Clear search history in database
+            user.searchHistory = [];
+            await user.save();
 
             res.json({
                 success: true,
