@@ -139,19 +139,19 @@ const App = () => {
         const nutritionResult: NutritionResult = {
           searchId: `search_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           query: foodText,
-          totalCalories: data.data.totalCalories || 0,
-          totalProtein: data.data.macros?.protein || 0,
-          totalCarbs: data.data.macros?.carbs || 0,
-          totalFat: data.data.macros?.fat || 0,
-          breakdown: data.data.breakdown?.map((item: any) => ({
-            food: item.item || 'Unknown food',
+          totalCalories: data.data.calories || 0,
+          totalProtein: data.data.protein || 0,
+          totalCarbs: data.data.carbs || 0,
+          totalFat: data.data.fat || 0,
+          breakdown: data.data.foodItems?.map((item: any) => ({
+            food: item.name || 'Unknown food',
             calories: item.calories || 0,
-            protein: Math.round((item.calories || 0) * 0.15 / 4), // Estimate protein from calories
-            carbs: Math.round((item.calories || 0) * 0.50 / 4), // Estimate carbs from calories
-            fat: Math.round((item.calories || 0) * 0.35 / 9), // Estimate fat from calories
-            quantity: '1 serving'
+            protein: item.protein || 0,
+            carbs: item.carbs || 0,
+            fat: item.fat || 0,
+            quantity: item.quantity || '1 serving'
           })) || [],
-          summary: `Analysis of "${foodText}" shows ${data.data.totalCalories} total calories with ${data.data.servingSize || 'standard serving size'}. Confidence level: ${data.data.confidence || 'medium'}.`,
+          summary: `Analysis of "${foodText}" shows ${data.data.calories || 0} total calories with standard serving size. Confidence level: ${data.data.confidence || 0.5}.`,
           timestamp: new Date().toISOString()
         };
 
