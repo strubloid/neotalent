@@ -32,7 +32,7 @@ const App = () => {
             setUser(authData.user);
             setIsAuthenticated(true);
             
-            // Load search history for authenticated user
+            // Load search history for authenticated user from backend
             try {
               const historyResponse = await fetch('/api/auth/search-history', {
                 method: 'GET',
@@ -50,16 +50,50 @@ const App = () => {
               setBreadcrumbs([]);
             }
           } else {
-            // Not authenticated, start with empty breadcrumbs
-            setBreadcrumbs([]);
+            // Not authenticated, load from sessionStorage for non-logged users
+            try {
+              const sessionHistory = sessionStorage.getItem('neotalent-search-history');
+              if (sessionHistory) {
+                const parsedHistory = JSON.parse(sessionHistory);
+                setBreadcrumbs(Array.isArray(parsedHistory) ? parsedHistory : []);
+              } else {
+                setBreadcrumbs([]);
+              }
+            } catch (error) {
+              console.error('Error loading session search history:', error);
+              setBreadcrumbs([]);
+            }
           }
         } else {
-          // Not authenticated, start with empty breadcrumbs
-          setBreadcrumbs([]);
+          // Not authenticated, load from sessionStorage for non-logged users
+          try {
+            const sessionHistory = sessionStorage.getItem('neotalent-search-history');
+            if (sessionHistory) {
+              const parsedHistory = JSON.parse(sessionHistory);
+              setBreadcrumbs(Array.isArray(parsedHistory) ? parsedHistory : []);
+            } else {
+              setBreadcrumbs([]);
+            }
+          } catch (error) {
+            console.error('Error loading session search history:', error);
+            setBreadcrumbs([]);
+          }
         }
       } catch (error) {
         console.error('Error loading breadcrumbs:', error);
-        setBreadcrumbs([]);
+        // If there's an error with auth check, try loading from sessionStorage
+        try {
+          const sessionHistory = sessionStorage.getItem('neotalent-search-history');
+          if (sessionHistory) {
+            const parsedHistory = JSON.parse(sessionHistory);
+            setBreadcrumbs(Array.isArray(parsedHistory) ? parsedHistory : []);
+          } else {
+            setBreadcrumbs([]);
+          }
+        } catch (sessionError) {
+          console.error('Error loading session search history:', sessionError);
+          setBreadcrumbs([]);
+        }
       } finally {
         setLoading(false);
       }
@@ -169,7 +203,12 @@ const App = () => {
           setBreadcrumbs([]);
         }
       } else {
-        // For non-authenticated users, just clear the local array
+        // For non-authenticated users, clear from sessionStorage and local state
+        try {
+          sessionStorage.removeItem('neotalent-search-history');
+        } catch (error) {
+          console.error('Error clearing session storage:', error);
+        }
         setBreadcrumbs([]);
       }
     }
@@ -261,8 +300,16 @@ const App = () => {
             setBreadcrumbs(prev => [newBreadcrumb, ...prev.slice(0, 9)]);
           }
         } else {
-          // For non-authenticated users, store in session memory only
-          setBreadcrumbs(prev => [newBreadcrumb, ...prev.slice(0, 9)]);
+          // For non-authenticated users, store in session memory and sessionStorage
+          const newBreadcrumbs = [newBreadcrumb, ...breadcrumbs.slice(0, 9)];
+          setBreadcrumbs(newBreadcrumbs);
+          
+          // Save to sessionStorage for persistence during browser session
+          try {
+            sessionStorage.setItem('neotalent-search-history', JSON.stringify(newBreadcrumbs));
+          } catch (error) {
+            console.error('Error saving to session storage:', error);
+          }
         }
       } else {
         setAnalysisError(data.error || 'Analysis failed. Please try again.');
@@ -365,6 +412,14 @@ const App = () => {
     setUser(null);
     setIsAuthenticated(false);
     setBreadcrumbs([]); // Clear search history from UI
+    
+    // Clear session storage for fresh anonymous session
+    try {
+      sessionStorage.removeItem('neotalent-search-history');
+    } catch (error) {
+      console.error('Error clearing session storage during logout:', error);
+    }
+    
     alert('Logged out successfully');
   };
 
