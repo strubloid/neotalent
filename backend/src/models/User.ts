@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Model } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 /**
@@ -12,6 +12,13 @@ export interface IUser extends Document {
     comparePassword(candidatePassword: string): Promise<boolean>;
     createdAt: Date;
     updatedAt: Date;
+}
+
+/**
+ * User Model Interface (includes static methods)
+ */
+export interface IUserModel extends Model<IUser> {
+    findByUsername(username: string): Promise<IUser | null>;
 }
 
 /**
@@ -43,7 +50,7 @@ const userSchema = new Schema<IUser>({
     timestamps: true,
     toJSON: {
         transform: function(doc, ret) {
-            delete ret.password;
+            delete (ret as any).password;
             return ret;
         }
     }
@@ -94,4 +101,4 @@ userSchema.pre<IUser>('save', function(next) {
     next();
 });
 
-export default mongoose.model<IUser>('User', userSchema);
+export default mongoose.model<IUser, IUserModel>('User', userSchema);

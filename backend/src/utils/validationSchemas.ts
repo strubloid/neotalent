@@ -26,6 +26,54 @@ interface PaginationParams {
 }
 
 /**
+ * Auth validation schemas
+ */
+const authSchemas = {
+    register: Joi.object({
+        username: Joi.string()
+            .alphanum()
+            .min(3)
+            .max(50)
+            .required()
+            .messages({
+                'string.empty': 'Username is required',
+                'string.min': 'Username must be at least 3 characters long',
+                'string.max': 'Username cannot exceed 50 characters',
+                'string.alphanum': 'Username can only contain letters and numbers'
+            }),
+        password: Joi.string()
+            .min(6)
+            .max(100)
+            .required()
+            .messages({
+                'string.empty': 'Password is required',
+                'string.min': 'Password must be at least 6 characters long',
+                'string.max': 'Password cannot exceed 100 characters'
+            }),
+        nickname: Joi.string()
+            .min(1)
+            .max(100)
+            .required()
+            .messages({
+                'string.empty': 'Nickname is required',
+                'string.max': 'Nickname cannot exceed 100 characters'
+            })
+    }),
+    login: Joi.object({
+        username: Joi.string()
+            .required()
+            .messages({
+                'string.empty': 'Username is required'
+            }),
+        password: Joi.string()
+            .required()
+            .messages({
+                'string.empty': 'Password is required'
+            })
+    })
+};
+
+/**
  * Validation schema for nutrition analysis request
  */
 const nutritionRequestSchema = Joi.object({
@@ -85,7 +133,8 @@ export {
     validateSearchId,
     validateSessionId,
     nutritionRequestSchema,
-    paginationSchema
+    paginationSchema,
+    authSchemas
 };
 
 export default {
@@ -94,5 +143,6 @@ export default {
     validateSearchId,
     validateSessionId,
     nutritionRequestSchema,
-    paginationSchema
+    paginationSchema,
+    authSchemas
 };

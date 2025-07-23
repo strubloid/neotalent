@@ -1,11 +1,12 @@
 import { Router, Request, Response } from 'express';
 import NutritionController from '../controllers/NutritionController';
-// import nutritionRoutes from './nutritionRoutes';
+import AuthController from '../controllers/AuthController';
 
 const router = Router();
 
-// Create a single instance of the nutrition controller
+// Create controller instances
 const nutritionController = new NutritionController();
+const authController = new AuthController();
 
 /**
  * Health check endpoint
@@ -49,8 +50,12 @@ router.get('/info', (req: Request, res: Response) => {
 // router.use('/nutrition', nutritionRoutes);
 
 // Legacy route compatibility (to maintain existing frontend compatibility)
-router.post('/calories', (req: Request, res: Response, next) => {
-    nutritionController.analyzeNutrition(req, res, next);
+router.post('/calories', async (req: Request, res: Response, next) => {
+    try {
+        await nutritionController.analyzeNutrition(req, res, next);
+    } catch (error) {
+        next(error);
+    }
 });
 
 router.get('/breadcrumbs', (req: Request, res: Response) => {
@@ -66,8 +71,37 @@ router.delete('/history', (req: Request, res: Response) => {
 });
 
 // Test endpoint for OpenAI
-router.get('/nutrition/test', (req: Request, res: Response) => {
-    nutritionController.testConnection(req, res);
+router.get('/nutrition/test', async (req: Request, res: Response) => {
+    try {
+        await nutritionController.testConnection(req, res);
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+});
+
+// Auth routes
+router.post('/auth/register', (req: Request, res: Response) => {
+    authController.register(req, res);
+});
+
+router.post('/auth/login', (req: Request, res: Response) => {
+    authController.login(req, res);
+});
+
+router.post('/auth/logout', (req: Request, res: Response) => {
+    authController.logout(req, res);
+});
+
+router.get('/auth/me', (req: Request, res: Response) => {
+    authController.getCurrentUser(req, res);
+});
+
+router.get('/auth/status', (req: Request, res: Response) => {
+    authController.checkAuthStatus(req, res);
+});
+
+router.delete('/auth/account', (req: Request, res: Response) => {
+    authController.deleteAccount(req, res);
 });
 
 export default router;

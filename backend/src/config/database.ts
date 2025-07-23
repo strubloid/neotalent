@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import appConfig from './appConfig';
 
+console.log('🔍 Database: Loading configuration...');
+
 interface ConnectionStatus {
     isConnected: boolean;
     readyState: string;
@@ -27,6 +29,7 @@ class DatabaseManager {
             }
 
             const { uri, options } = appConfig.database.mongodb;
+            console.log('🔍 Debug: MongoDB URI =', uri);
 
             // Set up connection events
             mongoose.connection.on('connected', () => {

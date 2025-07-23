@@ -140,5 +140,36 @@ export default {
     sanitizeEmail,
     normalizeWhitespace,
     sanitizeURL,
-    sanitizeFilename
+    sanitizeFilename,
+    sanitizeObject: function(obj: any) {
+        if (!obj || typeof obj !== 'object') return {};
+        const sanitized: any = {};
+        for (const key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                sanitized[key] = typeof obj[key] === 'string' ? sanitizeInput(obj[key]) : obj[key];
+            }
+        }
+        return sanitized;
+    }
+};
+
+// Named export for compatibility
+export const inputSanitizer = {
+    sanitizeInput,
+    sanitizeForHTML,
+    sanitizeNumber,
+    sanitizeEmail,
+    normalizeWhitespace,
+    sanitizeURL,
+    sanitizeFilename,
+    sanitizeObject: function(obj: any) {
+        if (!obj || typeof obj !== 'object') return {};
+        const sanitized: any = {};
+        for (const key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                sanitized[key] = typeof obj[key] === 'string' ? sanitizeInput(obj[key]) : obj[key];
+            }
+        }
+        return sanitized;
+    }
 };
