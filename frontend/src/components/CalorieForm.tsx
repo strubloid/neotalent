@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface CalorieFormProps {
   onAnalyze: (foodText: string) => void;
   isLoading: boolean;
   error: string;
+  resetTrigger?: number; // Add a reset trigger prop
 }
 
-const CalorieForm = ({ onAnalyze, isLoading, error }: CalorieFormProps) => {
+const CalorieForm = ({ onAnalyze, isLoading, error, resetTrigger }: CalorieFormProps) => {
   const [foodText, setFoodText] = useState('');
+
+  // Reset form when resetTrigger changes
+  useEffect(() => {
+    if (resetTrigger !== undefined) {
+      setFoodText('');
+    }
+  }, [resetTrigger]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

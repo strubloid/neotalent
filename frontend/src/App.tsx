@@ -16,6 +16,14 @@ const App = () => {
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [analysisError, setAnalysisError] = useState('');
   const [nutritionResult, setNutritionResult] = useState<NutritionResult | null>(null);
+  const [formResetTrigger, setFormResetTrigger] = useState(0); // Add reset trigger for form
+
+  // Helper function to clear all analysis-related state
+  const clearAnalysisState = () => {
+    setNutritionResult(null);
+    setAnalysisError('');
+    setFormResetTrigger(prev => prev + 1); // Trigger form reset
+  };
 
   // Load initial data and check authentication
   useEffect(() => {
@@ -332,8 +340,7 @@ const App = () => {
       if (data.success && data.user) {
         setUser(data.user);
         setIsAuthenticated(true);
-        setNutritionResult(null); // Clear any previous nutrition results
-        setAnalysisError(''); // Clear any analysis errors
+        clearAnalysisState(); // Clear any previous nutrition results and form
         console.log('Login successful:', data.user);
         
         // Transfer session storage search history to database for newly authenticated user
@@ -426,8 +433,7 @@ const App = () => {
       if (data.success && data.user) {
         setUser(data.user);
         setIsAuthenticated(true);
-        setNutritionResult(null); // Clear any previous nutrition results
-        setAnalysisError(''); // Clear any analysis errors
+        clearAnalysisState(); // Clear any previous nutrition results and form
         console.log('Registration successful:', data.user);
       } else {
         // Use data.message first (backend sends this), then fallback to data.error, then generic message
@@ -460,8 +466,7 @@ const App = () => {
     setUser(null);
     setIsAuthenticated(false);
     setBreadcrumbs([]); // Clear search history from UI
-    setNutritionResult(null); // Clear current nutrition results
-    setAnalysisError(''); // Clear any analysis errors
+    clearAnalysisState(); // Clear nutrition results, errors, and form
     
     // Initialize fresh anonymous session storage
     try {
@@ -479,9 +484,8 @@ const App = () => {
     if (window.confirm('Are you sure you want to delete your account? This cannot be undone.')) {
       setUser(null);
       setIsAuthenticated(false);
-      setNutritionResult(null); // Clear any nutrition results
-      setAnalysisError(''); // Clear any analysis errors
       setBreadcrumbs([]); // Clear search history
+      clearAnalysisState(); // Clear nutrition results, errors, and form
       alert('Account deleted successfully');
     }
   };
@@ -541,6 +545,7 @@ const App = () => {
           onAnalyze={handleAnalyzeFood}
           isLoading={analysisLoading}
           error={analysisError}
+          resetTrigger={formResetTrigger}
         />
 
         {/* Breadcrumbs Section */}
