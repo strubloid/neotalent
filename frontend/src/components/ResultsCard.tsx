@@ -19,6 +19,161 @@ class ResultsCard extends Component<ResultsCardProps, ResultsCardState> {
     }));
   };
 
+  printResults = () => {
+    // Get the nutrition content to print
+    const printContent = document.querySelector('.nutrition-analysis-content');
+    if (!printContent) return;
+
+    // Create a clone of the content
+    const contentClone = printContent.cloneNode(true) as HTMLElement;
+    
+    // Remove action buttons from the clone
+    const actionButtons = contentClone.querySelector('.action-buttons-section');
+    if (actionButtons) {
+      actionButtons.remove();
+    }
+
+    // Store original body content
+    const originalContent = document.body.innerHTML;
+    const originalTitle = document.title;
+
+    // Create print styles
+    const printStyles = `
+      <style>
+        @media print {
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.2;
+            color: #000 !important;
+            background: white !important;
+            margin: 15px;
+            font-size: 12px;
+          }
+          .card {
+            border: 1px solid #ccc !important;
+            box-shadow: none !important;
+            margin-bottom: 10px !important;
+            page-break-inside: avoid;
+          }
+          .card-body {
+            padding: 10px !important;
+          }
+          .card-header {
+            padding: 8px 10px !important;
+            font-size: 11px !important;
+          }
+          .bg-success {
+            background-color: #28a745 !important;
+            color: white !important;
+          }
+          .text-success { color: #28a745 !important; }
+          .text-danger { color: #dc3545 !important; }
+          .text-warning { color: #ffc107 !important; }
+          .text-info { color: #17a2b8 !important; }
+          .table { 
+            border-collapse: collapse; 
+            font-size: 10px !important;
+          }
+          .table td, .table th { 
+            border: 1px solid #dee2e6 !important; 
+            padding: 4px !important;
+          }
+          .badge { 
+            background-color: #28a745 !important; 
+            color: white !important;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 9px !important;
+          }
+          h1 { font-size: 18px !important; margin: 5px 0 !important; }
+          h2 { font-size: 16px !important; margin: 3px 0 !important; }
+          h3 { font-size: 14px !important; margin: 3px 0 !important; }
+          h4 { font-size: 13px !important; margin: 2px 0 !important; }
+          h5 { font-size: 12px !important; margin: 2px 0 !important; }
+          h6 { font-size: 11px !important; margin: 2px 0 !important; }
+          .display-4 { font-size: 24px !important; }
+          .fs-2 { font-size: 16px !important; }
+          .row { margin: 5px 0 !important; }
+          .col-4, .col-md-4, .col-md-8, .col-md-12, .col-12 {
+            padding: 2px !important;
+          }
+          .mb-2, .mb-4 { margin-bottom: 8px !important; }
+          .mt-3, .mt-4 { margin-top: 8px !important; }
+          .p-3 { padding: 8px !important; }
+          small { font-size: 9px !important; }
+          .opacity-75 { font-size: 10px !important; }
+          .progress {
+            height: 6px !important;
+            margin-bottom: 5px !important;
+          }
+          .bi {
+            font-size: 12px !important;
+          }
+          .table-responsive {
+            font-size: 9px !important;
+          }
+        }
+        .print-header {
+          text-align: center;
+          margin-bottom: 15px;
+          padding-bottom: 10px;
+          border-bottom: 2px solid #28a745;
+        }
+        .print-date {
+          margin-top: 5px;
+          font-size: 10px;
+          color: #666;
+        }
+        .compact-layout {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+        .compact-section {
+          flex: 1;
+          min-width: 200px;
+        }
+      </style>
+    `;
+
+    // Set document title
+    document.title = `Nutrition Analysis - ${this.props.result.query}`;
+
+    // Replace body content with print content
+    document.body.innerHTML = `
+      ${printStyles}
+      <div class="print-header">
+        <h1 style="color: #28a745; margin-bottom: 5px;">
+          Nutrition Analysis Results
+        </h1>
+        <h2 style="color: #000; margin-bottom: 3px;">${this.props.result.query}</h2>
+        <div class="print-date">
+          Generated on ${new Date().toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })}
+        </div>
+      </div>
+      <div class="compact-layout">
+        ${contentClone.innerHTML}
+      </div>
+    `;
+
+    // Print
+    window.print();
+
+    // Restore original content
+    setTimeout(() => {
+      document.body.innerHTML = originalContent;
+      document.title = originalTitle;
+      // Re-attach event listeners by triggering a re-render
+      window.location.reload();
+    }, 100);
+  };
+
   override render() {
     const { result, onNewAnalysis } = this.props;
     const { isExpanded } = this.state;
@@ -93,7 +248,7 @@ class ResultsCard extends Component<ResultsCardProps, ResultsCardState> {
                 transition: 'max-height 0.4s ease-in-out'
               }}
             >
-              <div className="card-body">
+              <div className="card-body nutrition-analysis-content">
               {/* Query Display */}
               <div className="mb-4 p-3 bg-light rounded">
                 <h6 className="text-muted mb-2">
@@ -345,7 +500,7 @@ class ResultsCard extends Component<ResultsCardProps, ResultsCardState> {
               </div>
 
               {/* Action Buttons */}
-              <div className="row mt-4">
+              <div className="row mt-4 action-buttons-section">
                 <div className="col-12 text-center">
                   <div className="btn-group" role="group">
                     <button 
@@ -357,7 +512,7 @@ class ResultsCard extends Component<ResultsCardProps, ResultsCardState> {
                     </button>
                     <button 
                       className="btn btn-outline-success"
-                      onClick={() => window.print()}
+                      onClick={this.printResults}
                     >
                       <i className="bi bi-printer me-2"></i>
                       Print Results
