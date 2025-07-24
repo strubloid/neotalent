@@ -1,21 +1,21 @@
-import React from 'react';
-import { User } from '../types';
+import React, { Component } from 'react';
+import { User, NavigationProps } from '../interfaces';
 
-interface NavigationProps {
-  user: User | null;
-  isAuthenticated: boolean;
-  onLogout: () => void;
-  onDeleteAccount: () => void;
-}
+class Navigation extends Component<NavigationProps> {
+  override render() {
+    const { user, isAuthenticated, onLogout, onDeleteAccount, onNavigateToRecentSearches, onNavigateToHome, currentView } = this.props;
 
-const Navigation = ({ user, isAuthenticated, onLogout, onDeleteAccount }: NavigationProps) => {
-  return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-      <div className="container">
-        <a className="navbar-brand" href="/">
-          <i className="bi bi-calculator me-2"></i>
-          NeoTalent Calorie Tracker
-        </a>
+    return (
+      <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div className="container">
+          <button 
+            className="navbar-brand btn btn-link text-white"
+            onClick={onNavigateToHome}
+            style={{ border: 'none', background: 'none', textDecoration: 'none' }}
+          >
+            <i className="bi bi-calculator me-2"></i>
+            NeoTalent Calorie Tracker
+          </button>
         
         <button 
           className="navbar-toggler" 
@@ -29,16 +29,36 @@ const Navigation = ({ user, isAuthenticated, onLogout, onDeleteAccount }: Naviga
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav me-auto">
             <li className="nav-item">
-              <a className="nav-link active" href="/">
+              <button 
+                className={`nav-link btn btn-link text-white ${currentView === 'home' ? 'active' : ''}`}
+                onClick={onNavigateToHome}
+                style={{ 
+                  border: 'none', 
+                  background: 'none',
+                  opacity: currentView === 'home' ? 1 : 0.85
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                onMouseLeave={(e) => e.currentTarget.style.opacity = currentView === 'home' ? '1' : '0.85'}
+              >
                 <i className="bi bi-house me-1"></i>
                 Home
-              </a>
+              </button>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="/nutrition">
-                <i className="bi bi-search me-1"></i>
-                Analyze Food
-              </a>
+              <button 
+                className={`nav-link btn btn-link text-white ${currentView === 'recent-searches' ? 'active' : ''}`}
+                onClick={onNavigateToRecentSearches}
+                style={{ 
+                  border: 'none', 
+                  background: 'none',
+                  opacity: currentView === 'recent-searches' ? 1 : 0.85
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                onMouseLeave={(e) => e.currentTarget.style.opacity = currentView === 'recent-searches' ? '1' : '0.85'}
+              >
+                <i className="bi bi-clock-history me-1"></i>
+                Recent Searches
+              </button>
             </li>
           </ul>
           
@@ -103,7 +123,8 @@ const Navigation = ({ user, isAuthenticated, onLogout, onDeleteAccount }: Naviga
         </div>
       </div>
     </nav>
-  );
-};
+    );
+  }
+}
 
 export default Navigation;

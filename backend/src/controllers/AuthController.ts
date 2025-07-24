@@ -1,10 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../models/User';
-
-// Simplified AuthController without bcrypt dependency
-interface AuthenticatedRequest extends Request {
-    session: any; // Simplified session type
-}
+import { SessionHelper } from '../services/SessionHelper';
+import { AuthenticatedRequest } from '../interfaces';
 
 /**
  * Authentication Controller (Simplified without bcrypt)
@@ -123,10 +120,7 @@ class AuthController {
             
             // Create session if available
             if (req.session) {
-                req.session.userId = (user._id as any).toString();
-                req.session.username = user.username;
-                req.session.nickname = user.nickname;
-                req.session.isAuthenticated = true;
+                SessionHelper.createUserSession(req.session, user);
 
                 // Debug logging for session creation
                 console.log('🔐 Login successful, session created:', {
@@ -241,7 +235,7 @@ class AuthController {
      */
     async getCurrentUser(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
-            if (!req.session || !req.session.isAuthenticated) {
+            if (!SessionHelper.isAuthenticated(req.session)) {
                 res.status(401).json({
                     success: false,
                     message: 'Not authenticated'

@@ -58,18 +58,6 @@ router.post('/calories', async (req: Request, res: Response, next) => {
     }
 });
 
-router.get('/breadcrumbs', (req: Request, res: Response) => {
-    nutritionController.getBreadcrumbs(req, res);
-});
-
-router.get('/searches/:id', (req: Request, res: Response) => {
-    nutritionController.getSearchById(req, res);
-});
-
-router.delete('/history', (req: Request, res: Response) => {
-    nutritionController.clearHistory(req, res);
-});
-
 // Test endpoint for OpenAI
 router.get('/nutrition/test', async (req: Request, res: Response) => {
     try {

@@ -1,34 +1,31 @@
-import React from 'react';
-import { BreadcrumbItem } from '../types';
+import React, { Component } from 'react';
+import { BreadcrumbItem, BreadcrumbsSectionProps } from '../interfaces';
 
-interface BreadcrumbsSectionProps {
-  breadcrumbs: BreadcrumbItem[];
-  onBreadcrumbClick: (searchId: string) => void;
-  onClearHistory: () => void;
-}
-
-const BreadcrumbsSection = ({ breadcrumbs, onBreadcrumbClick, onClearHistory }: BreadcrumbsSectionProps) => {
-  if (!breadcrumbs || breadcrumbs.length === 0) {
-    return (
-      <div className="container mt-4">
-        <div className="row">
-          <div className="col-12">
-            <div className="card">
-              <div className="card-body text-center">
-                <i className="bi bi-clock-history fs-1 text-muted"></i>
-                <h5 className="card-title mt-3">No Search History</h5>
-                <p className="card-text text-muted">
-                  Your recent food searches will appear here for quick access.
-                </p>
+class BreadcrumbsSection extends Component<BreadcrumbsSectionProps> {
+  override render() {
+    const { breadcrumbs, onBreadcrumbClick, onClearHistory } = this.props;
+    
+    if (!breadcrumbs || breadcrumbs.length === 0) {
+      return (
+        <div className="container mt-4">
+          <div className="row">
+            <div className="col-12">
+              <div className="card">
+                <div className="card-body text-center">
+                  <i className="bi bi-clock-history fs-1 text-muted"></i>
+                  <h5 className="card-title mt-3">No Search History</h5>
+                  <p className="card-text text-muted">
+                    Your recent food searches will appear here for quick access.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  return (
+    return (
     <div className="container mt-4">
       <div className="row">
         <div className="col-12">
@@ -83,7 +80,8 @@ const BreadcrumbsSection = ({ breadcrumbs, onBreadcrumbClick, onClearHistory }: 
         </div>
       </div>
     </div>
-  );
-};
+    );
+  }
+}
 
 export default BreadcrumbsSection;

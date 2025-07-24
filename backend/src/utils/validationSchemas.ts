@@ -1,29 +1,6 @@
 import Joi from 'joi';
 import appConfig from '../config/appConfig';
-
-/**
- * Validation Result Interface
- */
-interface ValidationResult {
-    error?: Joi.ValidationError;
-    value: any;
-}
-
-/**
- * Nutrition Request Data Interface
- */
-interface NutritionRequestData {
-    food: string;
-}
-
-/**
- * Pagination Parameters Interface
- */
-interface PaginationParams {
-    page?: number;
-    per_page?: number;
-    limit?: number;
-}
+import { ValidationResult, NutritionRequestData, PaginationParams } from '../interfaces';
 
 /**
  * Auth validation schemas

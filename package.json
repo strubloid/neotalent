@@ -6,9 +6,6 @@
   "scripts": {
     "start": "docker-compose up -d",
     "stop": "docker-compose down",
-    "dev": "echo '❌ Use Docker only! Run: npm start (for production) or use docker-compose directly for development' && exit 1",
-    "dev:docker": "docker-compose -f docker-compose.dev.yml up -d",
-    "dev:stop": "docker-compose -f docker-compose.dev.yml down",
     "build": "docker-compose build",
     "rebuild": "docker-compose build --no-cache",
     "logs": "docker-compose logs -f",
@@ -19,11 +16,8 @@
     "shell:mongodb": "docker-compose exec mongodb bash",
     "test": "docker-compose exec backend npm test",
     "test:watch": "docker-compose exec backend npm run test:watch",
-    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
-    "docker:start": "./start-docker.sh",
     "docker:clean": "docker system prune -f && docker volume prune -f",
-    "docker:reset": "docker-compose down --volumes --remove-orphans && docker system prune -a -f",
-    "help": "echo '🐳 Docker Commands Only! Available commands:\n  npm start - Start production containers\n  npm run dev:docker - Start development containers\n  npm run logs - View all logs\n  npm run stop - Stop containers\n  npm run shell:backend - Access backend shell\n  npm run test - Run tests in container'"
+    "docker:reset": "docker-compose down --volumes --remove-orphans && docker system prune -a -f"
   },
   "keywords": [
     "ai",

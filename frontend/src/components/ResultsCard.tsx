@@ -1,23 +1,21 @@
-import React from 'react';
-import { NutritionResult } from '../types';
+import React, { Component } from 'react';
+import { NutritionResult, ResultsCardProps } from '../interfaces';
 
-interface ResultsCardProps {
-  result: NutritionResult;
-  onNewAnalysis: () => void;
-}
+class ResultsCard extends Component<ResultsCardProps> {
+  override render() {
+    const { result, onNewAnalysis } = this.props;
+    
+    // Calculate macronutrient percentages
+    const totalMacros = result.totalProtein + result.totalCarbs + result.totalFat;
+    const proteinPercent = totalMacros > 0 ? Math.round((result.totalProtein / totalMacros) * 100) : 0;
+    const carbsPercent = totalMacros > 0 ? Math.round((result.totalCarbs / totalMacros) * 100) : 0;
+    const fatPercent = totalMacros > 0 ? Math.round((result.totalFat / totalMacros) * 100) : 0;
 
-const ResultsCard = ({ result, onNewAnalysis }: ResultsCardProps) => {
-  // Calculate macronutrient percentages
-  const totalMacros = result.totalProtein + result.totalCarbs + result.totalFat;
-  const proteinPercent = totalMacros > 0 ? Math.round((result.totalProtein / totalMacros) * 100) : 0;
-  const carbsPercent = totalMacros > 0 ? Math.round((result.totalCarbs / totalMacros) * 100) : 0;
-  const fatPercent = totalMacros > 0 ? Math.round((result.totalFat / totalMacros) * 100) : 0;
+    // Calculate calories from macros (for verification)
+    const caloriesFromMacros = (result.totalProtein * 4) + (result.totalCarbs * 4) + (result.totalFat * 9);
+    const accuracy = result.totalCalories > 0 ? Math.round((Math.min(result.totalCalories, caloriesFromMacros) / Math.max(result.totalCalories, caloriesFromMacros)) * 100) : 0;
 
-  // Calculate calories from macros (for verification)
-  const caloriesFromMacros = (result.totalProtein * 4) + (result.totalCarbs * 4) + (result.totalFat * 9);
-  const accuracy = result.totalCalories > 0 ? Math.round((Math.min(result.totalCalories, caloriesFromMacros) / Math.max(result.totalCalories, caloriesFromMacros)) * 100) : 0;
-
-  return (
+    return (
     <div className="container mt-4">
       <div className="row justify-content-center">
         <div className="col-lg-10">
@@ -329,7 +327,8 @@ const ResultsCard = ({ result, onNewAnalysis }: ResultsCardProps) => {
         </div>
       </div>
     </div>
-  );
-};
+    );
+  }
+}
 
 export default ResultsCard;
