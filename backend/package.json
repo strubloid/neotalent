@@ -5,7 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "start": "node dist/server.js",
-    "dev": "nodemon --exec ts-node src/server.ts",
+    "dev": "nodemon",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "test": "jest",
@@ -15,26 +15,33 @@
     "lint:fix": "eslint src/**/*.ts --fix",
     "type-check": "tsc --noEmit"
   },
-  "keywords": ["nutrition", "calorie-tracker", "api", "openai", "typescript"],
+  "keywords": [
+    "nutrition",
+    "calorie-tracker",
+    "api",
+    "openai",
+    "typescript"
+  ],
   "author": "NeoTalent Team",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
     "cors": "^2.8.5",
-    "helmet": "^7.0.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
     "express-rate-limit": "^6.10.0",
     "express-session": "^1.17.3",
+    "helmet": "^7.0.0",
     "joi": "^17.9.2",
+    "mongoose": "^8.0.0",
     "openai": "^4.0.0",
-    "dotenv": "^16.3.1",
-    "mongoose": "^8.0.0"
+    "session-file-store": "^1.5.0"
   },
   "devDependencies": {
-    "@types/node": "^20.8.0",
-    "@types/express": "^4.17.18",
     "@types/cors": "^2.8.14",
+    "@types/express": "^4.17.18",
     "@types/express-session": "^1.17.8",
     "@types/jest": "^29.5.5",
+    "@types/node": "^20.8.0",
     "@types/supertest": "^2.0.13",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",

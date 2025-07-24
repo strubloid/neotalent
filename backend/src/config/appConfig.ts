@@ -48,6 +48,7 @@ interface EnvironmentConfig {
     logging: boolean;
     cors: {
         origin: string | string[];
+        credentials: boolean;
     };
     helmet: {
         contentSecurityPolicy?: boolean | object;
@@ -77,8 +78,6 @@ class AppConfig {
             corsOrigin: process.env.CORS_ORIGIN || '*'
         };
         
-        console.log("process.env.OPENAI_API_KEY")
-        console.log(process.env.OPENAI_API_KEY)
         // External Services Configuration
         this.services = {
             openai: {
@@ -143,7 +142,10 @@ class AppConfig {
         const configs: { [key: string]: EnvironmentConfig } = {
             development: {
                 logging: true,
-                cors: { origin: '*' },
+                cors: { 
+                    origin: this.security.corsOrigin,
+                    credentials: true
+                },
                 helmet: {
                     contentSecurityPolicy: false // Disable CSP in development
                 }
@@ -151,7 +153,8 @@ class AppConfig {
             production: {
                 logging: false,
                 cors: { 
-                    origin: this.security.corsOrigin.split(',').map(origin => origin.trim())
+                    origin: this.security.corsOrigin.split(',').map(origin => origin.trim()),
+                    credentials: true
                 },
                 helmet: {
                     contentSecurityPolicy: {
@@ -167,7 +170,10 @@ class AppConfig {
             },
             test: {
                 logging: false,
-                cors: { origin: '*' },
+                cors: { 
+                    origin: '*',
+                    credentials: true
+                },
                 helmet: {
                     contentSecurityPolicy: false
                 }

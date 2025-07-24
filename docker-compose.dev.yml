@@ -44,6 +44,7 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
+      - session_dev_data:/app/sessions
     depends_on:
       - mongodb
     networks:
@@ -73,6 +74,7 @@ services:
 
 volumes:
   mongodb_dev_data:
+  session_dev_data:
 
 networks:
   neotalent-network:
