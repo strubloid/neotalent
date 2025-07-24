@@ -238,13 +238,14 @@ class RecentSearches extends Component<RecentSearchesProps, RecentSearchesState>
 
           {/* Info Section */}
           <div className="row mt-3 mb-3">
-            <div className="col-md-6">
+            <div className="col-md-6 mb-3 mb-md-0">
               <div className="card border-0 shadow-sm" style={{
                 background: 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)',
                 borderRadius: '8px',
-                height: '80px'
+                minHeight: '100px',
+                height: '100px'
               }}>
-                <div className="card-body d-flex align-items-center py-2 px-3">
+                <div className="card-body d-flex align-items-center py-3 px-3 h-100">
                   <div className="me-3">
                     <i className="bi bi-info-circle" style={{ fontSize: '1.5rem', color: '#146c43' }}></i>
                   </div>
@@ -266,9 +267,10 @@ class RecentSearches extends Component<RecentSearchesProps, RecentSearchesState>
               <div className="card border-0 shadow-sm" style={{
                 background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
                 borderRadius: '8px',
-                height: '80px'
+                minHeight: '100px',
+                height: '100px'
               }}>
-                <div className="card-body d-flex align-items-center py-2 px-3">
+                <div className="card-body d-flex align-items-center py-3 px-3 h-100">
                   <div className="me-3">
                     <i className="bi bi-lightning" style={{ fontSize: '1.5rem', color: '#198754' }}></i>
                   </div>

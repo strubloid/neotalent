@@ -137,10 +137,10 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
               }}
             >
               <div className="position-relative p-3">
-                <div className="d-flex align-items-center">
+                <div className="d-flex align-items-center w-100">
                   {/* Previous Button */}
                   <button 
-                    className="btn btn-outline-success btn-sm me-3 d-flex align-items-center justify-content-center"
+                    className="btn btn-outline-success btn-sm d-flex align-items-center justify-content-center flex-shrink-0"
                     onClick={this.handlePrevious}
                     disabled={breadcrumbs.length <= 1}
                     style={{
@@ -148,7 +148,8 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
                       height: '40px',
                       borderRadius: '50%',
                       opacity: breadcrumbs.length <= 1 ? 0.3 : 1,
-                      transition: 'all 0.3s ease'
+                      transition: 'all 0.3s ease',
+                      marginRight: '12px'
                     }}
                     onMouseEnter={(e) => {
                       if (breadcrumbs.length > 1) {
@@ -170,14 +171,16 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
 
                   {/* Current Search Display */}
                   <div 
-                    className="flex-grow-1 p-3 rounded position-relative"
+                    className="p-3 rounded position-relative"
                     style={{
                       background: 'white',
                       border: '2px solid #e9ecef',
                       boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
                       cursor: 'pointer',
                       transition: 'all 0.3s ease',
-                      minHeight: '100px'
+                      minHeight: '100px',
+                      flex: '1 1 auto',
+                      marginRight: '12px'
                     }}
                     onClick={() => onBreadcrumbClick(breadcrumbs[currentIndex].searchId)}
                     onMouseEnter={(e) => {
@@ -244,7 +247,7 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
 
                   {/* Next Button */}
                   <button 
-                    className="btn btn-outline-success btn-sm ms-3 d-flex align-items-center justify-content-center"
+                    className="btn btn-outline-success btn-sm d-flex align-items-center justify-content-center flex-shrink-0"
                     onClick={this.handleNext}
                     disabled={breadcrumbs.length <= 1}
                     style={{

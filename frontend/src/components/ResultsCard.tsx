@@ -1,9 +1,27 @@
 import React, { Component } from 'react';
 import { NutritionResult, ResultsCardProps } from '../interfaces';
 
-class ResultsCard extends Component<ResultsCardProps> {
+interface ResultsCardState {
+  isExpanded: boolean;
+}
+
+class ResultsCard extends Component<ResultsCardProps, ResultsCardState> {
+  constructor(props: ResultsCardProps) {
+    super(props);
+    this.state = {
+      isExpanded: true
+    };
+  }
+
+  toggleExpanded = () => {
+    this.setState(prevState => ({
+      isExpanded: !prevState.isExpanded
+    }));
+  };
+
   override render() {
     const { result, onNewAnalysis } = this.props;
+    const { isExpanded } = this.state;
     
     // Calculate macronutrient percentages
     const totalMacros = result.totalProtein + result.totalCarbs + result.totalFat;
@@ -18,28 +36,64 @@ class ResultsCard extends Component<ResultsCardProps> {
     return (
     <div className="container mt-4">
       <div className="row justify-content-center">
-        <div className="col-lg-10">
-          <div className="card shadow-lg">
-            {/* Header */}
-            <div className="card-header bg-success text-white">
+        <div style={{ flex: '1 auto', maxWidth: '100%' }}>
+          <div className="card shadow-lg" style={{
+            borderRadius: '15px',
+            overflow: 'hidden'
+          }}>
+            {/* Clickable Header */}
+            <div 
+              className="card-header text-white border-0"
+              style={{
+                background: 'linear-gradient(90deg, #198754 0%, #157347 100%)',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+              onClick={this.toggleExpanded}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'linear-gradient(90deg, #157347 0%, #146c43 100%)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'linear-gradient(90deg, #198754 0%, #157347 100%)';
+              }}
+            >
               <div className="d-flex justify-content-between align-items-center">
                 <h4 className="card-title mb-0">
                   <i className="bi bi-check-circle me-2"></i>
                   Nutrition Analysis Results
                 </h4>
-                <button
-                  className="btn btn-light btn-sm"
-                  onClick={onNewAnalysis}
-                  title="Start new analysis"
-                >
-                  <i className="bi bi-plus-circle me-1"></i>
-                  New Analysis
-                </button>
+                <div className="d-flex align-items-center">
+                  <button
+                    className="btn btn-outline-light btn-sm me-2"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent triggering the toggle
+                      onNewAnalysis();
+                    }}
+                    title="Start new analysis"
+                  >
+                    <i className="bi bi-plus-circle me-1"></i>
+                    New Analysis
+                  </button>
+                  <i 
+                    className={`bi bi-chevron-${isExpanded ? 'up' : 'down'}`}
+                    style={{ 
+                      fontSize: '1.2rem',
+                      transition: 'transform 0.3s ease'
+                    }}
+                  ></i>
+                </div>
               </div>
             </div>
 
-            {/* Main Results */}
-            <div className="card-body">
+            {/* Collapsible Content */}
+            <div 
+              style={{
+                maxHeight: isExpanded ? '2000px' : '0px',
+                overflow: 'hidden',
+                transition: 'max-height 0.4s ease-in-out'
+              }}
+            >
+              <div className="card-body">
               {/* Query Display */}
               <div className="mb-4 p-3 bg-light rounded">
                 <h6 className="text-muted mb-2">
@@ -321,6 +375,7 @@ class ResultsCard extends Component<ResultsCardProps> {
                     </button>
                   </div>
                 </div>
+              </div>
               </div>
             </div>
           </div>

@@ -683,7 +683,7 @@ class App extends Component<{}, AppState> {
               {nutritionResult && (
                 <div className="container mt-5">
                   <div className="row justify-content-center">
-                    <div className="col-lg-10">
+                    <div style={{ flex: '1 auto', maxWidth: '100%' }}>
                       <ResultsCard
                         result={nutritionResult}
                         onNewAnalysis={this.handleNewAnalysis}
