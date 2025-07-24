@@ -124,19 +124,18 @@ const App = () => {
   }, []);
 
   const handleBreadcrumbClick = (searchId: string) => {
-    // Navigate to home view when viewing a search result
-    setCurrentView('home');
-    
     // Find the breadcrumb item that was clicked
     const clickedBreadcrumb = breadcrumbs.find(b => b.searchId === searchId);
     
     if (clickedBreadcrumb) {
       // If we already have this result stored, display it directly
       if (nutritionResult && nutritionResult.searchId === searchId) {
-        // Result is already displayed, just scroll to it
-        const resultsElement = document.querySelector('.container.mt-5');
-        if (resultsElement) {
-          resultsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Result is already displayed, just scroll to it if on recent searches page
+        if (currentView === 'recent-searches') {
+          const resultsElement = document.querySelector('.container.mt-5');
+          if (resultsElement) {
+            resultsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
         }
         return;
       }
@@ -172,13 +171,17 @@ const App = () => {
       // Clear any analysis errors
       setAnalysisError('');
 
-      // Scroll to results after a short delay to allow rendering
-      setTimeout(() => {
-        const resultsElement = document.querySelector('.container.mt-5');
-        if (resultsElement) {
-          resultsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
+      // Only navigate to home view if we're currently on the home page
+      // If we're on recent searches, stay on that page to show results
+      if (currentView === 'home') {
+        // Scroll to results after a short delay to allow rendering
+        setTimeout(() => {
+          const resultsElement = document.querySelector('.container.mt-5');
+          if (resultsElement) {
+            resultsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
+      }
     }
   };
 
@@ -463,7 +466,10 @@ const App = () => {
   const handleNewAnalysis = () => {
     setNutritionResult(null);
     setAnalysisError('');
-    setCurrentView('home'); // Navigate back to home
+    // Only navigate to home if we're not already on recent searches
+    if (currentView !== 'recent-searches') {
+      setCurrentView('home');
+    }
   };
 
   const handleLogout = async () => {
@@ -598,6 +604,8 @@ const App = () => {
             onClearHistory={handleClearHistory}
             onBackToHome={handleNavigateToHome}
             isAuthenticated={isAuthenticated}
+            nutritionResult={nutritionResult}
+            onNewAnalysis={handleNewAnalysis}
           />
         )}
 

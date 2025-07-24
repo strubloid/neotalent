@@ -1,5 +1,6 @@
 import React from 'react';
-import { BreadcrumbItem } from '../types';
+import { BreadcrumbItem, NutritionResult } from '../types';
+import ResultsCard from './ResultsCard';
 
 interface RecentSearchesProps {
   breadcrumbs: BreadcrumbItem[];
@@ -7,6 +8,8 @@ interface RecentSearchesProps {
   onClearHistory: () => void;
   onBackToHome: () => void;
   isAuthenticated: boolean;
+  nutritionResult?: NutritionResult | null;
+  onNewAnalysis?: () => void;
 }
 
 const RecentSearches = ({ 
@@ -14,7 +17,9 @@ const RecentSearches = ({
   onSearchClick, 
   onClearHistory, 
   onBackToHome,
-  isAuthenticated 
+  isAuthenticated,
+  nutritionResult,
+  onNewAnalysis
 }: RecentSearchesProps) => {
   const formatDate = (timestamp: string) => {
     const date = new Date(timestamp);
@@ -156,6 +161,16 @@ const RecentSearches = ({
               </div>
             </div>
           </div>
+
+          {/* Results Section - Show nutrition result if available */}
+          {nutritionResult && onNewAnalysis && (
+            <div className="mt-5">
+              <ResultsCard
+                result={nutritionResult}
+                onNewAnalysis={onNewAnalysis}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
