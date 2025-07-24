@@ -1,5 +1,35 @@
-const rateLimit = require('express-rate-limit');
-const appConfig = require('../config/appConfig');
+import { Request, Response, NextFunction } from 'express';
+import rateLimit, { RateLimitRequestHandler, Options as RateLimitOptions } from 'express-rate-limit';
+import appConfig from '../config/appConfig';
+
+/**
+ * Rate Limit Message Interface
+ */
+interface RateLimitMessage {
+    success: false;
+    error: string;
+    retryAfter: number;
+    timestamp: string;
+}
+
+/**
+ * Request Size Error Response Interface
+ */
+interface RequestSizeErrorResponse {
+    success: false;
+    error: string;
+    maxSize: string;
+    timestamp: string;
+}
+
+/**
+ * Session Error Response Interface
+ */
+interface SessionErrorResponse {
+    success: false;
+    error: string;
+    timestamp: string;
+}
 
 /**
  * Security Middleware Configuration
@@ -7,11 +37,9 @@ const appConfig = require('../config/appConfig');
 class SecurityMiddleware {
     /**
      * Create rate limiting middleware
-     * @param {Object} options - Rate limit options
-     * @returns {Function} - Express middleware
      */
-    static createRateLimit(options = {}) {
-        const defaultOptions = {
+    public static createRateLimit(options: Partial<RateLimitOptions> = {}): RateLimitRequestHandler {
+        const defaultOptions: Partial<RateLimitOptions> = {
             windowMs: appConfig.security.rateLimitWindowMs,
             max: appConfig.security.rateLimitMaxRequests,
             message: {
@@ -19,7 +47,7 @@ class SecurityMiddleware {
                 error: 'Too many requests from this IP, please try again later.',
                 retryAfter: Math.ceil(appConfig.security.rateLimitWindowMs / 1000),
                 timestamp: new Date().toISOString()
-            },
+            } as RateLimitMessage,
             standardHeaders: true,
             legacyHeaders: false,
             ...options
@@ -30,9 +58,8 @@ class SecurityMiddleware {
 
     /**
      * Create strict rate limiting for sensitive endpoints
-     * @returns {Function} - Express middleware
      */
-    static createStrictRateLimit() {
+    public static createStrictRateLimit(): RateLimitRequestHandler {
         return this.createRateLimit({
             windowMs: 5 * 60 * 1000, // 5 minutes
             max: 10, // 10 requests per 5 minutes
@@ -41,15 +68,14 @@ class SecurityMiddleware {
                 error: 'Too many requests to this endpoint. Please try again later.',
                 retryAfter: 300,
                 timestamp: new Date().toISOString()
-            }
+            } as RateLimitMessage
         });
     }
 
     /**
      * API rate limiting middleware
-     * @returns {Function} - Express middleware
      */
-    static createAPIRateLimit() {
+    public static createAPIRateLimit(): RateLimitRequestHandler {
         return this.createRateLimit({
             windowMs: 1 * 60 * 1000, // 1 minute
             max: 30, // 30 requests per minute for API calls
@@ -58,16 +84,15 @@ class SecurityMiddleware {
                 error: 'API rate limit exceeded. Please slow down your requests.',
                 retryAfter: 60,
                 timestamp: new Date().toISOString()
-            }
+            } as RateLimitMessage
         });
     }
 
     /**
      * Request logging middleware
-     * @returns {Function} - Express middleware
      */
-    static requestLogger() {
-        return (req, res, next) => {
+    public static requestLogger() {
+        return (req: Request, res: Response, next: NextFunction): void => {
             const start = Date.now();
             
             // Log request
@@ -85,10 +110,9 @@ class SecurityMiddleware {
 
     /**
      * Security headers middleware
-     * @returns {Function} - Express middleware
      */
-    static securityHeaders() {
-        return (req, res, next) => {
+    public static securityHeaders() {
+        return (req: Request, res: Response, next: NextFunction): void => {
             // Remove X-Powered-By header
             res.removeHeader('X-Powered-By');
             
@@ -104,21 +128,21 @@ class SecurityMiddleware {
 
     /**
      * Request size limiting middleware
-     * @param {string} limit - Size limit (e.g., '10mb')
-     * @returns {Function} - Express middleware
      */
-    static requestSizeLimit(limit = '10mb') {
-        return (req, res, next) => {
+    public static requestSizeLimit(limit: string = '10mb') {
+        return (req: Request, res: Response, next: NextFunction): Response | void => {
             const contentLength = parseInt(req.get('content-length') || '0');
             const maxSize = this._parseSize(limit);
             
             if (contentLength > maxSize) {
-                return res.status(413).json({
+                const errorResponse: RequestSizeErrorResponse = {
                     success: false,
                     error: 'Request entity too large',
                     maxSize: limit,
                     timestamp: new Date().toISOString()
-                });
+                };
+                
+                return res.status(413).json(errorResponse);
             }
             
             next();
@@ -127,17 +151,18 @@ class SecurityMiddleware {
 
     /**
      * Session validation middleware
-     * @returns {Function} - Express middleware
      */
-    static validateSession() {
-        return (req, res, next) => {
+    public static validateSession() {
+        return (req: Request, res: Response, next: NextFunction): Response | void => {
             // Ensure session exists
             if (!req.session) {
-                return res.status(500).json({
+                const errorResponse: SessionErrorResponse = {
                     success: false,
                     error: 'Session not available',
                     timestamp: new Date().toISOString()
-                });
+                };
+                
+                return res.status(500).json(errorResponse);
             }
             
             next();
@@ -147,11 +172,9 @@ class SecurityMiddleware {
     /**
      * Parse size string to bytes
      * @private
-     * @param {string} size - Size string
-     * @returns {number} - Size in bytes
      */
-    static _parseSize(size) {
-        const units = {
+    private static _parseSize(size: string): number {
+        const units: Record<string, number> = {
             'b': 1,
             'kb': 1024,
             'mb': 1024 * 1024,
@@ -166,4 +189,4 @@ class SecurityMiddleware {
     }
 }
 
-module.exports = SecurityMiddleware;
+export default SecurityMiddleware;

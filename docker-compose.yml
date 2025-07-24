@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # MongoDB Database with SSH access
+  mongodb:
+    image: mongo:7.0
+    container_name: neotalent-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+      - "2221:22"  # SSH port for MongoDB
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: neotalent
+      MONGO_INITDB_ROOT_PASSWORD: neotalent123
+      MONGO_INITDB_DATABASE: neotalent
+    volumes:
+      - mongodb_data:/data/db
+      - ./scripts/mongodb-setup.sh:/docker-entrypoint-initdb.d/setup-ssh.sh:ro
+    networks:
+      - neotalent-network
+    command: >
+      bash -c "
+        apt-get update && 
+        apt-get install -y openssh-server sudo &&
+        useradd -rm -d /home/mongouser -s /bin/bash -g root -G sudo -u 1001 mongouser &&
+        echo 'mongouser:mongopass123' | chpasswd &&
+        mkdir -p /var/run/sshd &&
+        ssh-keygen -A &&
+        service ssh start &
+        exec docker-entrypoint.sh mongod
+      "
+
+  # Backend Service with SSH access
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.ssh
+    container_name: neotalent-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+      - "2222:22"  # SSH port for Backend
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      MONGODB_URI: mongodb://neotalent:neotalent123@mongodb:27017/neotalent?authSource=admin
+      SESSION_SECRET: neotalent-docker-secret-key-2024
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      RATE_LIMIT_WINDOW_MS: 900000
+      RATE_LIMIT_MAX_REQUESTS: 100
+      CORS_ORIGIN: http://localhost:3000
+    env_file:
+      - .env
+    depends_on:
+      - mongodb
+    networks:
+      - neotalent-network
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: neotalent-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    environment:
+      NODE_ENV: production
+    depends_on:
+      - backend
+    networks:
+      - neotalent-network
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  neotalent-network:
+    driver: bridge

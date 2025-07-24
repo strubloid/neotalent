@@ -2,28 +2,51 @@
   "name": "neotalent-frontend",
   "version": "1.0.0",
   "description": "NeoTalent Calorie Tracker Frontend",
-  "main": "src/main.js",
+  "main": "src/main.tsx",
   "scripts": {
-    "dev": "live-server public --port=8080 --host=localhost",
-    "build": "npm run copy-assets && npm run minify-js && npm run minify-css",
-    "copy-assets": "cp -r src/assets/* public/ 2>/dev/null || true",
-    "minify-js": "terser src/main.js -o public/js/app.min.js --source-map",
-    "minify-css": "cleancss -o public/css/styles.min.css public/css/styles.css",
-    "lint": "eslint src/",
-    "lint:fix": "eslint src/ --fix",
-    "serve": "live-server public"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint": "eslint src/**/*.{ts,tsx}",
+    "lint:fix": "eslint src/**/*.{ts,tsx} --fix",
+    "type-check": "tsc --noEmit"
   },
-  "keywords": ["nutrition", "calorie-tracker", "frontend", "spa"],
+  "keywords": ["nutrition", "calorie-tracker", "frontend", "react", "typescript"],
   "author": "NeoTalent Team",
   "license": "MIT",
-  "devDependencies": {
-    "live-server": "^1.2.2",
-    "terser": "^5.19.2",
-    "clean-css-cli": "^5.6.2",
-    "eslint": "^8.45.0"
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^3.4.0",
+    "bootstrap": "^5.3.2",
+    "bootstrap-icons": "^1.11.2",
+    "axios": "^1.5.0"
   },
-  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.8.0",
+    "@types/react": "^18.2.28",
+    "@types/react-dom": "^18.2.13",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "eslint": "^8.45.0",
+    "typescript": "^4.9.5"
+  },
   "engines": {
     "node": ">=16.0.0"
-  }
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "proxy": "http://backend:3001"
 }

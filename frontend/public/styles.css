@@ -86,10 +86,88 @@ body {
 /* Breadcrumbs */
 .breadcrumbs-container {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
+    flex-direction: column;
+    gap: 1rem;
 }
 
+.breadcrumb-group {
+    margin-bottom: 1rem;
+}
+
+.breadcrumb-group h6 {
+    font-size: 0.875rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 0.25rem;
+}
+
+.modern-breadcrumb {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 0.75rem;
+    min-width: 180px;
+    max-width: 220px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.modern-breadcrumb:hover {
+    background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    border-color: #0d6efd;
+}
+
+.modern-breadcrumb::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(to bottom, #0d6efd, #0a58ca);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modern-breadcrumb:hover::before {
+    opacity: 1;
+}
+
+.breadcrumb-content {
+    position: relative;
+    z-index: 1;
+}
+
+.search-text {
+    font-weight: 500;
+    color: #333;
+    font-size: 0.875rem;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.calories-badge {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(13, 110, 253, 0.3);
+}
+
+.time-text {
+    color: #6c757d;
+    font-size: 0.75rem;
+    font-weight: 400;
+}
+
+/* Old breadcrumb styles (kept for compatibility) */
 .breadcrumb-item {
     background: #f8f9fa;
     border: 1px solid #dee2e6;
@@ -126,6 +204,40 @@ body {
     border-radius: 4px;
     font-size: 0.875rem;
     color: #6c757d;
+}
+
+/* Clear History Button */
+#clearHistoryBtn {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+    transition: all 0.2s ease;
+}
+
+#clearHistoryBtn:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Success Messages */
+.alert-success {
+    border-left: 4px solid #198754;
+    background-color: #d1e7dd;
+    border-color: #badbcc;
+    color: #0f5132;
+    animation: slideInFromTop 0.3s ease-out;
+}
+
+@keyframes slideInFromTop {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Confidence Badges */

@@ -1,15 +1,41 @@
+import { Request, Response, NextFunction } from 'express';
+
+/**
+ * Error Response Interface
+ */
+interface ErrorResponse {
+    success: false;
+    error: string;
+    details?: string | {
+        message: string;
+        stack?: string;
+        code?: string;
+    };
+    code?: string;
+    status: number;
+    timestamp: string;
+    message?: string;
+}
+
+/**
+ * Custom Error Interface
+ */
+interface CustomError extends Error {
+    status?: number;
+    code?: string;
+    isJoi?: boolean;
+    details?: Array<{ message: string }>;
+    type?: string;
+}
+
 /**
  * Global Error Handler Middleware
  */
 class ErrorHandler {
     /**
      * Handle application errors
-     * @param {Error} err - Error object
-     * @param {Object} req - Express request
-     * @param {Object} res - Express response
-     * @param {Function} next - Next middleware
      */
-    static handle(err, req, res, next) {
+    public static handle(err: CustomError, req: Request, res: Response, next: NextFunction): void {
         console.error('Application Error:', {
             message: err.message,
             stack: err.stack,
@@ -21,7 +47,7 @@ class ErrorHandler {
         });
 
         // Default error response
-        let errorResponse = {
+        let errorResponse: ErrorResponse = {
             success: false,
             error: 'Internal server error',
             status: 500,
@@ -29,7 +55,7 @@ class ErrorHandler {
         };
 
         // Handle Joi validation errors
-        if (err.isJoi) {
+        if (err.isJoi && err.details && err.details.length > 0) {
             errorResponse = {
                 success: false,
                 error: 'Validation failed',
@@ -90,31 +116,28 @@ class ErrorHandler {
 
     /**
      * Handle 404 Not Found errors
-     * @param {Object} req - Express request
-     * @param {Object} res - Express response
      */
-    static notFound(req, res) {
-        res.status(404).json({
+    public static notFound(req: Request, res: Response): void {
+        const errorResponse: ErrorResponse = {
             success: false,
             error: 'Route not found',
             message: `Cannot ${req.method} ${req.url}`,
+            status: 404,
             timestamp: new Date().toISOString()
-        });
+        };
+
+        res.status(404).json(errorResponse);
     }
 
     /**
      * Create a custom application error
-     * @param {string} message - Error message
-     * @param {number} status - HTTP status code
-     * @param {string} code - Error code
-     * @returns {Error}
      */
-    static createError(message, status = 500, code = null) {
-        const error = new Error(message);
+    public static createError(message: string, status: number = 500, code?: string): CustomError {
+        const error = new Error(message) as CustomError;
         error.status = status;
         if (code) error.code = code;
         return error;
     }
 }
 
-module.exports = ErrorHandler;
+export default ErrorHandler;
