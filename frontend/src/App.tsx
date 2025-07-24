@@ -38,6 +38,9 @@ const App = () => {
 
   const handleNavigateToHome = () => {
     setCurrentView('home');
+    // Clear any displayed nutrition results when navigating back to home
+    setNutritionResult(null);
+    setAnalysisError('');
   };
 
   // Load initial data and check authentication
