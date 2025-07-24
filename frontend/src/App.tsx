@@ -31,6 +31,9 @@ const App = () => {
   // Navigation handlers
   const handleNavigateToRecentSearches = () => {
     setCurrentView('recent-searches');
+    // Clear any displayed nutrition results when navigating to recent searches
+    setNutritionResult(null);
+    setAnalysisError('');
   };
 
   const handleNavigateToHome = () => {
