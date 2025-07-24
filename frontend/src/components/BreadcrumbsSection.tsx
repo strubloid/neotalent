@@ -93,10 +93,9 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
         <div className="row">
           <div className="col-12">
             {/* Recent Searches Collapsible Section */}
-          <div className="mb-4" style={{
+          <div style={{
             background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
             borderRadius: '15px',
-            border: '1px solid #dee2e6',
             overflow: 'hidden',
             transition: 'all 0.3s ease'
           }}>
