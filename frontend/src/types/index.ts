@@ -58,45 +58,12 @@ export interface FoodItem {
   quantity?: string;
 }
 
-export interface NutritionAnalysisRequest {
-  food: string;
-}
-
-export interface NutritionResponse {
-  success: boolean;
-  data: NutritionResult;
-  search_id: string;
-  message?: string;
-}
-
 // Breadcrumb types
 export interface BreadcrumbItem {
   searchId: string;
   query: string;
   summary: string;
   timestamp: string;
-}
-
-export interface BreadcrumbResponse {
-  success: boolean;
-  data: BreadcrumbItem[];
-}
-
-// API response types
-export interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  message?: string;
-  error?: string;
-}
-
-export interface HealthResponse {
-  success: boolean;
-  status: string;
-  timestamp: string;
-  uptime: number;
-  version: string;
-  environment: string;
 }
 
 // Component prop types

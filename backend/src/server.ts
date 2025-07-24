@@ -10,7 +10,6 @@ import dotenv from 'dotenv';
 import appConfig from './config/appConfig';
 import databaseManager from './config/database';
 import ErrorHandler from './middleware/ErrorHandler';
-// import SecurityMiddleware from './middleware/SecurityMiddleware';
 import apiRoutes from './routes/apiRoutes';
 
 // Load environment variables from backend directory first, then parent directory
@@ -41,9 +40,6 @@ class Server {
     private initializeMiddleware(): void {
         // Trust proxy for accurate IP addresses
         this.app.set('trust proxy', 1);
-
-        // Security middleware - TEMPORARILY DISABLED
-        // this.app.use(SecurityMiddleware.securityHeaders());
         
         // Helmet for security headers
         const envConfig = appConfig.getEnvironmentConfig();
@@ -57,9 +53,6 @@ class Server {
             allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
             exposedHeaders: ['Set-Cookie']
         }));
-
-        // Rate limiting - TEMPORARILY DISABLED
-        // this.app.use(SecurityMiddleware.createRateLimit());
 
         // Request logging (development only) 
         if (this.environment === 'development') {

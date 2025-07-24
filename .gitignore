@@ -79,3 +79,10 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# Temporary files
+cookies.txt
+*.tmp
+
+# ignoring the build directory
+frontend/build

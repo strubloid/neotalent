@@ -1,6 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-// import OpenAIService from '../services/OpenAIService';
-// import SearchHistoryService from '../services/SearchHistoryService';
 import { validateNutritionRequest } from '../utils/validationSchemas';
 import { sanitizeInput } from '../utils/inputSanitizer';
 import { OpenAI } from 'openai';
@@ -224,42 +222,6 @@ For each food item in the foodItems array, provide individual nutrition values (
             console.error('❌ Nutrition analysis failed:', error);
             throw error;
         }
-    }
-
-    /**
-     * Get breadcrumbs (placeholder)
-     */
-    public getBreadcrumbs(req: Request, res: Response): void {
-        res.json({
-            success: true,
-            breadcrumbs: [
-                { name: 'Home', path: '/' },
-                { name: 'Nutrition', path: '/nutrition' }
-            ],
-            timestamp: new Date().toISOString()
-        });
-    }
-
-    /**
-     * Get search by ID (placeholder)
-     */
-    public getSearchById(req: Request, res: Response): void {
-        res.status(404).json({
-            success: false,
-            error: 'Search not found',
-            timestamp: new Date().toISOString()
-        });
-    }
-
-    /**
-     * Clear history (placeholder)
-     */
-    public clearHistory(req: Request, res: Response): void {
-        res.json({
-            success: true,
-            message: 'History cleared',
-            timestamp: new Date().toISOString()
-        });
     }
 }
 
