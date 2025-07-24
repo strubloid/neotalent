@@ -5,6 +5,7 @@ import BreadcrumbsSection from './components/BreadcrumbsSection';
 import CalorieForm from './components/CalorieForm';
 import ResultsCard from './components/ResultsCard';
 import AuthModals from './components/AuthModals';
+import RecentSearches from './components/RecentSearches';
 import { User, BreadcrumbItem, NutritionResult } from './types';
 import { API_ENDPOINTS } from './config/api';
 
@@ -17,12 +18,23 @@ const App = () => {
   const [analysisError, setAnalysisError] = useState('');
   const [nutritionResult, setNutritionResult] = useState<NutritionResult | null>(null);
   const [formResetTrigger, setFormResetTrigger] = useState(0); // Add reset trigger for form
+  const [currentView, setCurrentView] = useState<'home' | 'recent-searches'>('home'); // Add view state
 
   // Helper function to clear all analysis-related state
   const clearAnalysisState = () => {
     setNutritionResult(null);
     setAnalysisError('');
     setFormResetTrigger(prev => prev + 1); // Trigger form reset
+    setCurrentView('home'); // Reset to home view
+  };
+
+  // Navigation handlers
+  const handleNavigateToRecentSearches = () => {
+    setCurrentView('recent-searches');
+  };
+
+  const handleNavigateToHome = () => {
+    setCurrentView('home');
   };
 
   // Load initial data and check authentication
@@ -112,6 +124,9 @@ const App = () => {
   }, []);
 
   const handleBreadcrumbClick = (searchId: string) => {
+    // Navigate to home view when viewing a search result
+    setCurrentView('home');
+    
     // Find the breadcrumb item that was clicked
     const clickedBreadcrumb = breadcrumbs.find(b => b.searchId === searchId);
     
@@ -448,6 +463,7 @@ const App = () => {
   const handleNewAnalysis = () => {
     setNutritionResult(null);
     setAnalysisError('');
+    setCurrentView('home'); // Navigate back to home
   };
 
   const handleLogout = async () => {
@@ -513,60 +529,76 @@ const App = () => {
       />
       
       <main>
-        {/* Hero Section */}
-        <div className="hero-section py-5">
-          <div className="container">
-            <div className="row">
-              <div className="col-12 text-center">
-                <h1 className="display-4 mb-3">
-                  <i className="bi bi-calculator text-primary me-3"></i>
-                  NeoTalent Calorie Tracker
-                </h1>
-                <p className="lead text-muted">
-                  Analyze your food and track calories with AI-powered nutrition insights
-                </p>
-                <div className="mt-4">
-                  <button className="btn btn-primary btn-lg me-3">
-                    <i className="bi bi-search me-2"></i>
-                    Analyze Food
-                  </button>
-                  <button className="btn btn-outline-primary btn-lg">
-                    <i className="bi bi-info-circle me-2"></i>
-                    Learn More
-                  </button>
+        {currentView === 'home' ? (
+          <>
+            {/* Hero Section */}
+            <div className="hero-section py-5">
+              <div className="container">
+                <div className="row">
+                  <div className="col-12 text-center">
+                    <h1 className="display-4 mb-3">
+                      <i className="bi bi-calculator text-primary me-3"></i>
+                      NeoTalent Calorie Tracker
+                    </h1>
+                    <p className="lead text-muted">
+                      Analyze your food and track calories with AI-powered nutrition insights
+                    </p>
+                    <div className="mt-4">
+                      <button className="btn btn-primary btn-lg me-3">
+                        <i className="bi bi-search me-2"></i>
+                        Analyze Food
+                      </button>
+                      <button 
+                        className="btn btn-outline-primary btn-lg"
+                        onClick={handleNavigateToRecentSearches}
+                      >
+                        <i className="bi bi-clock-history me-2"></i>
+                        Recent Searches
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Food Analysis Form */}
-        <CalorieForm
-          onAnalyze={handleAnalyzeFood}
-          isLoading={analysisLoading}
-          error={analysisError}
-          resetTrigger={formResetTrigger}
-        />
+            {/* Food Analysis Form */}
+            <CalorieForm
+              onAnalyze={handleAnalyzeFood}
+              isLoading={analysisLoading}
+              error={analysisError}
+              resetTrigger={formResetTrigger}
+            />
 
-        {/* Breadcrumbs Section */}
-        <BreadcrumbsSection
-          breadcrumbs={breadcrumbs}
-          onBreadcrumbClick={handleBreadcrumbClick}
-          onClearHistory={handleClearHistory}
-        />
+            {/* Breadcrumbs Section */}
+            <BreadcrumbsSection
+              breadcrumbs={breadcrumbs}
+              onBreadcrumbClick={handleBreadcrumbClick}
+              onClearHistory={handleClearHistory}
+            />
 
-        {/* Results Section */}
-        {nutritionResult && (
-          <div className="container mt-5">
-            <div className="row justify-content-center">
-              <div className="col-lg-10">
-                <ResultsCard
-                  result={nutritionResult}
-                  onNewAnalysis={handleNewAnalysis}
-                />
+            {/* Results Section */}
+            {nutritionResult && (
+              <div className="container mt-5">
+                <div className="row justify-content-center">
+                  <div className="col-lg-10">
+                    <ResultsCard
+                      result={nutritionResult}
+                      onNewAnalysis={handleNewAnalysis}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            )}
+          </>
+        ) : (
+          /* Recent Searches View */
+          <RecentSearches
+            breadcrumbs={breadcrumbs}
+            onSearchClick={handleBreadcrumbClick}
+            onClearHistory={handleClearHistory}
+            onBackToHome={handleNavigateToHome}
+            isAuthenticated={isAuthenticated}
+          />
         )}
 
         {/* Footer */}
