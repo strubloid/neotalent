@@ -30,14 +30,14 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
   handlePrevious = () => {
     const { breadcrumbs } = this.props;
     this.setState(prevState => ({
-      currentIndex: prevState.currentIndex > 0 ? prevState.currentIndex - 1 : breadcrumbs.length - 1
+      currentIndex: Math.max(0, prevState.currentIndex - 3)
     }));
   };
 
   handleNext = () => {
     const { breadcrumbs } = this.props;
     this.setState(prevState => ({
-      currentIndex: prevState.currentIndex < breadcrumbs.length - 1 ? prevState.currentIndex + 1 : 0
+      currentIndex: Math.min(breadcrumbs.length - 3, prevState.currentIndex + 3)
     }));
   };
 
@@ -52,19 +52,27 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
     
     if (!breadcrumbs || breadcrumbs.length === 0) {
       return (
-        <div className="container mt-4">
-          <div className="row">
-            <div className="col-12">
-              <div className="card border-0" style={{
-                background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-                borderRadius: '15px'
-              }}>
-                <div className="card-body text-center py-4">
-                  <i className="bi bi-clock-history fs-1 text-muted"></i>
-                  <h5 className="card-title mt-3">No Search History</h5>
-                  <p className="card-text text-muted">
-                    Your recent food searches will appear here for quick access.
-                  </p>
+        <div className="w-100 mt-4" style={{
+          background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+          borderTop: '1px solid #dee2e6',
+          borderBottom: '1px solid #dee2e6',
+          paddingTop: '2rem',
+          paddingBottom: '2rem'
+        }}>
+          <div className="container">
+            <div className="row">
+              <div className="col-12">
+                <div className="card border-0" style={{
+                  background: 'transparent',
+                  borderRadius: '15px'
+                }}>
+                  <div className="card-body text-center py-4">
+                    <i className="bi bi-clock-history fs-1 text-muted"></i>
+                    <h5 className="card-title mt-3">No Search History</h5>
+                    <p className="card-text text-muted">
+                      Your recent food searches will appear here for quick access.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -74,10 +82,17 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
     }
 
     return (
-    <div className="container mt-4">
-      <div className="row">
-        <div className="col-12">
-          {/* Recent Searches Collapsible Section */}
+    <div className="w-100 mt-4" style={{
+      background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+      borderTop: '1px solid #dee2e6',
+      borderBottom: '1px solid #dee2e6',
+      paddingTop: '2rem',
+      paddingBottom: '2rem'
+    }}>
+      <div className="container">
+        <div className="row">
+          <div className="col-12">
+            {/* Recent Searches Collapsible Section */}
           <div className="mb-4" style={{
             background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
             borderRadius: '15px',
@@ -142,24 +157,24 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
                   <button 
                     className="btn btn-outline-success btn-sm d-flex align-items-center justify-content-center flex-shrink-0"
                     onClick={this.handlePrevious}
-                    disabled={breadcrumbs.length <= 1}
+                    disabled={currentIndex === 0}
                     style={{
                       width: '40px',
                       height: '40px',
                       borderRadius: '50%',
-                      opacity: breadcrumbs.length <= 1 ? 0.3 : 1,
+                      opacity: currentIndex === 0 ? 0.3 : 1,
                       transition: 'all 0.3s ease',
                       marginRight: '12px'
                     }}
                     onMouseEnter={(e) => {
-                      if (breadcrumbs.length > 1) {
+                      if (currentIndex !== 0) {
                         e.currentTarget.style.backgroundColor = '#198754';
                         e.currentTarget.style.borderColor = '#198754';
                         e.currentTarget.style.color = 'white';
                       }
                     }}
                     onMouseLeave={(e) => {
-                      if (breadcrumbs.length > 1) {
+                      if (currentIndex !== 0) {
                         e.currentTarget.style.backgroundColor = '';
                         e.currentTarget.style.borderColor = '#198754';
                         e.currentTarget.style.color = '#198754';
@@ -169,103 +184,108 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
                     <i className="bi bi-chevron-left"></i>
                   </button>
 
-                  {/* Current Search Display */}
-                  <div 
-                    className="p-3 rounded position-relative"
-                    style={{
-                      background: 'white',
-                      border: '2px solid #e9ecef',
-                      boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                      minHeight: '100px',
-                      flex: '1 1 auto',
-                      marginRight: '12px'
-                    }}
-                    onClick={() => onBreadcrumbClick(breadcrumbs[currentIndex].searchId)}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)';
-                      e.currentTarget.style.borderColor = '#198754';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = '';
-                      e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
-                      e.currentTarget.style.borderColor = '#e9ecef';
-                    }}
-                  >
-                    <div className="d-flex justify-content-between align-items-start">
-                      <div className="flex-grow-1">
-                        <div className="d-flex align-items-center mb-2">
-                          <span className="badge bg-success me-2">
-                            #{breadcrumbs.length - currentIndex}
-                          </span>
-                          <h5 className="mb-0 text-success fw-bold">
-                            {breadcrumbs[currentIndex].query}
-                          </h5>
-                        </div>
-                        <p className="mb-2 text-muted">
-                          <i className="bi bi-bar-chart me-1"></i>
-                          {breadcrumbs[currentIndex].summary}
-                        </p>
-                        <div className="d-flex justify-content-between align-items-center">
-                          <small className="text-muted">
-                            <i className="bi bi-calendar me-1"></i>
-                            {this.formatTimeAgo(breadcrumbs[currentIndex].timestamp)}
-                          </small>
-                          <small className="text-muted">
-                            Click to view details
-                          </small>
-                        </div>
-                      </div>
-                      <div className="ms-3 d-flex align-items-center">
-                        <i className="bi bi-arrow-right-circle text-success" style={{ fontSize: '1.5rem' }}></i>
-                      </div>
-                    </div>
-
-                    {/* Search indicator dots */}
-                    <div className="position-absolute bottom-0 start-50 translate-middle-x mb-2">
-                      <div className="d-flex gap-1">
-                        {breadcrumbs.slice(0, Math.min(5, breadcrumbs.length)).map((_, index) => (
-                          <div
-                            key={index}
-                            className="rounded-circle"
-                            style={{
-                              width: '6px',
-                              height: '6px',
-                              backgroundColor: index === currentIndex ? '#198754' : '#dee2e6',
-                              transition: 'all 0.3s ease'
+                  {/* Current 3 Searches Display */}
+                  <div className="d-flex gap-3 flex-grow-1">
+                    {breadcrumbs.slice(currentIndex, currentIndex + 3).map((item, index) => (
+                      <div 
+                        key={item.searchId}
+                        className="p-3 rounded position-relative"
+                        style={{
+                          background: 'white',
+                          border: '2px solid #e9ecef',
+                          boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          height: '120px',
+                          flex: '1 1 0',
+                          minWidth: '0'
+                        }}
+                        onClick={() => onBreadcrumbClick(item.searchId)}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)';
+                          e.currentTarget.style.borderColor = '#198754';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = '';
+                          e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+                          e.currentTarget.style.borderColor = '#e9ecef';
+                        }}
+                      >
+                        <div className="d-flex h-100">
+                          <div className="flex-grow-1 d-flex flex-column" style={{ 
+                            width: '0', 
+                            paddingRight: '12px',
+                            minWidth: '0'
+                          }}>
+                            <div className="d-flex align-items-center mb-1">
+                              <span className="badge bg-success me-1" style={{ fontSize: '0.65rem' }}>
+                                #{breadcrumbs.length - breadcrumbs.indexOf(item)}
+                              </span>
+                              <h6 className="mb-0 text-success fw-bold text-truncate" style={{ fontSize: '0.8rem' }}>
+                                {item.query}
+                              </h6>
+                            </div>
+                            <p className="mb-1 text-muted flex-grow-1" style={{ 
+                              fontSize: '0.7rem', 
+                              lineHeight: '1.1',
+                              overflow: 'hidden',
+                              display: '-webkit-box',
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: 'vertical',
+                              margin: 0
+                            }}>
+                              <i className="bi bi-bar-chart me-1"></i>
+                              {item.summary}
+                            </p>
+                            <div className="mt-auto">
+                              <small className="text-muted" style={{ fontSize: '0.65rem' }}>
+                                <i className="bi bi-calendar me-1"></i>
+                                {this.formatTimeAgo(item.timestamp)}
+                              </small>
+                            </div>
+                          </div>
+                          <div 
+                            className="d-flex align-items-center justify-content-center flex-shrink-0" 
+                            style={{ 
+                              width: '32px',
+                              height: '100%',
+                              cursor: 'pointer'
                             }}
-                          ></div>
-                        ))}
-                        {breadcrumbs.length > 5 && (
-                          <span className="text-muted small ms-1">+{breadcrumbs.length - 5}</span>
-                        )}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onBreadcrumbClick(item.searchId);
+                            }}
+                          >
+                            <i className="bi bi-arrow-right-circle text-success" style={{ fontSize: '1.4rem' }}></i>
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    ))}
                   </div>
 
                   {/* Next Button */}
                   <button 
                     className="btn btn-outline-success btn-sm d-flex align-items-center justify-content-center flex-shrink-0"
                     onClick={this.handleNext}
-                    disabled={breadcrumbs.length <= 1}
+                    disabled={currentIndex + 3 >= breadcrumbs.length}
                     style={{
                       width: '40px',
                       height: '40px',
                       borderRadius: '50%',
-                      opacity: breadcrumbs.length <= 1 ? 0.3 : 1,
-                      transition: 'all 0.3s ease'
+                      opacity: currentIndex + 3 >= breadcrumbs.length ? 0.3 : 1,
+                      transition: 'all 0.3s ease',
+                      marginLeft: '12px'
                     }}
                     onMouseEnter={(e) => {
-                      if (breadcrumbs.length > 1) {
+                      if (currentIndex + 3 < breadcrumbs.length) {
                         e.currentTarget.style.backgroundColor = '#198754';
                         e.currentTarget.style.borderColor = '#198754';
                         e.currentTarget.style.color = 'white';
                       }
                     }}
                     onMouseLeave={(e) => {
-                      if (breadcrumbs.length > 1) {
+                      if (currentIndex + 3 < breadcrumbs.length) {
                         e.currentTarget.style.backgroundColor = '';
                         e.currentTarget.style.borderColor = '#198754';
                         e.currentTarget.style.color = '#198754';
@@ -277,11 +297,11 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
                 </div>
 
                 {/* Navigation Info */}
-                {breadcrumbs.length > 1 && (
+                {breadcrumbs.length > 3 && (
                   <div className="text-center mt-3">
                     <small className="text-muted">
                       <i className="bi bi-info-circle me-1"></i>
-                      Showing {currentIndex + 1} of {breadcrumbs.length} searches • Use arrows to navigate
+                      Showing {currentIndex + 1}-{Math.min(currentIndex + 3, breadcrumbs.length)} of {breadcrumbs.length} searches • Use arrows to navigate
                     </small>
                   </div>
                 )}
@@ -290,6 +310,7 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
           </div>
         </div>
       </div>
+    </div>
     </div>
     );
   }

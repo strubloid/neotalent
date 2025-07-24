@@ -168,9 +168,9 @@ class RecentSearches extends Component<RecentSearchesProps, RecentSearchesState>
               {/* Collapsible Content */}
               <div 
                 style={{
-                  maxHeight: isExpanded ? '1000px' : '0px',
-                  overflow: 'hidden',
-                  transition: 'max-height 0.4s ease-in-out'
+                  maxHeight: isExpanded ? 'none' : '0px',
+                  overflow: isExpanded ? 'visible' : 'hidden',
+                  transition: isExpanded ? 'max-height 0.4s ease-in-out, overflow 0.4s ease-in-out 0.4s' : 'max-height 0.4s ease-in-out, overflow 0s ease-in-out'
                 }}
               >
                 <div className="card-body p-0">
