@@ -14,7 +14,7 @@ class Navigation extends Component<NavigationProps> {
             style={{ border: 'none', background: 'none', textDecoration: 'none' }}
           >
             <i className="bi bi-calculator me-2"></i>
-            NeoTalent Calorie Tracker
+            🍎 Calorie Tracker ✨
           </button>
         
         <button 

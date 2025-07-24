@@ -101,7 +101,7 @@ class AuthModals extends Component<AuthModalsProps, AuthModalsState> {
               <div className="modal-header">
                 <h1 className="modal-title fs-5" id="loginModalLabel">
                   <i className="bi bi-box-arrow-in-right me-2"></i>
-                  Login to NeoTalent
+                  Login to Your Journey
                 </h1>
                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
@@ -174,7 +174,7 @@ class AuthModals extends Component<AuthModalsProps, AuthModalsState> {
               <div className="modal-header">
                 <h1 className="modal-title fs-5" id="registerModalLabel">
                   <i className="bi bi-person-plus me-2"></i>
-                  Create NeoTalent Account
+                  Create Your Account
                 </h1>
                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
