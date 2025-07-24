@@ -54,7 +54,11 @@ class RecentSearches extends Component<RecentSearchesProps> {
 
           {/* Search History Content */}
           {breadcrumbs.length === 0 ? (
-            <div className="text-center py-5">
+            <div className="text-center py-5" style={{
+              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+              borderRadius: '15px',
+              border: '1px solid #dee2e6'
+            }}>
               <div className="mb-4">
                 <i className="bi bi-clock-history text-muted" style={{ fontSize: '4rem' }}></i>
               </div>
@@ -71,13 +75,22 @@ class RecentSearches extends Component<RecentSearchesProps> {
               </button>
             </div>
           ) : (
-            <div className="card">
-              <div className="card-header d-flex justify-content-between align-items-center">
+            <div className="card border-0" style={{
+              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+              borderRadius: '15px',
+              border: '1px solid #dee2e6'
+            }}>
+              <div className="card-header d-flex justify-content-between align-items-center border-0" style={{
+                background: 'linear-gradient(90deg, #6c757d 0%, #495057 100%)',
+                color: 'white',
+                borderRadius: '15px 15px 0 0'
+              }}>
                 <span>
+                  <i className="bi bi-collection me-2"></i>
                   <strong>{breadcrumbs.length}</strong> {breadcrumbs.length === 1 ? 'search' : 'searches'} found
                 </span>
                 <button 
-                  className="btn btn-sm btn-outline-danger"
+                  className="btn btn-sm btn-outline-light"
                   onClick={onClearHistory}
                 >
                   <i className="bi bi-trash me-1"></i>
@@ -89,11 +102,24 @@ class RecentSearches extends Component<RecentSearchesProps> {
                   {breadcrumbs.map((breadcrumb, index) => (
                     <div 
                       key={breadcrumb.searchId}
-                      className="list-group-item list-group-item-action cursor-pointer hover-bg-light"
+                      className="list-group-item list-group-item-action cursor-pointer"
                       onClick={() => onSearchClick(breadcrumb.searchId)}
-                      style={{ cursor: 'pointer' }}
+                      style={{ 
+                        cursor: 'pointer',
+                        border: 'none',
+                        background: index % 2 === 0 ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.5)',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(0,123,255,0.1)';
+                        e.currentTarget.style.transform = 'translateX(5px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = index % 2 === 0 ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.5)';
+                        e.currentTarget.style.transform = '';
+                      }}
                     >
-                      <div className="d-flex justify-content-between align-items-start">
+                      <div className="d-flex justify-content-between align-items-start p-3">
                         <div className="flex-grow-1">
                           <div className="d-flex align-items-center mb-2">
                             <span className="badge bg-primary me-2">#{breadcrumbs.length - index}</span>
@@ -110,8 +136,8 @@ class RecentSearches extends Component<RecentSearchesProps> {
                             {this.formatDate(breadcrumb.timestamp)}
                           </small>
                         </div>
-                        <div className="ms-3">
-                          <i className="bi bi-arrow-right text-muted"></i>
+                        <div className="ms-3 d-flex align-items-center">
+                          <i className="bi bi-arrow-right-circle text-primary" style={{ fontSize: '1.5rem' }}></i>
                         </div>
                       </div>
                     </div>
@@ -124,13 +150,16 @@ class RecentSearches extends Component<RecentSearchesProps> {
           {/* Info Section */}
           <div className="row mt-4">
             <div className="col-md-6">
-              <div className="card bg-light">
+              <div className="card border-0" style={{
+                background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+                borderRadius: '12px'
+              }}>
                 <div className="card-body">
-                  <h6 className="card-title">
-                    <i className="bi bi-info-circle me-2 text-info"></i>
+                  <h6 className="card-title text-primary">
+                    <i className="bi bi-info-circle me-2"></i>
                     About Search History
                   </h6>
-                  <p className="card-text small mb-0">
+                  <p className="card-text small mb-0 text-dark">
                     {isAuthenticated 
                       ? "Your search history is saved to your account and synced across devices. You can access it anytime you're logged in."
                       : "Your search history is stored locally in this browser session. Create an account to save your history permanently."
@@ -140,13 +169,16 @@ class RecentSearches extends Component<RecentSearchesProps> {
               </div>
             </div>
             <div className="col-md-6">
-              <div className="card bg-light">
+              <div className="card border-0" style={{
+                background: 'linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%)',
+                borderRadius: '12px'
+              }}>
                 <div className="card-body">
-                  <h6 className="card-title">
-                    <i className="bi bi-lightning me-2 text-warning"></i>
+                  <h6 className="card-title text-warning-emphasis">
+                    <i className="bi bi-lightning me-2"></i>
                     Quick Access
                   </h6>
-                  <p className="card-text small mb-0">
+                  <p className="card-text small mb-0 text-dark">
                     Click on any search result to instantly view the nutritional analysis again. 
                     Perfect for tracking repeated meals or comparing different foods.
                   </p>
