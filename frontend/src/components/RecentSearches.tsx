@@ -78,40 +78,49 @@ class RecentSearches extends Component<RecentSearchesProps, RecentSearchesState>
           </div>
 
           {/* Info Section */}
-          <div className="row mt-4 mb-2">
+          <div className="row mt-3 mb-3">
             <div className="col-md-6">
-              <div className="card border-0" style={{
+              <div className="card border-0 shadow-sm" style={{
                 background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
-                borderRadius: '12px'
+                borderRadius: '8px',
+                height: '80px'
               }}>
-                <div className="card-body">
-                  <h6 className="card-title text-primary">
-                    <i className="bi bi-info-circle me-2"></i>
-                    About Search History
-                  </h6>
-                  <p className="card-text small mb-0 text-dark">
-                    {isAuthenticated 
-                      ? "Your search history is saved to your account and synced across devices. You can access it anytime you're logged in."
-                      : "Your search history is stored locally in this browser session. Create an account to save your history permanently."
-                    }
-                  </p>
+                <div className="card-body d-flex align-items-center py-2 px-3">
+                  <div className="me-3">
+                    <i className="bi bi-info-circle text-primary" style={{ fontSize: '1.5rem' }}></i>
+                  </div>
+                  <div className="flex-grow-1">
+                    <h6 className="card-title mb-1 text-primary fw-bold" style={{ fontSize: '0.9rem' }}>
+                      About Search History
+                    </h6>
+                    <p className="card-text mb-0 text-dark" style={{ fontSize: '0.75rem', lineHeight: '1.2' }}>
+                      {isAuthenticated 
+                        ? "Search history synced across devices when logged in."
+                        : "History stored locally. Create account to save permanently."
+                      }
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
             <div className="col-md-6">
-              <div className="card border-0" style={{
+              <div className="card border-0 shadow-sm" style={{
                 background: 'linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%)',
-                borderRadius: '12px'
+                borderRadius: '8px',
+                height: '80px'
               }}>
-                <div className="card-body">
-                  <h6 className="card-title text-warning-emphasis">
-                    <i className="bi bi-lightning me-2"></i>
-                    Quick Access
-                  </h6>
-                  <p className="card-text small mb-0 text-dark">
-                    Click on any search result to instantly view the nutritional analysis again. 
-                    Perfect for tracking repeated meals or comparing different foods.
-                  </p>
+                <div className="card-body d-flex align-items-center py-2 px-3">
+                  <div className="me-3">
+                    <i className="bi bi-lightning text-warning-emphasis" style={{ fontSize: '1.5rem' }}></i>
+                  </div>
+                  <div className="flex-grow-1">
+                    <h6 className="card-title mb-1 text-warning-emphasis fw-bold" style={{ fontSize: '0.9rem' }}>
+                      Quick Access
+                    </h6>
+                    <p className="card-text mb-0 text-dark" style={{ fontSize: '0.75rem', lineHeight: '1.2' }}>
+                      Click any search to instantly view nutritional analysis again.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
