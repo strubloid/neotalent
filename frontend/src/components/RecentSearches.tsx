@@ -1,16 +1,6 @@
 import React from 'react';
-import { BreadcrumbItem, NutritionResult } from '../types';
+import { BreadcrumbItem, NutritionResult, RecentSearchesProps } from '../interfaces';
 import ResultsCard from './ResultsCard';
-
-interface RecentSearchesProps {
-  breadcrumbs: BreadcrumbItem[];
-  onSearchClick: (searchId: string) => void;
-  onClearHistory: () => void;
-  onBackToHome: () => void;
-  isAuthenticated: boolean;
-  nutritionResult?: NutritionResult | null;
-  onNewAnalysis?: () => void;
-}
 
 const RecentSearches = ({ 
   breadcrumbs, 

@@ -1,10 +1,5 @@
 import React from 'react';
-import { NutritionResult } from '../types';
-
-interface ResultsCardProps {
-  result: NutritionResult;
-  onNewAnalysis: () => void;
-}
+import { NutritionResult, ResultsCardProps } from '../interfaces';
 
 const ResultsCard = ({ result, onNewAnalysis }: ResultsCardProps) => {
   // Calculate macronutrient percentages

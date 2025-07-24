@@ -1,12 +1,5 @@
 import React from 'react';
-import { User } from '../types';
-
-interface NavigationProps {
-  user: User | null;
-  isAuthenticated: boolean;
-  onLogout: () => void;
-  onDeleteAccount: () => void;
-}
+import { User, NavigationProps } from '../interfaces';
 
 const Navigation = ({ user, isAuthenticated, onLogout, onDeleteAccount }: NavigationProps) => {
   return (

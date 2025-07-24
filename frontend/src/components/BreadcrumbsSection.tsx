@@ -1,11 +1,5 @@
 import React from 'react';
-import { BreadcrumbItem } from '../types';
-
-interface BreadcrumbsSectionProps {
-  breadcrumbs: BreadcrumbItem[];
-  onBreadcrumbClick: (searchId: string) => void;
-  onClearHistory: () => void;
-}
+import { BreadcrumbItem, BreadcrumbsSectionProps } from '../interfaces';
 
 const BreadcrumbsSection = ({ breadcrumbs, onBreadcrumbClick, onClearHistory }: BreadcrumbsSectionProps) => {
   if (!breadcrumbs || breadcrumbs.length === 0) {

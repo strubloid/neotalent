@@ -6,7 +6,7 @@ import CalorieForm from './components/CalorieForm';
 import ResultsCard from './components/ResultsCard';
 import AuthModals from './components/AuthModals';
 import RecentSearches from './components/RecentSearches';
-import { User, BreadcrumbItem, NutritionResult } from './types';
+import { User, BreadcrumbItem, NutritionResult, LoginCredentials, RegisterData } from './interfaces';
 import { API_ENDPOINTS } from './config/api';
 
 const App = () => {
@@ -348,7 +348,7 @@ const App = () => {
     }
   };
 
-  const handleLogin = async (credentials: { username: string; password: string }) => {
+  const handleLogin = async (credentials: LoginCredentials) => {
     try {
       const response = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
         method: 'POST',
@@ -441,7 +441,7 @@ const App = () => {
     }
   };
 
-  const handleRegister = async (userData: { username: string; password: string; nickname: string }) => {
+  const handleRegister = async (userData: RegisterData) => {
     try {
       const response = await fetch(API_ENDPOINTS.AUTH.REGISTER, {
         method: 'POST',

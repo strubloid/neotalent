@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
-
-interface AuthModalsProps {
-  onLogin: (credentials: { username: string; password: string }) => void;
-  onRegister: (userData: { username: string; password: string; nickname: string }) => void;
-}
+import { AuthModalsProps } from '../interfaces';
 
 const AuthModals = ({ onLogin, onRegister }: AuthModalsProps) => {
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });

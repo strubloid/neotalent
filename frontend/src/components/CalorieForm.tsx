@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
-interface CalorieFormProps {
-  onAnalyze: (foodText: string) => void;
-  isLoading: boolean;
-  error: string;
-  resetTrigger?: number; // Add a reset trigger prop
-}
+import { CalorieFormProps } from '../interfaces';
 
 const CalorieForm = ({ onAnalyze, isLoading, error, resetTrigger }: CalorieFormProps) => {
   const [foodText, setFoodText] = useState('');
