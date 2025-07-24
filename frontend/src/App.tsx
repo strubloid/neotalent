@@ -6,6 +6,7 @@ import CalorieForm from './components/CalorieForm';
 import ResultsCard from './components/ResultsCard';
 import AuthModals from './components/AuthModals';
 import { User, BreadcrumbItem, NutritionResult } from './types';
+import { API_ENDPOINTS } from './config/api';
 
 const App = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -22,7 +23,7 @@ const App = () => {
       try {
         // Check authentication status first
         console.log('🔍 Frontend: Checking authentication status...');
-        const authResponse = await fetch('/api/auth/status', {
+        const authResponse = await fetch(API_ENDPOINTS.AUTH.STATUS, {
           method: 'GET',
           credentials: 'include',
         });
@@ -39,7 +40,7 @@ const App = () => {
             
             // Load search history for authenticated user from database
             try {
-              const historyResponse = await fetch('/api/auth/search-history', {
+              const historyResponse = await fetch(API_ENDPOINTS.AUTH.SEARCH_HISTORY, {
                 method: 'GET',
                 credentials: 'include',
               });
@@ -163,7 +164,7 @@ const App = () => {
       if (isAuthenticated) {
         // For authenticated users, clear from database
         try {
-          const response = await fetch('/api/auth/search-history', {
+          const response = await fetch(API_ENDPOINTS.AUTH.SEARCH_HISTORY, {
             method: 'DELETE',
             credentials: 'include',
           });
@@ -206,7 +207,7 @@ const App = () => {
     setNutritionResult(null);
     
     try {
-      const response = await fetch('/api/calories', {
+      const response = await fetch(API_ENDPOINTS.CALORIES, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -258,7 +259,7 @@ const App = () => {
         if (isAuthenticated) {
           // Save to database for authenticated users
           try {
-            const response = await fetch('/api/auth/search-history', {
+            const response = await fetch(API_ENDPOINTS.AUTH.SEARCH_HISTORY, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -316,7 +317,7 @@ const App = () => {
 
   const handleLogin = async (credentials: { username: string; password: string }) => {
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -350,7 +351,7 @@ const App = () => {
           // Transfer each session search to database
           for (const search of sessionSearches) {
             try {
-              await fetch('/api/auth/search-history', {
+              await fetch(API_ENDPOINTS.AUTH.SEARCH_HISTORY, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -376,7 +377,7 @@ const App = () => {
         
         // Load complete search history from database (including transferred items)
         try {
-          const historyResponse = await fetch('/api/auth/search-history', {
+          const historyResponse = await fetch(API_ENDPOINTS.AUTH.SEARCH_HISTORY, {
             method: 'GET',
             credentials: 'include',
           });
@@ -407,7 +408,7 @@ const App = () => {
 
   const handleRegister = async (userData: { username: string; password: string; nickname: string }) => {
     try {
-      const response = await fetch('/api/auth/register', {
+      const response = await fetch(API_ENDPOINTS.AUTH.REGISTER, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -439,7 +440,7 @@ const App = () => {
   const handleLogout = async () => {
     try {
       // Call logout API to destroy session on server
-      await fetch('/api/auth/logout', {
+      await fetch(API_ENDPOINTS.AUTH.LOGOUT, {
         method: 'POST',
         credentials: 'include',
       });

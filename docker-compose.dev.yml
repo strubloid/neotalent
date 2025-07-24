@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # MongoDB Database with SSH
+  mongodb:
+    build:
+      context: .
+      dockerfile: Dockerfile.mongodb
+    container_name: neotalent-mongodb-dev
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+      - "2221:22"  # SSH port for MongoDB
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: neotalent
+      MONGO_INITDB_ROOT_PASSWORD: neotalent123
+      MONGO_INITDB_DATABASE: neotalent
+      SSH_USER: mongouser
+      SSH_PASSWORD: mongopass123
+    volumes:
+      - mongodb_dev_data:/data/db
+    networks:
+      - neotalent-network
+
+  # Backend Service (Development)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: neotalent-backend-dev
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+      - "9229:9229" # Node.js debugging port
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      MONGODB_URI: mongodb://neotalent:neotalent123@mongodb:27017/neotalent?authSource=admin
+      SESSION_SECRET: neotalent-docker-secret-key-2024
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      RATE_LIMIT_WINDOW_MS: 900000
+      RATE_LIMIT_MAX_REQUESTS: 100
+      CORS_ORIGIN: http://localhost:3000
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - session_dev_data:/app/sessions
+    depends_on:
+      - mongodb
+    networks:
+      - neotalent-network
+
+  # Frontend Service (Development)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: neotalent-frontend-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      REACT_APP_API_URL: http://backend:3001
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - neotalent-network
+
+volumes:
+  mongodb_dev_data:
+  session_dev_data:
+
+networks:
+  neotalent-network:
+    driver: bridge

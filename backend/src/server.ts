@@ -50,15 +50,32 @@ class Server {
         this.app.use(helmet(envConfig.helmet));
 
         // CORS configuration
-        this.app.use(cors(envConfig.cors));
+        this.app.use(cors({
+            origin: envConfig.cors.origin,
+            credentials: envConfig.cors.credentials,
+            methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+            allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+            exposedHeaders: ['Set-Cookie']
+        }));
 
         // Rate limiting - TEMPORARILY DISABLED
         // this.app.use(SecurityMiddleware.createRateLimit());
 
-        // Request logging (development only) - TEMPORARILY DISABLED
-        // if (this.environment === 'development') {
-        //     this.app.use(SecurityMiddleware.requestLogger());
-        // }
+        // Request logging (development only) 
+        if (this.environment === 'development') {
+            this.app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+                console.log(`📥 ${req.method} ${req.url} - Origin: ${req.get('Origin') || 'none'}`);
+                
+                // Log response completion
+                const originalSend = res.send;
+                res.send = function(data) {
+                    console.log(`📤 ${req.method} ${req.url} - Status: ${res.statusCode}`);
+                    return originalSend.call(this, data);
+                };
+                
+                next();
+            });
+        }
 
         // Body parsing
         this.app.use(express.json({ 
