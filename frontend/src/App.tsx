@@ -332,6 +332,8 @@ const App = () => {
       if (data.success && data.user) {
         setUser(data.user);
         setIsAuthenticated(true);
+        setNutritionResult(null); // Clear any previous nutrition results
+        setAnalysisError(''); // Clear any analysis errors
         console.log('Login successful:', data.user);
         
         // Transfer session storage search history to database for newly authenticated user
@@ -424,6 +426,8 @@ const App = () => {
       if (data.success && data.user) {
         setUser(data.user);
         setIsAuthenticated(true);
+        setNutritionResult(null); // Clear any previous nutrition results
+        setAnalysisError(''); // Clear any analysis errors
         console.log('Registration successful:', data.user);
       } else {
         // Use data.message first (backend sends this), then fallback to data.error, then generic message
@@ -456,6 +460,8 @@ const App = () => {
     setUser(null);
     setIsAuthenticated(false);
     setBreadcrumbs([]); // Clear search history from UI
+    setNutritionResult(null); // Clear current nutrition results
+    setAnalysisError(''); // Clear any analysis errors
     
     // Initialize fresh anonymous session storage
     try {
@@ -473,6 +479,9 @@ const App = () => {
     if (window.confirm('Are you sure you want to delete your account? This cannot be undone.')) {
       setUser(null);
       setIsAuthenticated(false);
+      setNutritionResult(null); // Clear any nutrition results
+      setAnalysisError(''); // Clear any analysis errors
+      setBreadcrumbs([]); // Clear search history
       alert('Account deleted successfully');
     }
   };
