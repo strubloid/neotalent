@@ -89,17 +89,17 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
             <div 
               className="d-flex justify-content-between align-items-center p-3 border-bottom"
               style={{
-                background: 'linear-gradient(90deg, #6c757d 0%, #495057 100%)',
+                background: 'linear-gradient(90deg, #198754 0%, #157347 100%)',
                 color: 'white',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease'
               }}
               onClick={this.toggleExpanded}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'linear-gradient(90deg, #5a6268 0%, #343a40 100%)';
+                e.currentTarget.style.background = 'linear-gradient(90deg, #157347 0%, #146c43 100%)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'linear-gradient(90deg, #6c757d 0%, #495057 100%)';
+                e.currentTarget.style.background = 'linear-gradient(90deg, #198754 0%, #157347 100%)';
               }}
             >
               <div className="d-flex align-items-center">
@@ -140,7 +140,7 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
                 <div className="d-flex align-items-center">
                   {/* Previous Button */}
                   <button 
-                    className="btn btn-outline-secondary btn-sm me-3 d-flex align-items-center justify-content-center"
+                    className="btn btn-outline-success btn-sm me-3 d-flex align-items-center justify-content-center"
                     onClick={this.handlePrevious}
                     disabled={breadcrumbs.length <= 1}
                     style={{
@@ -152,16 +152,16 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
                     }}
                     onMouseEnter={(e) => {
                       if (breadcrumbs.length > 1) {
-                        e.currentTarget.style.backgroundColor = '#6c757d';
-                        e.currentTarget.style.borderColor = '#6c757d';
+                        e.currentTarget.style.backgroundColor = '#198754';
+                        e.currentTarget.style.borderColor = '#198754';
                         e.currentTarget.style.color = 'white';
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (breadcrumbs.length > 1) {
                         e.currentTarget.style.backgroundColor = '';
-                        e.currentTarget.style.borderColor = '#6c757d';
-                        e.currentTarget.style.color = '#6c757d';
+                        e.currentTarget.style.borderColor = '#198754';
+                        e.currentTarget.style.color = '#198754';
                       }
                     }}
                   >
@@ -183,7 +183,7 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-2px)';
                       e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)';
-                      e.currentTarget.style.borderColor = '#007bff';
+                      e.currentTarget.style.borderColor = '#198754';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = '';
@@ -194,10 +194,10 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
                     <div className="d-flex justify-content-between align-items-start">
                       <div className="flex-grow-1">
                         <div className="d-flex align-items-center mb-2">
-                          <span className="badge bg-primary me-2">
+                          <span className="badge bg-success me-2">
                             #{breadcrumbs.length - currentIndex}
                           </span>
-                          <h5 className="mb-0 text-primary fw-bold">
+                          <h5 className="mb-0 text-success fw-bold">
                             {breadcrumbs[currentIndex].query}
                           </h5>
                         </div>
@@ -216,7 +216,7 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
                         </div>
                       </div>
                       <div className="ms-3 d-flex align-items-center">
-                        <i className="bi bi-arrow-right-circle text-primary" style={{ fontSize: '1.5rem' }}></i>
+                        <i className="bi bi-arrow-right-circle text-success" style={{ fontSize: '1.5rem' }}></i>
                       </div>
                     </div>
 
@@ -230,7 +230,7 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
                             style={{
                               width: '6px',
                               height: '6px',
-                              backgroundColor: index === currentIndex ? '#007bff' : '#dee2e6',
+                              backgroundColor: index === currentIndex ? '#198754' : '#dee2e6',
                               transition: 'all 0.3s ease'
                             }}
                           ></div>
@@ -244,7 +244,7 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
 
                   {/* Next Button */}
                   <button 
-                    className="btn btn-outline-secondary btn-sm ms-3 d-flex align-items-center justify-content-center"
+                    className="btn btn-outline-success btn-sm ms-3 d-flex align-items-center justify-content-center"
                     onClick={this.handleNext}
                     disabled={breadcrumbs.length <= 1}
                     style={{
@@ -256,16 +256,16 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
                     }}
                     onMouseEnter={(e) => {
                       if (breadcrumbs.length > 1) {
-                        e.currentTarget.style.backgroundColor = '#6c757d';
-                        e.currentTarget.style.borderColor = '#6c757d';
+                        e.currentTarget.style.backgroundColor = '#198754';
+                        e.currentTarget.style.borderColor = '#198754';
                         e.currentTarget.style.color = 'white';
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (breadcrumbs.length > 1) {
                         e.currentTarget.style.backgroundColor = '';
-                        e.currentTarget.style.borderColor = '#6c757d';
-                        e.currentTarget.style.color = '#6c757d';
+                        e.currentTarget.style.borderColor = '#198754';
+                        e.currentTarget.style.color = '#198754';
                       }
                     }}
                   >

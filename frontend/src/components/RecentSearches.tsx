@@ -58,7 +58,7 @@ class RecentSearches extends Component<RecentSearchesProps, RecentSearchesState>
           <div className="d-flex justify-content-between align-items-center mb-4">
             <div>
               <h2 className="mb-1">
-                <i className="bi bi-clock-history me-2 text-primary"></i>
+                <i className="bi bi-clock-history me-2 text-success"></i>
                 Recent Searches
               </h2>
               <p className="text-muted mb-0">
@@ -69,61 +69,28 @@ class RecentSearches extends Component<RecentSearchesProps, RecentSearchesState>
               </p>
             </div>
             <button 
-              className="btn btn-outline-primary"
+              className="btn btn-outline-success"
               onClick={onBackToHome}
+              style={{
+                border: '2px solid #198754',
+                color: '#198754',
+                background: 'rgba(255, 255, 255, 0.9)',
+                backdropFilter: 'blur(10px)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'linear-gradient(135deg, #198754 0%, #157347 100%)';
+                e.currentTarget.style.color = 'white';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
+                e.currentTarget.style.color = '#198754';
+                e.currentTarget.style.transform = '';
+              }}
             >
               <i className="bi bi-arrow-left me-2"></i>
               Back to Home
             </button>
-          </div>
-
-          {/* Info Section */}
-          <div className="row mt-3 mb-3">
-            <div className="col-md-6">
-              <div className="card border-0 shadow-sm" style={{
-                background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
-                borderRadius: '8px',
-                height: '80px'
-              }}>
-                <div className="card-body d-flex align-items-center py-2 px-3">
-                  <div className="me-3">
-                    <i className="bi bi-info-circle text-primary" style={{ fontSize: '1.5rem' }}></i>
-                  </div>
-                  <div className="flex-grow-1">
-                    <h6 className="card-title mb-1 text-primary fw-bold" style={{ fontSize: '0.9rem' }}>
-                      About Search History
-                    </h6>
-                    <p className="card-text mb-0 text-dark" style={{ fontSize: '0.75rem', lineHeight: '1.2' }}>
-                      {isAuthenticated 
-                        ? "Search history synced across devices when logged in."
-                        : "History stored locally. Create account to save permanently."
-                      }
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-6">
-              <div className="card border-0 shadow-sm" style={{
-                background: 'linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%)',
-                borderRadius: '8px',
-                height: '80px'
-              }}>
-                <div className="card-body d-flex align-items-center py-2 px-3">
-                  <div className="me-3">
-                    <i className="bi bi-lightning text-warning-emphasis" style={{ fontSize: '1.5rem' }}></i>
-                  </div>
-                  <div className="flex-grow-1">
-                    <h6 className="card-title mb-1 text-warning-emphasis fw-bold" style={{ fontSize: '0.9rem' }}>
-                      Quick Access
-                    </h6>
-                    <p className="card-text mb-0 text-dark" style={{ fontSize: '0.75rem', lineHeight: '1.2' }}>
-                      Click any search to instantly view nutritional analysis again.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Search History Content */}
@@ -141,7 +108,7 @@ class RecentSearches extends Component<RecentSearchesProps, RecentSearchesState>
                 Your recent food searches will appear here for quick access.
               </p>
               <button 
-                className="btn btn-primary mt-3"
+                className="btn btn-success mt-3"
                 onClick={onBackToHome}
               >
                 <i className="bi bi-search me-2"></i>
@@ -159,7 +126,7 @@ class RecentSearches extends Component<RecentSearchesProps, RecentSearchesState>
               <div 
                 className="card-header d-flex justify-content-between align-items-center border-0"
                 style={{
-                  background: 'linear-gradient(90deg, #6c757d 0%, #495057 100%)',
+                  background: 'linear-gradient(90deg, #198754 0%, #157347 100%)',
                   color: 'white',
                   borderRadius: '15px 15px 0 0',
                   cursor: 'pointer',
@@ -167,10 +134,10 @@ class RecentSearches extends Component<RecentSearchesProps, RecentSearchesState>
                 }}
                 onClick={this.toggleExpanded}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'linear-gradient(90deg, #5a6268 0%, #343a40 100%)';
+                  e.currentTarget.style.background = 'linear-gradient(90deg, #157347 0%, #146c43 100%)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'linear-gradient(90deg, #6c757d 0%, #495057 100%)';
+                  e.currentTarget.style.background = 'linear-gradient(90deg, #198754 0%, #157347 100%)';
                 }}
               >
                 <span>
@@ -231,8 +198,8 @@ class RecentSearches extends Component<RecentSearchesProps, RecentSearchesState>
                         <div className="d-flex justify-content-between align-items-start p-3">
                           <div className="flex-grow-1">
                             <div className="d-flex align-items-center mb-2">
-                              <span className="badge bg-primary me-2">#{breadcrumbs.length - index}</span>
-                              <h6 className="mb-0 text-primary fw-bold">
+                              <span className="badge bg-success me-2">#{breadcrumbs.length - index}</span>
+                              <h6 className="mb-0 text-success fw-bold">
                                 {breadcrumb.query}
                               </h6>
                             </div>
@@ -246,7 +213,7 @@ class RecentSearches extends Component<RecentSearchesProps, RecentSearchesState>
                             </small>
                           </div>
                           <div className="ms-3 d-flex align-items-center">
-                            <i className="bi bi-arrow-right-circle text-primary" style={{ fontSize: '1.5rem' }}></i>
+                            <i className="bi bi-arrow-right-circle text-success" style={{ fontSize: '1.5rem' }}></i>
                           </div>
                         </div>
                       </div>
@@ -268,6 +235,56 @@ class RecentSearches extends Component<RecentSearchesProps, RecentSearchesState>
               />
             </div>
           )}
+
+          {/* Info Section */}
+          <div className="row mt-3 mb-3">
+            <div className="col-md-6">
+              <div className="card border-0 shadow-sm" style={{
+                background: 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)',
+                borderRadius: '8px',
+                height: '80px'
+              }}>
+                <div className="card-body d-flex align-items-center py-2 px-3">
+                  <div className="me-3">
+                    <i className="bi bi-info-circle" style={{ fontSize: '1.5rem', color: '#146c43' }}></i>
+                  </div>
+                  <div className="flex-grow-1">
+                    <h6 className="card-title mb-1 fw-bold" style={{ fontSize: '0.9rem', color: '#146c43' }}>
+                      About Search History
+                    </h6>
+                    <p className="card-text mb-0" style={{ fontSize: '0.75rem', lineHeight: '1.2', color: '#0f5132' }}>
+                      {isAuthenticated 
+                        ? "Search history synced across devices when logged in."
+                        : "History stored locally. Create account to save permanently."
+                      }
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="card border-0 shadow-sm" style={{
+                background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                borderRadius: '8px',
+                height: '80px'
+              }}>
+                <div className="card-body d-flex align-items-center py-2 px-3">
+                  <div className="me-3">
+                    <i className="bi bi-lightning" style={{ fontSize: '1.5rem', color: '#198754' }}></i>
+                  </div>
+                  <div className="flex-grow-1">
+                    <h6 className="card-title mb-1 fw-bold" style={{ fontSize: '0.9rem', color: '#198754' }}>
+                      Quick Access
+                    </h6>
+                    <p className="card-text mb-0" style={{ fontSize: '0.75rem', lineHeight: '1.2', color: '#495057' }}>
+                      Click any search to instantly view nutritional analysis again.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

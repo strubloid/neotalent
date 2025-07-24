@@ -27,7 +27,7 @@
 
 .loading-spinner {
   border: 2px solid #f3f3f3;
-  border-top: 2px solid #0d6efd;
+  border-top: 2px solid #198754;
   border-radius: 50%;
   width: 20px;
   height: 20px;
@@ -40,7 +40,7 @@
 }
 
 .nutrition-breakdown .food-item {
-  border-left: 4px solid #0d6efd;
+  border-left: 4px solid #198754;
   background-color: #f8f9fa;
   transition: background-color 0.2s ease;
 }

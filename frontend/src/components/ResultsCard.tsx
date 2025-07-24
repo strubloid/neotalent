@@ -52,7 +52,7 @@ class ResultsCard extends Component<ResultsCardProps> {
               <div className="row">
                 {/* Total Calories - Featured */}
                 <div className="col-md-4 mb-4">
-                  <div className="card bg-primary text-white h-100">
+                  <div className="card bg-success text-white h-100">
                     <div className="card-body text-center">
                       <i className="bi bi-fire display-4 mb-2"></i>
                       <h2 className="display-4 mb-2">{result.totalCalories}</h2>
@@ -158,9 +158,9 @@ class ResultsCard extends Component<ResultsCardProps> {
                         {/* Sugar */}
                         <div className="col-4">
                           <div className="mb-2">
-                            <i className="bi bi-hexagon text-secondary fs-2"></i>
+                            <i className="bi bi-hexagon text-success fs-2"></i>
                           </div>
-                          <h4 className="text-secondary">{result.totalSugar || 0}g</h4>
+                          <h4 className="text-success">{result.totalSugar || 0}g</h4>
                           <h6 className="text-muted">Sugar</h6>
                         </div>
 
@@ -209,20 +209,20 @@ class ResultsCard extends Component<ResultsCardProps> {
                               {result.breakdown.map((item, index) => (
                                 <tr key={index}>
                                   <td>
-                                    <i className="bi bi-dot text-primary me-1"></i>
+                                    <i className="bi bi-dot text-success me-1"></i>
                                     {item.food}
                                   </td>
                                   <td className="text-end text-muted">
                                     {item.quantity || 'N/A'}
                                   </td>
                                   <td className="text-end">
-                                    <span className="badge bg-primary">{item.calories}</span>
+                                    <span className="badge bg-success">{item.calories}</span>
                                   </td>
                                   <td className="text-end text-danger">{item.protein}g</td>
                                   <td className="text-end text-warning">{item.carbs}g</td>
                                   <td className="text-end text-info">{item.fat}g</td>
                                   <td className="text-end text-success">{item.fiber || 0}g</td>
-                                  <td className="text-end text-secondary">{item.sugar || 0}g</td>
+                                  <td className="text-end text-success">{item.sugar || 0}g</td>
                                   <td className="text-end text-dark">{item.sodium || 0}mg</td>
                                 </tr>
                               ))}
@@ -295,14 +295,14 @@ class ResultsCard extends Component<ResultsCardProps> {
                 <div className="col-12 text-center">
                   <div className="btn-group" role="group">
                     <button 
-                      className="btn btn-primary"
+                      className="btn btn-success"
                       onClick={onNewAnalysis}
                     >
                       <i className="bi bi-plus-circle me-2"></i>
                       Analyze Another Food
                     </button>
                     <button 
-                      className="btn btn-outline-secondary"
+                      className="btn btn-outline-success"
                       onClick={() => window.print()}
                     >
                       <i className="bi bi-printer me-2"></i>

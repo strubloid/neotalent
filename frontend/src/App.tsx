@@ -576,7 +576,7 @@ class App extends Component<{}, AppState> {
       return (
         <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
           <div className="text-center">
-            <div className="spinner-border text-primary mb-3" role="status">
+            <div className="spinner-border text-success mb-3" role="status">
               <span className="visually-hidden">Loading...</span>
             </div>
             <h5>✨ Loading your nutrition journey... 🍎</h5>
@@ -606,14 +606,14 @@ class App extends Component<{}, AppState> {
                   <div className="row">
                     <div className="col-12 text-center">
                       <h1 className="display-4 mb-3" style={{
-                        background: 'linear-gradient(45deg, #007bff, #28a745, #ffc107)',
+                        background: 'linear-gradient(45deg, #198754, #20c997, #0f5132)',
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
                         backgroundClip: 'text',
                         fontWeight: 'bold'
                       }}>
                         <i className="bi bi-heart-pulse text-danger me-3"></i>
-                        🍎 Calorie Tracker ✨
+                         &nbsp;Calorie Tracker ✨
                       </h1>
                       <p className="lead text-muted" style={{
                         fontStyle: 'italic',
@@ -624,13 +624,36 @@ class App extends Component<{}, AppState> {
                         <span className="d-block">🤖 <em>Where AI meets nutrition, and health becomes poetry</em> 🎯</span>
                       </p>
                       <div className="mt-4">
-                        <button className="btn btn-primary btn-lg me-3">
+                        <button 
+                          className="btn btn-primary btn-lg me-3"
+                          style={{
+                            background: 'linear-gradient(135deg, #198754 0%, #157347 100%)',
+                            border: 'none',
+                            boxShadow: '0 4px 15px rgba(25, 135, 84, 0.3)'
+                          }}
+                        >
                           <i className="bi bi-search me-2"></i>
                           Analyze Food
                         </button>
                         <button 
                           className="btn btn-outline-primary btn-lg"
                           onClick={this.handleNavigateToRecentSearches}
+                          style={{
+                            border: '2px solid #198754',
+                            color: '#198754',
+                            background: 'rgba(255, 255, 255, 0.9)',
+                            backdropFilter: 'blur(10px)'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'linear-gradient(135deg, #198754 0%, #157347 100%)';
+                            e.currentTarget.style.color = 'white';
+                            e.currentTarget.style.transform = 'translateY(-1px)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
+                            e.currentTarget.style.color = '#198754';
+                            e.currentTarget.style.transform = '';
+                          }}
                         >
                           <i className="bi bi-clock-history me-2"></i>
                           Recent Searches
@@ -689,7 +712,7 @@ class App extends Component<{}, AppState> {
               <div className="row">
                 <div className="col-12 text-center text-muted">
                   <p className="mb-0">
-                    &copy; 2025 Calorie Tracker. Crafted with 💖 and powered by AI for your wellness journey.
+                    &copy; 2025 Calorie Tracker. Crafted with a heart just for your wellness journey.
                   </p>
                 </div>
               </div>

@@ -145,10 +145,10 @@ class AuthModals extends Component<AuthModalsProps, AuthModalsState> {
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" disabled={loginLoading}>
+                  <button type="button" className="btn btn-success" data-bs-dismiss="modal" disabled={loginLoading}>
                     Cancel
                   </button>
-                  <button type="submit" className="btn btn-primary" disabled={loginLoading}>
+                  <button type="submit" className="btn btn-success" disabled={loginLoading}>
                     {loginLoading ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2" role="status"></span>
@@ -252,10 +252,10 @@ class AuthModals extends Component<AuthModalsProps, AuthModalsState> {
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" disabled={registerLoading}>
+                  <button type="button" className="btn btn-success" data-bs-dismiss="modal" disabled={registerLoading}>
                     Cancel
                   </button>
-                  <button type="submit" className="btn btn-primary" disabled={registerLoading}>
+                  <button type="submit" className="btn btn-success" disabled={registerLoading}>
                     {registerLoading ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2" role="status"></span>

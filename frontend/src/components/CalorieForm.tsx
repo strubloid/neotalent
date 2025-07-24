@@ -44,7 +44,7 @@ class CalorieForm extends Component<CalorieFormProps, CalorieFormState> {
       <div className="row justify-content-center">
         <div className="col-lg-8">
           <div className="card shadow-sm">
-            <div className="card-header bg-primary text-white">
+            <div className="card-header bg-success text-white">
               <h5 className="card-title mb-0">
                 <i className="bi bi-search me-2"></i>
                 Analyze Your Food
@@ -85,7 +85,7 @@ class CalorieForm extends Component<CalorieFormProps, CalorieFormState> {
                 <div className="d-flex gap-2">
                   <button
                     type="submit"
-                    className="btn btn-primary flex-grow-1"
+                    className="btn btn-success flex-grow-1"
                     disabled={isLoading || !foodText.trim()}
                   >
                     {isLoading ? (
@@ -103,7 +103,7 @@ class CalorieForm extends Component<CalorieFormProps, CalorieFormState> {
                   
                   <button
                     type="button"
-                    className="btn btn-outline-secondary"
+                    className="btn btn-outline-success"
                     onClick={this.handleClear}
                     disabled={isLoading || !foodText.trim()}
                   >
