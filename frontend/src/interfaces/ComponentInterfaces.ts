@@ -7,6 +7,9 @@ export interface NavigationProps {
   isAuthenticated: boolean;
   onLogout: () => void;
   onDeleteAccount: () => void;
+  onNavigateToRecentSearches: () => void;
+  onNavigateToHome: () => void;
+  currentView: 'home' | 'recent-searches';
 }
 
 export interface CalorieFormProps {
