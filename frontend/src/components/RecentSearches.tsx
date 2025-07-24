@@ -1,17 +1,9 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { BreadcrumbItem, NutritionResult, RecentSearchesProps } from '../interfaces';
 import ResultsCard from './ResultsCard';
 
-const RecentSearches = ({ 
-  breadcrumbs, 
-  onSearchClick, 
-  onClearHistory, 
-  onBackToHome,
-  isAuthenticated,
-  nutritionResult,
-  onNewAnalysis
-}: RecentSearchesProps) => {
-  const formatDate = (timestamp: string) => {
+class RecentSearches extends Component<RecentSearchesProps> {
+  formatDate = (timestamp: string) => {
     const date = new Date(timestamp);
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
@@ -22,7 +14,18 @@ const RecentSearches = ({
     });
   };
 
-  return (
+  override render() {
+    const { 
+      breadcrumbs, 
+      onSearchClick, 
+      onClearHistory, 
+      onBackToHome,
+      isAuthenticated,
+      nutritionResult,
+      onNewAnalysis
+    } = this.props;
+
+    return (
     <div className="container mt-4">
       <div className="row">
         <div className="col-12">
@@ -104,7 +107,7 @@ const RecentSearches = ({
                           </p>
                           <small className="text-muted">
                             <i className="bi bi-calendar me-1"></i>
-                            {formatDate(breadcrumb.timestamp)}
+                            {this.formatDate(breadcrumb.timestamp)}
                           </small>
                         </div>
                         <div className="ms-3">
@@ -164,7 +167,8 @@ const RecentSearches = ({
         </div>
       </div>
     </div>
-  );
-};
+    );
+  }
+}
 
 export default RecentSearches;

@@ -1,18 +1,21 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { User, NavigationProps } from '../interfaces';
 
-const Navigation = ({ user, isAuthenticated, onLogout, onDeleteAccount, onNavigateToRecentSearches, onNavigateToHome, currentView }: NavigationProps) => {
-  return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-      <div className="container">
-        <button 
-          className="navbar-brand btn btn-link text-white"
-          onClick={onNavigateToHome}
-          style={{ border: 'none', background: 'none', textDecoration: 'none' }}
-        >
-          <i className="bi bi-calculator me-2"></i>
-          NeoTalent Calorie Tracker
-        </button>
+class Navigation extends Component<NavigationProps> {
+  override render() {
+    const { user, isAuthenticated, onLogout, onDeleteAccount, onNavigateToRecentSearches, onNavigateToHome, currentView } = this.props;
+
+    return (
+      <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div className="container">
+          <button 
+            className="navbar-brand btn btn-link text-white"
+            onClick={onNavigateToHome}
+            style={{ border: 'none', background: 'none', textDecoration: 'none' }}
+          >
+            <i className="bi bi-calculator me-2"></i>
+            NeoTalent Calorie Tracker
+          </button>
         
         <button 
           className="navbar-toggler" 
@@ -120,7 +123,8 @@ const Navigation = ({ user, isAuthenticated, onLogout, onDeleteAccount, onNaviga
         </div>
       </div>
     </nav>
-  );
-};
+    );
+  }
+}
 
 export default Navigation;

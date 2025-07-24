@@ -1,28 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import { CalorieFormProps } from '../interfaces';
 
-const CalorieForm = ({ onAnalyze, isLoading, error, resetTrigger }: CalorieFormProps) => {
-  const [foodText, setFoodText] = useState('');
+interface CalorieFormState {
+  foodText: string;
+}
 
-  // Reset form when resetTrigger changes
-  useEffect(() => {
-    if (resetTrigger !== undefined) {
-      setFoodText('');
+class CalorieForm extends Component<CalorieFormProps, CalorieFormState> {
+  constructor(props: CalorieFormProps) {
+    super(props);
+    this.state = {
+      foodText: ''
+    };
+  }
+
+  override componentDidUpdate(prevProps: CalorieFormProps) {
+    // Reset form when resetTrigger changes
+    if (prevProps.resetTrigger !== this.props.resetTrigger && this.props.resetTrigger !== undefined) {
+      this.setState({ foodText: '' });
     }
-  }, [resetTrigger]);
+  }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (foodText.trim()) {
-      onAnalyze(foodText.trim());
+    if (this.state.foodText.trim()) {
+      this.props.onAnalyze(this.state.foodText.trim());
     }
   };
 
-  const handleClear = () => {
-    setFoodText('');
+  handleClear = () => {
+    this.setState({ foodText: '' });
   };
 
-  return (
+  handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    this.setState({ foodText: e.target.value });
+  };
+
+  override render() {
+    const { isLoading, error } = this.props;
+    const { foodText } = this.state;
+
+    return (
     <div className="container mt-4">
       <div className="row justify-content-center">
         <div className="col-lg-8">
@@ -34,7 +51,7 @@ const CalorieForm = ({ onAnalyze, isLoading, error, resetTrigger }: CalorieFormP
               </h5>
             </div>
             <div className="card-body">
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={this.handleSubmit}>
                 <div className="mb-3">
                   <label htmlFor="foodInput" className="form-label">
                     Describe your food or meal:
@@ -45,7 +62,7 @@ const CalorieForm = ({ onAnalyze, isLoading, error, resetTrigger }: CalorieFormP
                     rows={4}
                     placeholder="e.g., 2 slices of whole wheat toast with avocado and a poached egg"
                     value={foodText}
-                    onChange={(e) => setFoodText(e.target.value)}
+                    onChange={this.handleTextChange}
                     disabled={isLoading}
                     maxLength={500}
                   />
@@ -87,7 +104,7 @@ const CalorieForm = ({ onAnalyze, isLoading, error, resetTrigger }: CalorieFormP
                   <button
                     type="button"
                     className="btn btn-outline-secondary"
-                    onClick={handleClear}
+                    onClick={this.handleClear}
                     disabled={isLoading || !foodText.trim()}
                   >
                     <i className="bi bi-x-circle me-1"></i>
@@ -107,7 +124,8 @@ const CalorieForm = ({ onAnalyze, isLoading, error, resetTrigger }: CalorieFormP
         </div>
       </div>
     </div>
-  );
-};
+    );
+  }
+}
 
 export default CalorieForm;
