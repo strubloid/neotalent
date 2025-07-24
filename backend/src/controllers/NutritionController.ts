@@ -49,7 +49,7 @@ class NutritionController {
             if (error) {
                 res.status(400).json({
                     success: false,
-                    error: 'Validation failed',
+                    message: 'Validation failed',
                     details: error.details[0].message,
                     timestamp: new Date().toISOString()
                 });
@@ -62,7 +62,7 @@ class NutritionController {
             if (!foodDescription.trim()) {
                 res.status(400).json({
                     success: false,
-                    error: 'Food description cannot be empty',
+                    message: 'Food description cannot be empty',
                     timestamp: new Date().toISOString()
                 });
                 return;

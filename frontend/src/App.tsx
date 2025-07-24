@@ -305,7 +305,8 @@ const App = () => {
           }
         }
       } else {
-        setAnalysisError(data.error || 'Analysis failed. Please try again.');
+        // Use data.message first (backend now standardized), then fallback to data.error for compatibility
+        setAnalysisError(data.message || data.error || 'Analysis failed. Please try again.');
       }
     } catch (error) {
       console.error('Error analyzing food:', error);
@@ -398,7 +399,8 @@ const App = () => {
           setBreadcrumbs([]);
         }
       } else {
-        throw new Error(data.error || 'Login failed');
+        // Use data.message first (backend sends this), then fallback to data.error, then generic message
+        throw new Error(data.message || data.error || 'Login failed');
       }
     } catch (error: any) {
       console.error('Login error:', error);
@@ -424,7 +426,8 @@ const App = () => {
         setIsAuthenticated(true);
         console.log('Registration successful:', data.user);
       } else {
-        throw new Error(data.error || 'Registration failed');
+        // Use data.message first (backend sends this), then fallback to data.error, then generic message
+        throw new Error(data.message || data.error || 'Registration failed');
       }
     } catch (error: any) {
       console.error('Registration error:', error);
