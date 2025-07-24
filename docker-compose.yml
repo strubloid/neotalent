@@ -1,47 +1,34 @@
 version: '3.8'
 
 services:
-  # MongoDB Database with SSH access
+  # MongoDB Database
   mongodb:
     image: mongo:7.0
     container_name: neotalent-mongodb
     restart: unless-stopped
     ports:
       - "27017:27017"
-      - "2221:22"  # SSH port for MongoDB
     environment:
       MONGO_INITDB_ROOT_USERNAME: neotalent
       MONGO_INITDB_ROOT_PASSWORD: neotalent123
       MONGO_INITDB_DATABASE: neotalent
     volumes:
       - mongodb_data:/data/db
-      - ./scripts/mongodb-setup.sh:/docker-entrypoint-initdb.d/setup-ssh.sh:ro
     networks:
       - neotalent-network
-    command: >
-      bash -c "
-        apt-get update && 
-        apt-get install -y openssh-server sudo &&
-        useradd -rm -d /home/mongouser -s /bin/bash -g root -G sudo -u 1001 mongouser &&
-        echo 'mongouser:mongopass123' | chpasswd &&
-        mkdir -p /var/run/sshd &&
-        ssh-keygen -A &&
-        service ssh start &
-        exec docker-entrypoint.sh mongod
-      "
 
-  # Backend Service with SSH access
+  # Backend Service
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.ssh
+      dockerfile: Dockerfile.dev
     container_name: neotalent-backend
     restart: unless-stopped
     ports:
       - "3001:3001"
-      - "2222:22"  # SSH port for Backend
+      - "9229:9229"
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
       PORT: 3001
       MONGODB_URI: mongodb://neotalent:neotalent123@mongodb:27017/neotalent?authSource=admin
       SESSION_SECRET: neotalent-docker-secret-key-2024
@@ -49,8 +36,10 @@ services:
       RATE_LIMIT_WINDOW_MS: 900000
       RATE_LIMIT_MAX_REQUESTS: 100
       CORS_ORIGIN: http://localhost:3000
-    env_file:
-      - .env
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - session_data:/app/sessions
     depends_on:
       - mongodb
     networks:
@@ -60,13 +49,19 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: neotalent-frontend
     restart: unless-stopped
     ports:
-      - "3000:80"
+      - "3000:3000"
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
+      REACT_APP_API_URL: http://localhost:3001
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     depends_on:
       - backend
     networks:
@@ -74,7 +69,7 @@ services:
 
 volumes:
   mongodb_data:
-    driver: local
+  session_data:
 
 networks:
   neotalent-network:

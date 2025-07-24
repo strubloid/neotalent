@@ -127,6 +127,27 @@ class AuthController {
                 req.session.username = user.username;
                 req.session.nickname = user.nickname;
                 req.session.isAuthenticated = true;
+
+                // Debug logging for session creation
+                console.log('🔐 Login successful, session created:', {
+                    sessionId: req.session.id,
+                    userId: req.session.userId,
+                    username: req.session.username,
+                    isAuthenticated: req.session.isAuthenticated
+                });
+
+                // Explicitly save the session to ensure persistence and wait for it
+                await new Promise<void>((resolve, reject) => {
+                    req.session!.save((err: any) => {
+                        if (err) {
+                            console.error('❌ Session save error:', err);
+                            reject(err);
+                        } else {
+                            console.log('✅ Session saved successfully');
+                            resolve();
+                        }
+                    });
+                });
             }
 
             res.json({
@@ -254,6 +275,15 @@ class AuthController {
      * @access  Public
      */
     async checkAuthStatus(req: AuthenticatedRequest, res: Response): Promise<void> {
+        // Debug logging for session issues
+        console.log('🔍 Auth status check:', {
+            hasSession: !!req.session,
+            sessionId: req.session?.id,
+            isAuthenticated: req.session?.isAuthenticated,
+            userId: req.session?.userId,
+            username: req.session?.username
+        });
+
         res.json({
             success: true,
             isAuthenticated: !!(req.session && req.session.isAuthenticated),
@@ -273,6 +303,12 @@ class AuthController {
      */
     async getSearchHistory(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
+            console.log('📚 Getting search history for session:', {
+                hasSession: !!req.session,
+                isAuthenticated: req.session?.isAuthenticated,
+                userId: req.session?.userId
+            });
+
             if (!req.session || !req.session.isAuthenticated || !req.session.userId) {
                 res.status(401).json({
                     success: false,
@@ -285,6 +321,7 @@ class AuthController {
             const user = await User.findById(req.session.userId).select('searchHistory');
             
             if (!user) {
+                console.log('❌ User not found in database:', req.session.userId);
                 res.status(404).json({
                     success: false,
                     message: 'User not found'
@@ -294,6 +331,12 @@ class AuthController {
 
             // Return search history from database
             const searchHistory = user.searchHistory || [];
+            
+            console.log('📚 Retrieved search history:', {
+                userId: req.session.userId,
+                historyCount: searchHistory.length,
+                history: searchHistory
+            });
             
             res.json({
                 success: true,
@@ -317,6 +360,13 @@ class AuthController {
      */
     async addSearchHistory(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
+            console.log('📝 Adding search history for session:', {
+                hasSession: !!req.session,
+                isAuthenticated: req.session?.isAuthenticated,
+                userId: req.session?.userId,
+                body: req.body
+            });
+
             if (!req.session || !req.session.isAuthenticated || !req.session.userId) {
                 res.status(401).json({
                     success: false,
@@ -335,10 +385,28 @@ class AuthController {
                 return;
             }
 
+            // Validate input lengths
+            if (query.length > 500) {
+                res.status(400).json({
+                    success: false,
+                    message: 'Search query cannot exceed 500 characters'
+                });
+                return;
+            }
+
+            if (summary.length > 1000) {
+                res.status(400).json({
+                    success: false,
+                    message: 'Search summary cannot exceed 1000 characters'
+                });
+                return;
+            }
+
             // Find user in database
             const user = await User.findById(req.session.userId);
             
             if (!user) {
+                console.log('❌ User not found in database:', req.session.userId);
                 res.status(404).json({
                     success: false,
                     message: 'User not found'
@@ -349,6 +417,16 @@ class AuthController {
             // Initialize search history if it doesn't exist
             if (!user.searchHistory) {
                 user.searchHistory = [];
+            }
+
+            // Check if search already exists (avoid duplicates)
+            const existingSearchIndex = user.searchHistory.findIndex(
+                (search: any) => search.searchId === searchId
+            );
+
+            if (existingSearchIndex !== -1) {
+                // Update existing search timestamp and move to front
+                user.searchHistory.splice(existingSearchIndex, 1);
             }
 
             // Add new search to beginning of array
@@ -366,6 +444,12 @@ class AuthController {
 
             // Save to database
             await user.save();
+
+            console.log('✅ Search history saved:', {
+                userId: req.session.userId,
+                newSearch,
+                totalHistoryCount: user.searchHistory.length
+            });
 
             res.json({
                 success: true,

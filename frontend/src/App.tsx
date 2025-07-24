@@ -16,11 +16,12 @@ const App = () => {
   const [analysisError, setAnalysisError] = useState('');
   const [nutritionResult, setNutritionResult] = useState<NutritionResult | null>(null);
 
-  // Load breadcrumbs from API
+  // Load initial data and check authentication
   useEffect(() => {
-    const loadBreadcrumbs = async () => {
+    const initializeApp = async () => {
       try {
         // Check authentication status first
+        console.log('🔍 Frontend: Checking authentication status...');
         const authResponse = await fetch('/api/auth/status', {
           method: 'GET',
           credentials: 'include',
@@ -28,11 +29,15 @@ const App = () => {
         
         if (authResponse.ok) {
           const authData = await authResponse.json();
-          if (authData.success && authData.user) {
+          console.log('🔍 Frontend: Auth response:', authData);
+          
+          if (authData.success && authData.isAuthenticated && authData.user) {
+            // User is authenticated
+            console.log('✅ Frontend: User authenticated:', authData.user);
             setUser(authData.user);
             setIsAuthenticated(true);
             
-            // Load search history for authenticated user from backend
+            // Load search history for authenticated user from database
             try {
               const historyResponse = await fetch('/api/auth/search-history', {
                 method: 'GET',
@@ -43,85 +48,58 @@ const App = () => {
                 const historyData = await historyResponse.json();
                 if (historyData.success && historyData.searchHistory) {
                   setBreadcrumbs(historyData.searchHistory);
+                } else {
+                  setBreadcrumbs([]);
                 }
+              } else {
+                console.error('Failed to load search history from database');
+                setBreadcrumbs([]);
               }
             } catch (historyError) {
               console.error('Error loading search history:', historyError);
               setBreadcrumbs([]);
             }
           } else {
-            // Not authenticated, load from sessionStorage for non-logged users
-            try {
-              const sessionHistory = sessionStorage.getItem('neotalent-search-history');
-              if (sessionHistory) {
-                const parsedHistory = JSON.parse(sessionHistory);
-                setBreadcrumbs(Array.isArray(parsedHistory) ? parsedHistory : []);
-              } else {
-                setBreadcrumbs([]);
-              }
-            } catch (error) {
-              console.error('Error loading session search history:', error);
-              setBreadcrumbs([]);
-            }
+            // User is not authenticated - load from session storage
+            console.log('❌ Frontend: User not authenticated, loading session history');
+            setUser(null);
+            setIsAuthenticated(false);
+            loadSessionHistory();
           }
         } else {
-          // Not authenticated, load from sessionStorage for non-logged users
-          try {
-            const sessionHistory = sessionStorage.getItem('neotalent-search-history');
-            if (sessionHistory) {
-              const parsedHistory = JSON.parse(sessionHistory);
-              setBreadcrumbs(Array.isArray(parsedHistory) ? parsedHistory : []);
-            } else {
-              setBreadcrumbs([]);
-            }
-          } catch (error) {
-            console.error('Error loading session search history:', error);
-            setBreadcrumbs([]);
-          }
+          // Auth check failed - treat as not authenticated
+          console.log('❌ Frontend: Auth check failed, status:', authResponse.status);
+          setUser(null);
+          setIsAuthenticated(false);
+          loadSessionHistory();
         }
       } catch (error) {
-        console.error('Error loading breadcrumbs:', error);
-        // If there's an error with auth check, try loading from sessionStorage
-        try {
-          const sessionHistory = sessionStorage.getItem('neotalent-search-history');
-          if (sessionHistory) {
-            const parsedHistory = JSON.parse(sessionHistory);
-            setBreadcrumbs(Array.isArray(parsedHistory) ? parsedHistory : []);
-          } else {
-            setBreadcrumbs([]);
-          }
-        } catch (sessionError) {
-          console.error('Error loading session search history:', sessionError);
-          setBreadcrumbs([]);
-        }
+        console.error('❌ Frontend: Error checking authentication:', error);
+        // Fallback to session storage if auth check fails
+        setUser(null);
+        setIsAuthenticated(false);
+        loadSessionHistory();
       } finally {
         setLoading(false);
       }
     };
 
-    // Check authentication status on app load
-    const checkAuthStatus = async () => {
+    const loadSessionHistory = () => {
       try {
-        const response = await fetch('/api/auth/status', {
-          method: 'GET',
-          credentials: 'include',
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success && data.user) {
-            setUser(data.user);
-            setIsAuthenticated(true);
-          }
+        const sessionHistory = sessionStorage.getItem('neotalent-search-history');
+        if (sessionHistory) {
+          const parsedHistory = JSON.parse(sessionHistory);
+          setBreadcrumbs(Array.isArray(parsedHistory) ? parsedHistory : []);
+        } else {
+          setBreadcrumbs([]);
         }
       } catch (error) {
-        console.error('Error checking auth status:', error);
-        // Not a critical error, continue without auth
+        console.error('Error loading session search history:', error);
+        setBreadcrumbs([]);
       }
     };
 
-    // Load breadcrumbs (which includes auth check and history loading)
-    loadBreadcrumbs();
+    initializeApp();
   }, []);
 
   const handleBreadcrumbClick = (searchId: string) => {
@@ -183,7 +161,7 @@ const App = () => {
   const handleClearHistory = async () => {
     if (window.confirm('Are you sure you want to clear all search history?')) {
       if (isAuthenticated) {
-        // Clear from database for authenticated users
+        // For authenticated users, clear from database
         try {
           const response = await fetch('/api/auth/search-history', {
             method: 'DELETE',
@@ -191,25 +169,33 @@ const App = () => {
           });
 
           if (response.ok) {
-            setBreadcrumbs([]);
+            const data = await response.json();
+            if (data.success) {
+              setBreadcrumbs([]);
+            } else {
+              console.error('Failed to clear search history:', data.message);
+              // Still clear local state for better UX
+              setBreadcrumbs([]);
+            }
           } else {
-            // If delete fails, still clear local state
+            console.error('Failed to clear search history from server, status:', response.status);
+            // Still clear local state for better UX
             setBreadcrumbs([]);
-            console.error('Failed to clear search history from server');
           }
         } catch (error) {
-          console.error('Error clearing search history:', error);
-          // Still clear local state
+          console.error('Error clearing search history from database:', error);
+          // Still clear local state for better UX
           setBreadcrumbs([]);
         }
       } else {
         // For non-authenticated users, clear from sessionStorage and local state
+        setBreadcrumbs([]);
         try {
-          sessionStorage.removeItem('neotalent-search-history');
+          sessionStorage.setItem('neotalent-search-history', JSON.stringify([]));
         } catch (error) {
           console.error('Error clearing session storage:', error);
+          // Continue even if sessionStorage fails
         }
-        setBreadcrumbs([]);
       }
     }
   };
@@ -289,14 +275,19 @@ const App = () => {
               const historyData = await response.json();
               if (historyData.success && historyData.searchHistory) {
                 setBreadcrumbs(historyData.searchHistory);
+              } else {
+                console.error('Invalid search history response from server');
+                // Fall back to local state update
+                setBreadcrumbs(prev => [newBreadcrumb, ...prev.slice(0, 9)]);
               }
             } else {
-              // If save fails, fall back to local storage
+              console.error('Failed to save search history to database, status:', response.status);
+              // If save fails, fall back to local state update
               setBreadcrumbs(prev => [newBreadcrumb, ...prev.slice(0, 9)]);
             }
           } catch (error) {
-            console.error('Error saving search history:', error);
-            // Fall back to local storage
+            console.error('Error saving search history to database:', error);
+            // Fall back to local state update
             setBreadcrumbs(prev => [newBreadcrumb, ...prev.slice(0, 9)]);
           }
         } else {
@@ -309,6 +300,7 @@ const App = () => {
             sessionStorage.setItem('neotalent-search-history', JSON.stringify(newBreadcrumbs));
           } catch (error) {
             console.error('Error saving to session storage:', error);
+            // Continue even if sessionStorage fails - at least we have in-memory state
           }
         }
       } else {
@@ -340,7 +332,49 @@ const App = () => {
         setIsAuthenticated(true);
         console.log('Login successful:', data.user);
         
-        // Load search history for the newly authenticated user
+        // Transfer session storage search history to database for newly authenticated user
+        try {
+          const sessionHistory = sessionStorage.getItem('neotalent-search-history');
+          let sessionSearches: BreadcrumbItem[] = [];
+          
+          if (sessionHistory) {
+            try {
+              const parsedHistory = JSON.parse(sessionHistory);
+              sessionSearches = Array.isArray(parsedHistory) ? parsedHistory : [];
+            } catch (parseError) {
+              console.error('Error parsing session history:', parseError);
+              sessionSearches = [];
+            }
+          }
+
+          // Transfer each session search to database
+          for (const search of sessionSearches) {
+            try {
+              await fetch('/api/auth/search-history', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                  searchId: search.searchId,
+                  query: search.query,
+                  summary: search.summary
+                }),
+              });
+            } catch (transferError) {
+              console.error('Error transferring search to database:', transferError);
+              // Continue with other searches even if one fails
+            }
+          }
+
+          // Clear session storage after successful transfer
+          sessionStorage.removeItem('neotalent-search-history');
+        } catch (transferError) {
+          console.error('Error during session history transfer:', transferError);
+        }
+        
+        // Load complete search history from database (including transferred items)
         try {
           const historyResponse = await fetch('/api/auth/search-history', {
             method: 'GET',
@@ -351,10 +385,16 @@ const App = () => {
             const historyData = await historyResponse.json();
             if (historyData.success && historyData.searchHistory) {
               setBreadcrumbs(historyData.searchHistory);
+            } else {
+              setBreadcrumbs([]);
             }
+          } else {
+            console.error('Failed to load search history after login');
+            setBreadcrumbs([]);
           }
         } catch (historyError) {
           console.error('Error loading search history after login:', historyError);
+          setBreadcrumbs([]);
         }
       } else {
         throw new Error(data.error || 'Login failed');
@@ -413,11 +453,13 @@ const App = () => {
     setIsAuthenticated(false);
     setBreadcrumbs([]); // Clear search history from UI
     
-    // Clear session storage for fresh anonymous session
+    // Initialize fresh anonymous session storage
     try {
       sessionStorage.removeItem('neotalent-search-history');
+      // Initialize empty array for new anonymous session
+      sessionStorage.setItem('neotalent-search-history', JSON.stringify([]));
     } catch (error) {
-      console.error('Error clearing session storage during logout:', error);
+      console.error('Error initializing session storage during logout:', error);
     }
     
     alert('Logged out successfully');

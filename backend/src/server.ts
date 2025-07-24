@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import session from 'express-session';
 import path from 'path';
+import fs from 'fs';
 import dotenv from 'dotenv';
 
 // Import TypeScript modules
@@ -68,19 +69,61 @@ class Server {
         }));
         this.app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-        // Session configuration
+        // Session configuration with file store for persistence
+        const FileStore = require('session-file-store')(session);
+        
+        // Ensure sessions directory exists
+        const sessionsPath = path.join(__dirname, '../sessions');
+        if (!fs.existsSync(sessionsPath)) {
+            fs.mkdirSync(sessionsPath, { recursive: true });
+            console.log('📁 Created sessions directory:', sessionsPath);
+        }
+        
         this.app.use(session({
             secret: process.env.SESSION_SECRET || 'neotalent-dev-secret-key-change-in-production',
             resave: false,
-            saveUninitialized: false,
+            saveUninitialized: true, // Changed to true to save all sessions
             name: 'neotalent.sid',
+            store: new FileStore({
+                path: sessionsPath,
+                retries: 3,
+                ttl: 24 * 60 * 60, // 24 hours in seconds
+                reapInterval: 3600, // Cleanup expired sessions every hour
+                logFn: console.log // Enable logging for debugging
+            }),
             cookie: {
-                secure: this.environment === 'production',
+                secure: false, // Set to false for development (HTTP)
                 httpOnly: true,
                 maxAge: 24 * 60 * 60 * 1000, // 24 hours
-                sameSite: this.environment === 'production' ? 'strict' : 'lax'
-            }
+                sameSite: 'lax' // Changed to lax for development
+            },
+            // Add some debugging for session issues
+            ...(this.environment === 'development' && {
+                genid: () => {
+                    const id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                    console.log('🔑 Generated session ID:', id);
+                    return id;
+                }
+            })
         }));
+
+        // Session debugging middleware (development only)
+        if (this.environment === 'development') {
+            this.app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+                const session = req.session as any;
+                console.log('🔍 Session Debug:', {
+                    url: req.url,
+                    method: req.method,
+                    sessionId: session?.id,
+                    hasSession: !!session,
+                    isAuthenticated: session?.isAuthenticated,
+                    userId: session?.userId,
+                    username: session?.username,
+                    cookie: session?.cookie
+                });
+                next();
+            });
+        }
 
         // Session validation - TEMPORARILY DISABLED
         // this.app.use('/api', SecurityMiddleware.validateSession());
