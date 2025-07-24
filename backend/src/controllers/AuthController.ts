@@ -1,11 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../models/User';
 import { SessionHelper } from '../services/SessionHelper';
-
-// Simplified AuthController without bcrypt dependency
-interface AuthenticatedRequest extends Request {
-    session: any; // Simplified session type
-}
+import { AuthenticatedRequest } from '../interfaces';
 
 /**
  * Authentication Controller (Simplified without bcrypt)

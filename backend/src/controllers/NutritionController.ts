@@ -2,28 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { validateNutritionRequest } from '../utils/validationSchemas';
 import { sanitizeInput } from '../utils/inputSanitizer';
 import { OpenAIService } from '../services/OpenAIService';
-
-/**
- * Nutrition Data Interface
- */
-interface NutritionData {
-    calories: number;
-    protein: number;
-    carbs: number;
-    fat: number;
-    fiber?: number;
-    sugar?: number;
-    sodium?: number;
-    confidence: number;
-    foodItems: Array<{
-        name: string;
-        quantity: string;
-        calories: number;
-        protein: number;
-        carbs: number;
-        fat: number;
-    }>;
-}
+import { NutritionData } from '../interfaces';
 
 /**
  * Nutrition Analysis Controller

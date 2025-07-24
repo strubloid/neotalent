@@ -1,5 +1,6 @@
 import mongoose, { Document, Schema, Model } from 'mongoose';
 import crypto from 'crypto';
+import { IUser, IUserModel, ISearchHistoryItem } from '../interfaces';
 
 /**
  * Password hashing utility using Node.js crypto (Docker-friendly)
@@ -21,37 +22,6 @@ const verifyPassword = (password: string, hashedPassword: string): boolean => {
         return false;
     }
 };
-
-/**
- * Search History Item Interface
- */
-export interface ISearchHistoryItem {
-    searchId: string;
-    query: string;
-    summary: string;
-    timestamp: Date;
-}
-
-/**
- * User Interface
- * Requirements: username, password, nickname only
- */
-export interface IUser extends Document {
-    username: string;
-    password: string;
-    nickname: string;
-    searchHistory?: ISearchHistoryItem[];
-    comparePassword(candidatePassword: string): Promise<boolean>;
-    createdAt: Date;
-    updatedAt: Date;
-}
-
-/**
- * User Model Interface (includes static methods)
- */
-export interface IUserModel extends Model<IUser> {
-    findByUsername(username: string): Promise<IUser | null>;
-}
 
 /**
  * User Schema

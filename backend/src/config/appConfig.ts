@@ -2,58 +2,15 @@
  * Application Configuration
  */
 
-interface ServerConfig {
-    port: number;
-    environment: string;
-    host: string;
-}
-
-interface SecurityConfig {
-    sessionSecret: string;
-    rateLimitWindowMs: number;
-    rateLimitMaxRequests: number;
-    corsOrigin: string;
-}
-
-interface OpenAIConfig {
-    apiKey: string;
-    model: string;
-    maxTokens: number;
-    temperature: number;
-}
-
-interface ServicesConfig {
-    openai: OpenAIConfig;
-}
-
-interface DatabaseConfig {
-    mongodb: {
-        uri: string;
-        options: {
-            maxPoolSize: number;
-            serverSelectionTimeoutMS: number;
-            socketTimeoutMS: number;
-        };
-    };
-}
-
-interface AppSettings {
-    maxSearchHistoryPerSession: number;
-    maxFoodInputLength: number;
-    sessionCookieMaxAge: number;
-    frontendPath: string;
-}
-
-interface EnvironmentConfig {
-    logging: boolean;
-    cors: {
-        origin: string | string[];
-        credentials: boolean;
-    };
-    helmet: {
-        contentSecurityPolicy?: boolean | object;
-    };
-}
+import { 
+    ServerConfig, 
+    SecurityConfig, 
+    OpenAIConfig, 
+    ServicesConfig, 
+    DatabaseConfig, 
+    AppSettings, 
+    EnvironmentConfig 
+} from '../interfaces';
 
 class AppConfig {
     public server: ServerConfig;
@@ -113,25 +70,27 @@ class AppConfig {
      * Validate required configuration
      */
     public validateConfig(): void {
-        interface ConfigCheck {
-            key: string;
-            value: string;
-            message: string;
-        }
+        // Only validate in production mode
+        if (this.server.environment === 'production') {
+            const requiredConfigs = [
+                { 
+                    key: 'OPENAI_API_KEY', 
+                    value: this.services.openai.apiKey, 
+                    message: 'OpenAI API key is required in production' 
+                }
+            ];
 
-        const requiredConfigs: ConfigCheck[] = [
-            { 
-                key: 'OPENAI_API_KEY', 
-                value: this.services.openai.apiKey, 
-                message: 'OpenAI API key is required' 
+            const missingConfigs = requiredConfigs.filter(config => !config.value);
+            
+            if (missingConfigs.length > 0) {
+                const messages = missingConfigs.map(config => config.message);
+                throw new Error(`Missing required configuration: ${messages.join(', ')}`);
             }
-        ];
-
-        const missingConfigs = requiredConfigs.filter(config => !config.value);
+        }
         
-        if (missingConfigs.length > 0) {
-            const messages = missingConfigs.map(config => config.message);
-            throw new Error(`Missing required configuration: ${messages.join(', ')}`);
+        // In development, just warn about missing configs
+        if (this.server.environment === 'development' && !this.services.openai.apiKey) {
+            console.log('💡 Tip: Add OPENAI_API_KEY to .env file to enable nutrition analysis features');
         }
     }
 

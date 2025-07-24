@@ -1,15 +1,8 @@
+import { SanitizeNumberOptions } from '../interfaces';
+
 /**
  * Input sanitization utilities
  */
-
-/**
- * Number sanitization options interface
- */
-interface SanitizeNumberOptions {
-    min?: number;
-    max?: number;
-    defaultValue?: number | null;
-}
 
 /**
  * Sanitize user input to prevent injection attacks

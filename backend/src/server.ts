@@ -1,6 +1,19 @@
-import express from 'express';
 import path from 'path';
 import dotenv from 'dotenv';
+
+// IMPORTANT: Load environment variables FIRST, before any other imports
+// This ensures all modules have access to environment variables during initialization
+const backendRoot = path.resolve(__dirname, '..');  // Always resolve to backend folder
+const envFile = path.join(backendRoot, '.env');
+
+console.log(`🔧 Loading environment from: ${envFile}`);
+dotenv.config({ path: envFile });
+
+// Also try parent directory as fallback for root .env
+dotenv.config({ path: path.join(backendRoot, '../.env') });
+
+// Now import everything else AFTER environment is loaded
+import express from 'express';
 
 // Import TypeScript modules
 import appConfig from './config/appConfig';
@@ -8,10 +21,6 @@ import databaseManager from './config/database';
 import { MiddlewareConfig } from './config/MiddlewareConfig';
 import ErrorHandler from './middleware/ErrorHandler';
 import apiRoutes from './routes/apiRoutes';
-
-// Load environment variables from backend directory first, then parent directory
-dotenv.config({ path: path.join(__dirname, '../.env') });
-dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 /**
  * NeoTalent Calorie Tracker Backend Server

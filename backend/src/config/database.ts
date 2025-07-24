@@ -1,15 +1,8 @@
 import mongoose from 'mongoose';
 import appConfig from './appConfig';
+import { ConnectionStatus } from '../interfaces';
 
 console.log('🔍 Database: Loading configuration...');
-
-interface ConnectionStatus {
-    isConnected: boolean;
-    readyState: string;
-    host?: string;
-    port?: number;
-    name?: string;
-}
 
 /**
  * Database Connection Manager
