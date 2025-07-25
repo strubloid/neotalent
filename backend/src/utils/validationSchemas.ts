@@ -55,6 +55,7 @@ const authSchemas = {
  */
 const nutritionRequestSchema = Joi.object({
     food: Joi.string()
+        .trim()
         .min(1)
         .max(appConfig.app.maxFoodInputLength || 500)
         .required()

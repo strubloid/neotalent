@@ -71,7 +71,7 @@ describe('OpenAIService', () => {
 
       expect(result).toEqual({
         success: false,
-        message: 'OpenAI connection failed: API Error',
+        message: 'API Error',
         configured: true
       });
     });
@@ -87,18 +87,17 @@ describe('OpenAIService', () => {
         choices: [{
           message: {
             content: JSON.stringify({
-              searchId: 'test-123',
-              query: 'apple pie',
-              totalCalories: 320,
-              totalProtein: 4,
-              totalCarbs: 58,
-              totalFat: 12,
-              totalFiber: 3,
-              totalSugar: 35,
-              totalSodium: 150,
-              breakdown: [
+              calories: 320,
+              protein: 4,
+              carbs: 58,
+              fat: 12,
+              fiber: 3,
+              sugar: 35,
+              sodium: 150,
+              confidence: 0.9,
+              foodItems: [
                 {
-                  food: 'Apple pie',
+                  name: 'Apple pie',
                   quantity: '1 slice',
                   calories: 320,
                   protein: 4,
@@ -108,8 +107,7 @@ describe('OpenAIService', () => {
                   sugar: 35,
                   sodium: 150
                 }
-              ],
-              summary: 'A slice of homemade apple pie with cinnamon and sugar'
+              ]
             })
           }
         }]
@@ -120,15 +118,21 @@ describe('OpenAIService', () => {
       const result = await openAIService.analyzeNutrition('apple pie');
 
       expect(result).toMatchObject({
-        searchId: 'test-123',
-        query: 'apple pie',
-        totalCalories: 320,
-        totalProtein: 4,
-        totalCarbs: 58,
-        totalFat: 12
+        calories: 320,
+        protein: 4,
+        carbs: 58,
+        fat: 12,
+        fiber: 3,
+        sugar: 35,
+        sodium: 150,
+        confidence: 0.9
       });
-      expect(result).toHaveProperty('timestamp');
-      expect(result.breakdown).toHaveLength(1);
+      expect(result.foodItems).toHaveLength(1);
+      expect(result.foodItems[0]).toMatchObject({
+        name: 'Apple pie',
+        quantity: '1 slice',
+        calories: 320
+      });
     });
 
     it('should handle invalid JSON response from OpenAI', async () => {

@@ -74,9 +74,9 @@ describe('API Routes', () => {
       expect(response.status).not.toBe(404);
     });
 
-    it('should have GET /api/auth/profile route', async () => {
+    it('should have GET /api/auth/me route', async () => {
       const response = await request(app)
-        .get('/api/auth/profile');
+        .get('/api/auth/me');
 
       // Should not return 404 (route exists)
       expect(response.status).not.toBe(404);

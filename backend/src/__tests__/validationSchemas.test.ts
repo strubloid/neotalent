@@ -41,7 +41,7 @@ describe('validationSchemas', () => {
       const result = validateNutritionRequest(invalidRequest);
       
       expect(result.error).toBeDefined();
-      expect(result.error?.details[0].message).toContain('food');
+      expect(result.error?.details[0].message).toContain('Food input is required');
     });
 
     it('should reject non-string food value', () => {
@@ -63,7 +63,7 @@ describe('validationSchemas', () => {
       const result = validateNutritionRequest(invalidRequest);
       
       expect(result.error).toBeDefined();
-      expect(result.error?.details[0].message).toContain('length');
+      expect(result.error?.details[0].message).toContain('Food input must be less than');
     });
 
     it('should accept food with normal length', () => {
@@ -107,10 +107,8 @@ describe('validationSchemas', () => {
 
       const result = validateNutritionRequest(requestWithExtra);
       
-      expect(result.error).toBeUndefined();
-      expect(result.value.food).toBe('apple pie');
-      // Extra properties should not be in the validated result
-      expect(result.value).not.toHaveProperty('extraProperty');
+      expect(result.error).toBeDefined();
+      expect(result.error?.details[0].message).toContain('not allowed');
     });
   });
 });

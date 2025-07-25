@@ -169,7 +169,7 @@ describe('NutritionController', () => {
 
       expect(response.body).toMatchObject({
         success: false,
-        message: 'Food description cannot be empty'
+        message: 'Food input is required'
       });
     });
 
