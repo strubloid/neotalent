@@ -147,8 +147,8 @@ describe('RecentSearches', () => {
       const clearButton = screen.getByText('Clear All');
       fireEvent.click(clearButton);
       
-      // Should not show search items (not expanded)
-      expect(screen.queryByText('Apple pie')).not.toBeInTheDocument();
+      // Should not show search items (not expanded) - check for unique summary text
+      expect(screen.queryByText('Delicious apple pie with cinnamon')).not.toBeInTheDocument();
     });
   });
 

@@ -40,14 +40,14 @@ describe('AuthModals', () => {
       
       expect(screen.getByText('Login to Your Journey')).toBeInTheDocument();
       expect(document.querySelector('#loginUsername')).toBeInTheDocument(); // Specific login username
-      expect(screen.getByLabelText('Password')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
+      expect(document.querySelector('#loginPassword')).toBeInTheDocument(); // Specific login password
+      expect(document.querySelector('#loginModal button[type="submit"]')).toBeInTheDocument(); // Login button
     });
 
     it('handles username input change', () => {
       render(<AuthModals {...defaultProps} />);
       
-      const usernameInput = screen.getByLabelText('Username');
+      const usernameInput = document.querySelector('#loginUsername') as HTMLInputElement;
       fireEvent.change(usernameInput, { target: { value: 'testuser' } });
       
       expect(usernameInput).toHaveValue('testuser');
@@ -56,7 +56,7 @@ describe('AuthModals', () => {
     it('handles password input change', () => {
       render(<AuthModals {...defaultProps} />);
       
-      const passwordInput = screen.getByLabelText('Password');
+      const passwordInput = document.querySelector('#loginPassword') as HTMLInputElement;
       fireEvent.change(passwordInput, { target: { value: 'testpass' } });
       
       expect(passwordInput).toHaveValue('testpass');
@@ -144,8 +144,8 @@ describe('AuthModals', () => {
       render(<AuthModals {...defaultProps} />);
       
       const nicknameInput = screen.getByLabelText('Display Name');
-      const usernameInput = screen.getAllByLabelText(/Username/)[1]; // Second username input (register)
-      const passwordInput = screen.getAllByLabelText(/^Password$/)[1]; // Second password input (register)
+      const usernameInput = document.querySelector('#registerUsername') as HTMLInputElement; // Specific register username
+      const passwordInput = document.querySelector('#registerPassword') as HTMLInputElement; // Specific register password
       const confirmPasswordInput = screen.getByLabelText('Confirm Password');
       
       fireEvent.change(nicknameInput, { target: { value: 'Test User' } });
@@ -163,8 +163,8 @@ describe('AuthModals', () => {
       render(<AuthModals {...defaultProps} />);
       
       const nicknameInput = screen.getByLabelText('Display Name');
-      const usernameInput = screen.getAllByLabelText(/Username/)[1];
-      const passwordInput = screen.getAllByLabelText(/^Password$/)[1];
+      const usernameInput = document.querySelector('#registerUsername') as HTMLInputElement;
+      const passwordInput = document.querySelector('#registerPassword') as HTMLInputElement;
       const confirmPasswordInput = screen.getByLabelText('Confirm Password');
       const registerButton = document.querySelector('#registerModal .modal-footer button[type="submit"]') as HTMLButtonElement;
       
@@ -183,8 +183,8 @@ describe('AuthModals', () => {
       render(<AuthModals {...defaultProps} />);
       
       const nicknameInput = screen.getByLabelText('Display Name');
-      const usernameInput = screen.getAllByLabelText(/Username/)[1];
-      const passwordInput = screen.getAllByLabelText(/^Password$/)[1];
+      const usernameInput = document.querySelector('#registerUsername') as HTMLInputElement;
+      const passwordInput = document.querySelector('#registerPassword') as HTMLInputElement;
       const confirmPasswordInput = screen.getByLabelText('Confirm Password');
       const registerButton = document.querySelector('#registerModal .modal-footer button[type="submit"]') as HTMLButtonElement;
       

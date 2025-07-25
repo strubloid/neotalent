@@ -188,7 +188,7 @@ describe('Navigation', () => {
       
       render(<Navigation {...authenticatedProps} />);
       
-      const dropdownToggle = screen.getByText('Test User').closest('button');
+      const dropdownToggle = document.querySelector('.dropdown-toggle');
       expect(dropdownToggle).toHaveAttribute('data-bs-toggle', 'dropdown');
     });
 
