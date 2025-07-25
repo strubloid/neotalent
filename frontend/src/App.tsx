@@ -145,7 +145,7 @@ class App extends Component<{}, AppState> {
 
   loadSessionHistory = () => {
     try {
-      const sessionHistory = sessionStorage.getItem('neotalent-search-history');
+      const sessionHistory = sessionStorage.getItem('calorie-tracker-search-history');
       if (sessionHistory) {
         const parsedHistory = JSON.parse(sessionHistory);
         this.setState({ breadcrumbs: Array.isArray(parsedHistory) ? parsedHistory : [] });
@@ -253,7 +253,7 @@ class App extends Component<{}, AppState> {
         // For non-authenticated users, clear from sessionStorage and local state
         this.setState({ breadcrumbs: [] });
         try {
-          sessionStorage.setItem('neotalent-search-history', JSON.stringify([]));
+          sessionStorage.setItem('calorie-tracker-search-history', JSON.stringify([]));
         } catch (error) {
           console.error('Error clearing session storage:', error);
           // Continue even if sessionStorage fails
@@ -367,7 +367,7 @@ class App extends Component<{}, AppState> {
           
           // Save to sessionStorage for persistence during browser session
           try {
-            sessionStorage.setItem('neotalent-search-history', JSON.stringify(newBreadcrumbs));
+            sessionStorage.setItem('calorie-tracker-search-history', JSON.stringify(newBreadcrumbs));
           } catch (error) {
             console.error('Error saving to session storage:', error);
             // Continue even if sessionStorage fails - at least we have in-memory state
@@ -412,7 +412,7 @@ class App extends Component<{}, AppState> {
         
         // Transfer session storage search history to database for newly authenticated user
         try {
-          const sessionHistory = sessionStorage.getItem('neotalent-search-history');
+          const sessionHistory = sessionStorage.getItem('calorie-tracker-search-history');
           let sessionSearches: BreadcrumbItem[] = [];
           
           if (sessionHistory) {
@@ -447,7 +447,7 @@ class App extends Component<{}, AppState> {
           }
 
           // Clear session storage after successful transfer
-          sessionStorage.removeItem('neotalent-search-history');
+          sessionStorage.removeItem('calorie-tracker-search-history');
         } catch (transferError) {
           console.error('Error during session history transfer:', transferError);
         }
@@ -547,9 +547,9 @@ class App extends Component<{}, AppState> {
     
     // Initialize fresh anonymous session storage
     try {
-      sessionStorage.removeItem('neotalent-search-history');
+      sessionStorage.removeItem('calorie-tracker-search-history');
       // Initialize empty array for new anonymous session
-      sessionStorage.setItem('neotalent-search-history', JSON.stringify([]));
+      sessionStorage.setItem('calorie-tracker-search-history', JSON.stringify([]));
     } catch (error) {
       console.error('Error initializing session storage during logout:', error);
     }

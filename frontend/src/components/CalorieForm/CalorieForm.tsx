@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { CalorieFormProps } from '../interfaces';
+import { CalorieFormProps } from '../../interfaces';
 
 interface CalorieFormState {
   foodText: string;

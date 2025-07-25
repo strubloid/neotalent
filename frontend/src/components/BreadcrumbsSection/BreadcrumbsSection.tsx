@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BreadcrumbItem, BreadcrumbsSectionProps } from '../interfaces';
+import { BreadcrumbItem, BreadcrumbsSectionProps } from '../../interfaces';
 
 interface BreadcrumbsSectionState {
   currentIndex: number;

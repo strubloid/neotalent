@@ -4,25 +4,25 @@ services:
   # MongoDB Database
   mongodb:
     image: mongo:7.0
-    container_name: neotalent-mongodb
+    container_name: calorie-tracker-mongodb
     restart: unless-stopped
     ports:
       - "27017:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: neotalent
-      MONGO_INITDB_ROOT_PASSWORD: neotalent123
-      MONGO_INITDB_DATABASE: neotalent
+      MONGO_INITDB_ROOT_USERNAME: calorietracker
+      MONGO_INITDB_ROOT_PASSWORD: tracker123
+      MONGO_INITDB_DATABASE: calorietracker
     volumes:
       - mongodb_data:/data/db
     networks:
-      - neotalent-network
+      - calorie-tracker-network
 
   # Backend Service
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
-    container_name: neotalent-backend
+    container_name: calorie-tracker-backend
     restart: unless-stopped
     ports:
       - "3001:3001"
@@ -30,8 +30,8 @@ services:
     environment:
       NODE_ENV: development
       PORT: 3001
-      MONGODB_URI: mongodb://neotalent:neotalent123@mongodb:27017/neotalent?authSource=admin
-      SESSION_SECRET: neotalent-docker-secret-key-2024
+      MONGODB_URI: mongodb://calorietracker:tracker123@mongodb:27017/calorietracker?authSource=admin
+      SESSION_SECRET: calorie-tracker-docker-secret-key-2024
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       RATE_LIMIT_WINDOW_MS: 900000
       RATE_LIMIT_MAX_REQUESTS: 100
@@ -43,14 +43,14 @@ services:
     depends_on:
       - mongodb
     networks:
-      - neotalent-network
+      - calorie-tracker-network
 
   # Frontend Service
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
-    container_name: neotalent-frontend
+    container_name: calorie-tracker-frontend
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -65,12 +65,12 @@ services:
     depends_on:
       - backend
     networks:
-      - neotalent-network
+      - calorie-tracker-network
 
 volumes:
   mongodb_data:
   session_data:
 
 networks:
-  neotalent-network:
+  calorie-tracker-network:
     driver: bridge

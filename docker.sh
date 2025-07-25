@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# NeoTalent Docker Compose Management Script
+# AI Calorie Tracker Docker Compose Management Script
 
 case "$1" in
     "dev")
@@ -38,7 +38,7 @@ case "$1" in
         sudo docker-compose -f docker-compose.dev.yml up frontend --build
         ;;
     *)
-        echo "NeoTalent Docker Compose Manager"
+        echo "AI Calorie Tracker Docker Compose Manager"
         echo "Usage: $0 {dev|prod|down|logs|clean|backend|frontend}"
         echo ""
         echo "Commands:"

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { BreadcrumbItem, NutritionResult, RecentSearchesProps } from '../interfaces';
-import ResultsCard from './ResultsCard';
+import { BreadcrumbItem, NutritionResult, RecentSearchesProps } from '../../interfaces';
+import ResultsCard from '../ResultsCard';
 
 interface RecentSearchesState {
   isExpanded: boolean;

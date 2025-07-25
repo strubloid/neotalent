@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { NutritionResult, ResultsCardProps } from '../interfaces';
+import { NutritionResult, ResultsCardProps } from '../../interfaces';
 
 interface ResultsCardState {
   isExpanded: boolean;

@@ -34,7 +34,7 @@ router.get('/health', (req: Request, res: Response) => {
 router.get('/info', (req: Request, res: Response) => {
     res.json({
         success: true,
-        name: 'NeoTalent Calorie Tracker API',
+        name: 'AI Calorie Tracker API',
         version: process.env.npm_package_version || '1.0.0',
         description: 'API for analyzing food nutrition using AI',
         endpoints: {

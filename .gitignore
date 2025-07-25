@@ -15,6 +15,7 @@ pids
 coverage/
 backend/coverage/
 frontend/coverage/
+backend/sessions/
 
 # Dependency directories
 node_modules/

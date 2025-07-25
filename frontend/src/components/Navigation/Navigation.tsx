@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { User, NavigationProps } from '../interfaces';
+import { User, NavigationProps } from '../../interfaces';
 
 class Navigation extends Component<NavigationProps> {
   override render() {
