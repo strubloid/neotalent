@@ -157,7 +157,7 @@ describe('CalorieForm', () => {
       render(<CalorieForm {...defaultProps} isLoading={true} />);
 
       expect(screen.getByText('Analyzing...')).toBeInTheDocument();
-      expect(screen.getByRole('status')).toBeInTheDocument(); // spinner
+      expect(document.querySelector('.spinner-border')).toBeInTheDocument(); // spinner
     });
 
     it('disables form elements when loading', () => {

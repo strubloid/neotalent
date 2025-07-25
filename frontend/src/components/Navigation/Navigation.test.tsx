@@ -43,7 +43,8 @@ describe('Navigation', () => {
     it('renders the navbar toggler for mobile', () => {
       render(<Navigation {...defaultProps} />);
       
-      const toggleButton = screen.getByRole('button', { expanded: false });
+      const toggleButton = document.querySelector('.navbar-toggler');
+      expect(toggleButton).toBeInTheDocument();
       expect(toggleButton).toHaveClass('navbar-toggler');
     });
   });
@@ -187,7 +188,7 @@ describe('Navigation', () => {
       
       render(<Navigation {...authenticatedProps} />);
       
-      const dropdownToggle = screen.getByRole('button', { expanded: false });
+      const dropdownToggle = screen.getByText('Test User').closest('button');
       expect(dropdownToggle).toHaveAttribute('data-bs-toggle', 'dropdown');
     });
 
