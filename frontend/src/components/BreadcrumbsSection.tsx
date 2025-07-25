@@ -320,24 +320,6 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
                         <i className="bi bi-chevron-right"></i>
                       </button>
                     </div>
-
-                    {/* Navigation Info */}
-                    {breadcrumbs.length > 3 && (
-                      <div className="text-center mt-4">
-                        <div className="d-inline-flex align-items-center px-4 py-2" style={{
-                          backgroundColor: 'white',
-                          border: '1px solid #e9ecef',
-                          borderLeft: '4px solid #198754',
-                          fontSize: '0.85rem',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-                        }}>
-                          <i className="bi bi-info-circle me-2 text-success"></i>
-                          <span className="text-muted">
-                            Showing <strong className="text-success">{currentIndex + 1}-{Math.min(currentIndex + 3, breadcrumbs.length)}</strong> of <strong className="text-success">{breadcrumbs.length}</strong> searches
-                          </span>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
