@@ -23,7 +23,7 @@ import ErrorHandler from './middleware/ErrorHandler';
 import apiRoutes from './routes/apiRoutes';
 
 /**
- * NeoTalent Calorie Tracker Backend Server
+ * AI Calorie Tracker Backend Server
  */
 class Server {
     private app: express.Application;
@@ -85,7 +85,7 @@ class Server {
 
             // Start server
             const server = this.app.listen(this.port, () => {
-                console.log(`🚀 NeoTalent Backend Server started`);
+                console.log(`🚀 AI Calorie Tracker Backend Server started`);
                 console.log(`📍 Environment: ${this.environment}`);
                 console.log(`🌐 Server running on port ${this.port}`);
                 console.log(`🔗 API available at: http://localhost:${this.port}/api`);

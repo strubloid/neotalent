@@ -1,8 +1,8 @@
-# 🧪 NeoTalent Testing System
+# 🧪 AI Calorie Tracker Testing System
 
 ## Overview
 
-The NeoTalent project now features a centralized testing system that provides a single entry point for all testing needs.
+The AI Calorie Tracker project now features a centralized testing system that provides a single entry point for all testing needs.
 
 ## File Structure
 

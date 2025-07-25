@@ -1,5 +1,5 @@
 {
-  "name": "neotalent-calorie-tracker",
+  "name": "ai-calorie-tracker",
   "version": "1.0.0",
   "description": "AI-powered calorie estimation web application",
   "main": "backend/dist/server.js",
@@ -50,7 +50,7 @@
     "nutrition",
     "health"
   ],
-  "author": "NeoTalent",
+  "author": "Strubloid",
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",

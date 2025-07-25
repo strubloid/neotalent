@@ -106,10 +106,10 @@ export class MiddlewareConfig {
         }
         
         app.use(session({
-            secret: process.env.SESSION_SECRET || 'neotalent-dev-secret-key-change-in-production',
+            secret: process.env.SESSION_SECRET || 'calorie-tracker-dev-secret-key-change-in-production',
             resave: false,
             saveUninitialized: true,
-            name: 'neotalent.sid',
+            name: 'calorie-tracker.sid',
             store: new FileStore({
                 path: sessionsPath,
                 retries: 3,

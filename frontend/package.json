@@ -1,7 +1,7 @@
 {
-  "name": "neotalent-frontend",
+  "name": "ai-calorie-tracker-frontend",
   "version": "1.0.0",
-  "description": "NeoTalent Calorie Tracker Frontend",
+  "description": "AI Calorie Tracker Frontend",
   "main": "src/main.tsx",
   "scripts": {
     "start": "react-scripts start",
@@ -20,7 +20,7 @@
     "react",
     "typescript"
   ],
-  "author": "NeoTalent Team",
+  "author": "Strubloid",
   "license": "MIT",
   "dependencies": {
     "bootstrap": "^5.3.2",

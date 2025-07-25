@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 🔧 NeoTalent Environment Setup Script
+# 🔧 AI Calorie Tracker Environment Setup Script
 # This script generates .env files from their respective .env.example templates
 
 set -e  # Exit on any error
@@ -73,12 +73,12 @@ check_openai_key() {
 
 # Main setup function
 main() {
-    print_header "NeoTalent Environment Setup"
+    print_header "AI Calorie Tracker Environment Setup"
     echo ""
     
     # Check if we're in the right directory
     if [[ ! -f "package.json" ]] || [[ ! -d "backend" ]] || [[ ! -d "frontend" ]]; then
-        print_error "This script must be run from the NeoTalent project root directory!"
+        print_error "This script must be run from the AI Calorie Tracker project root directory!"
         exit 1
     fi
     
@@ -145,7 +145,7 @@ main() {
 
 # Show help
 show_help() {
-    echo "NeoTalent Environment Setup Script"
+    echo "AI Calorie Tracker Environment Setup Script"
     echo ""
     echo "Usage: $0 [OPTIONS]"
     echo ""

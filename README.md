@@ -1,4 +1,4 @@
-# 🥗 NeoTalent Calorie Tracker
+# 🥗 AI Calorie Tracker
 
 > **AI-powered nutrition analysis that transforms food descriptions into detailed calorie and nutritional insights**
 
@@ -19,7 +19,7 @@ A modern web application that uses OpenAI's GPT to analyze food descriptions and
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd neotalent
+cd ai-calorie-tracker
 
 # Set up environment files (includes OpenAI API key setup)
 npm run setup
@@ -155,7 +155,7 @@ The `./env.sh` script automates environment file creation:
 ## 🏗️ Project Structure
 
 ```
-neotalent/
+ai-calorie-tracker/
 ├── frontend/           # React TypeScript application
 │   ├── src/components/    # UI components (Auth, Forms, Results)
 │   ├── src/interfaces/    # TypeScript type definitions

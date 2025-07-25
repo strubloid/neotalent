@@ -1,7 +1,7 @@
 {
-  "name": "neotalent-backend",
+  "name": "ai-calorie-tracker-backend",
   "version": "1.0.0",
-  "description": "NeoTalent Calorie Tracker Backend API",
+  "description": "AI Calorie Tracker Backend API",
   "main": "dist/server.js",
   "scripts": {
     "start": "node dist/server.js",
@@ -23,7 +23,7 @@
     "openai",
     "typescript"
   ],
-  "author": "NeoTalent Team",
+  "author": "Strubloid",
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",

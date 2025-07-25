@@ -1,4 +1,4 @@
-# NeoTalent Test Configuration
+# AI Calorie Tracker Test Configuration
 
 ## Test Structure
 
