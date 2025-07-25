@@ -33,6 +33,18 @@ class ResultsCard extends Component<ResultsCardProps, ResultsCardState> {
       actionButtons.remove();
     }
 
+    // Remove the "Analyzed Food" section (duplicate of header)
+    const analyzedFoodSection = contentClone.querySelector('.bg-light.rounded');
+    if (analyzedFoodSection) {
+      analyzedFoodSection.remove();
+    }
+
+    // Remove the entire Analysis Info section
+    const analysisInfoCard = contentClone.querySelector('.col-md-4:last-child');
+    if (analysisInfoCard) {
+      analysisInfoCard.remove();
+    }
+
     // Store original body content
     const originalContent = document.body.innerHTML;
     const originalTitle = document.title;
@@ -41,26 +53,33 @@ class ResultsCard extends Component<ResultsCardProps, ResultsCardState> {
     const printStyles = `
       <style>
         @media print {
+          * {
+            box-sizing: border-box;
+          }
           body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.2;
             color: #000 !important;
             background: white !important;
-            margin: 15px;
-            font-size: 12px;
+            margin: 10px;
+            font-size: 11px;
+            padding: 0;
           }
           .card {
-            border: 1px solid #ccc !important;
+            border: 1px solid #ddd !important;
             box-shadow: none !important;
-            margin-bottom: 10px !important;
-            page-break-inside: avoid;
+            margin-bottom: 6px !important;
+            border-radius: 6px !important;
           }
           .card-body {
-            padding: 10px !important;
+            padding: 8px !important;
           }
           .card-header {
-            padding: 8px 10px !important;
-            font-size: 11px !important;
+            padding: 6px 8px !important;
+            font-size: 10px !important;
+            font-weight: 600 !important;
+            background-color: #f8f9fa !important;
+            border-bottom: 1px solid #dee2e6 !important;
           }
           .bg-success {
             background-color: #28a745 !important;
@@ -70,68 +89,103 @@ class ResultsCard extends Component<ResultsCardProps, ResultsCardState> {
           .text-danger { color: #dc3545 !important; }
           .text-warning { color: #ffc107 !important; }
           .text-info { color: #17a2b8 !important; }
+          .text-dark { color: #343a40 !important; }
+          .text-muted { color: #6c757d !important; }
           .table { 
             border-collapse: collapse; 
-            font-size: 10px !important;
+            font-size: 9px !important;
+            width: 100% !important;
+            margin: 0 !important;
           }
           .table td, .table th { 
             border: 1px solid #dee2e6 !important; 
-            padding: 4px !important;
+            padding: 3px 4px !important;
+            vertical-align: middle !important;
+          }
+          .table thead th {
+            background-color: #f8f9fa !important;
+            font-weight: 600 !important;
           }
           .badge { 
             background-color: #28a745 !important; 
             color: white !important;
-            padding: 2px 6px;
+            padding: 1px 4px;
             border-radius: 3px;
-            font-size: 9px !important;
+            font-size: 8px !important;
+            font-weight: 500 !important;
           }
-          h1 { font-size: 18px !important; margin: 5px 0 !important; }
-          h2 { font-size: 16px !important; margin: 3px 0 !important; }
-          h3 { font-size: 14px !important; margin: 3px 0 !important; }
-          h4 { font-size: 13px !important; margin: 2px 0 !important; }
-          h5 { font-size: 12px !important; margin: 2px 0 !important; }
-          h6 { font-size: 11px !important; margin: 2px 0 !important; }
-          .display-4 { font-size: 24px !important; }
-          .fs-2 { font-size: 16px !important; }
-          .row { margin: 5px 0 !important; }
+          h1 { font-size: 16px !important; margin: 3px 0 !important; font-weight: 700 !important; }
+          h2 { font-size: 14px !important; margin: 2px 0 !important; font-weight: 600 !important; }
+          h4 { font-size: 11px !important; margin: 1px 0 !important; font-weight: 600 !important; }
+          h5 { font-size: 10px !important; margin: 1px 0 !important; font-weight: 600 !important; }
+          h6 { font-size: 9px !important; margin: 1px 0 !important; font-weight: 600 !important; }
+          .display-4 { font-size: 20px !important; font-weight: 700 !important; margin: 2px 0 !important; }
+          .fs-2 { font-size: 14px !important; }
+          .row { 
+            margin: 0 !important; 
+            display: flex !important;
+            flex-wrap: wrap !important;
+          }
           .col-4, .col-md-4, .col-md-8, .col-md-12, .col-12 {
             padding: 2px !important;
+            flex: 1 !important;
           }
-          .mb-2, .mb-4 { margin-bottom: 8px !important; }
-          .mt-3, .mt-4 { margin-top: 8px !important; }
-          .p-3 { padding: 8px !important; }
-          small { font-size: 9px !important; }
-          .opacity-75 { font-size: 10px !important; }
+          .col-md-4 { flex: 0 0 33.333333% !important; }
+          .col-md-8 { flex: 0 0 66.666667% !important; }
+          .col-md-12, .col-12 { flex: 0 0 100% !important; }
+          .mb-2, .mb-4 { margin-bottom: 4px !important; }
+          .mt-3, .mt-4 { margin-top: 4px !important; }
+          .p-3 { padding: 4px !important; }
+          .rounded { border-radius: 4px !important; }
+          small { font-size: 8px !important; }
+          .opacity-75 { font-size: 9px !important; opacity: 0.8 !important; }
           .progress {
-            height: 6px !important;
-            margin-bottom: 5px !important;
+            height: 4px !important;
+            margin-bottom: 3px !important;
+            border-radius: 2px !important;
+            background-color: #e9ecef !important;
+          }
+          .progress-bar {
+            border-radius: 2px !important;
           }
           .bi {
-            font-size: 12px !important;
+            font-size: 10px !important;
+            margin-right: 2px !important;
           }
-          .table-responsive {
-            font-size: 9px !important;
+          .d-flex {
+            display: flex !important;
+          }
+          .justify-content-between {
+            justify-content: space-between !important;
+          }
+          .text-center {
+            text-align: center !important;
+          }
+          .text-end {
+            text-align: right !important;
+          }
+          .me-1 { margin-right: 2px !important; }
+          .me-2 { margin-right: 3px !important; }
+          .container-fluid { padding: 0 !important; }
+          
+          /* Hide duplicate/unnecessary elements */
+          .bg-light.rounded { display: none !important; }
+          
+          /* Compact summary layout */
+          .col-md-8:only-child {
+            flex: 0 0 100% !important;
           }
         }
         .print-header {
           text-align: center;
-          margin-bottom: 15px;
-          padding-bottom: 10px;
+          margin-bottom: 8px;
+          padding-bottom: 6px;
           border-bottom: 2px solid #28a745;
         }
         .print-date {
-          margin-top: 5px;
-          font-size: 10px;
+          margin-top: 3px;
+          font-size: 9px;
           color: #666;
-        }
-        .compact-layout {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-        }
-        .compact-section {
-          flex: 1;
-          min-width: 200px;
         }
       </style>
     `;
@@ -143,12 +197,12 @@ class ResultsCard extends Component<ResultsCardProps, ResultsCardState> {
     document.body.innerHTML = `
       ${printStyles}
       <div class="print-header">
-        <h1 style="color: #28a745; margin-bottom: 5px;">
+        <h1 style="color: #28a745; margin-bottom: 3px;">
           Nutrition Analysis Results
         </h1>
-        <h2 style="color: #000; margin-bottom: 3px;">${this.props.result.query}</h2>
+        <h2 style="color: #000; margin-bottom: 2px;">${this.props.result.query}</h2>
         <div class="print-date">
-          Generated on ${new Date().toLocaleDateString('en-US', { 
+          ${new Date().toLocaleDateString('en-US', { 
             year: 'numeric', 
             month: 'short', 
             day: 'numeric',
@@ -157,7 +211,7 @@ class ResultsCard extends Component<ResultsCardProps, ResultsCardState> {
           })}
         </div>
       </div>
-      <div class="compact-layout">
+      <div class="container-fluid">
         ${contentClone.innerHTML}
       </div>
     `;
