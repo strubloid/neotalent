@@ -572,15 +572,54 @@ class ResultsCard extends Component<ResultsCardProps, ResultsCardState> {
                       Print Results
                     </button>
                     <button 
-                      className="btn btn-outline-success"
+                      className="btn btn-outline-success me-2"
                       onClick={() => {
                         const data = `${result.query}: ${result.totalCalories} calories`;
                         navigator.clipboard?.writeText(data);
-                        alert('Results copied to clipboard!');
+                        alert('Simple results copied to clipboard!');
                       }}
                     >
                       <i className="bi bi-clipboard me-2"></i>
-                      Copy Results
+                      Copy Simple
+                    </button>
+                    <button 
+                      className="btn btn-outline-success"
+                      onClick={() => {
+                        const nutritionData = [
+                          `Food Analysis: ${result.query}`,
+                          `Total Calories: ${result.totalCalories}`,
+                          `Protein: ${result.totalProtein}g`,
+                          `Carbs: ${result.totalCarbs}g`,
+                          `Fat: ${result.totalFat}g`,
+                          `Fiber: ${result.totalFiber !== undefined ? result.totalFiber : 0}g`,
+                          `Sugar: ${result.totalSugar !== undefined ? result.totalSugar : 0}g`,
+                          `Sodium: ${result.totalSodium !== undefined ? result.totalSodium : 0}mg`,
+                          '',
+                          'Detailed Breakdown:',
+                          ...result.breakdown.map(item => {
+                            const details = [
+                              `• ${item.food}${item.quantity ? ` (${item.quantity})` : ''}`,
+                              `  Calories: ${item.calories}`,
+                              `  Protein: ${item.protein}g`,
+                              `  Carbs: ${item.carbs}g`,
+                              `  Fat: ${item.fat}g`,
+                              `  Fiber: ${item.fiber !== undefined ? item.fiber : 0}g`,
+                              `  Sugar: ${item.sugar !== undefined ? item.sugar : 0}g`,
+                              `  Sodium: ${item.sodium !== undefined ? item.sodium : 0}mg`
+                            ];
+                            return details.join(', ');
+                          }),
+                          '',
+                          `Summary: ${result.summary}`,
+                          `Analysis Date: ${new Date(result.timestamp).toLocaleString()}`
+                        ].join('\n');
+                        
+                        navigator.clipboard?.writeText(nutritionData);
+                        alert('Extended nutrition analysis copied to clipboard!');
+                      }}
+                    >
+                      <i className="bi bi-clipboard-check me-2"></i>
+                      Copy Extended
                     </button>
                   </div>
                 </div>
