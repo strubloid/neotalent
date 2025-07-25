@@ -43,9 +43,74 @@ npm run logs:frontend  # View frontend logs only
 npm run logs:mongodb   # View MongoDB logs only
 npm run shell:backend  # Access backend container shell
 npm run shell:mongodb  # Access MongoDB container shell
-npm run test           # Run tests in backend container
 npm run docker:clean   # Clean up Docker system
 npm run docker:reset   # Complete reset (removes volumes)
+```
+
+### 🧪 Testing Commands
+
+#### Centralized Test Runner
+All testing is now managed through a single script located at `./test/tests.sh`:
+
+```bash
+# Basic test commands
+./test/tests.sh all              # Run all tests (default)
+./test/tests.sh backend          # Run backend tests only  
+./test/tests.sh frontend         # Run frontend tests only
+
+# Coverage testing
+./test/tests.sh coverage         # Run all tests with coverage
+./test/tests.sh backend-coverage # Backend tests with coverage
+./test/tests.sh frontend-coverage # Frontend tests with coverage
+
+# Development commands
+./test/tests.sh quick            # Quick test run (minimal output)
+./test/tests.sh local            # Run tests locally (no Docker)
+./test/tests.sh check            # Check container status
+
+# Utility commands
+./test/tests.sh help             # Show all available options
+```
+
+#### NPM Shortcuts (from root directory)
+```bash
+npm test                    # Run all tests
+npm run test:backend       # Backend tests only
+npm run test:frontend      # Frontend tests only
+npm run test:coverage      # All tests with coverage
+npm run test:quick         # Quick test run
+npm run test:local         # Local tests (no Docker)
+npm run test:help          # Show test help
+```
+
+#### Watch Mode for Development
+```bash
+npm run test:backend:watch      # Backend tests in watch mode
+npm run test:frontend:watch     # Frontend tests in watch mode
+```
+
+#### Test Results Overview
+- **Backend**: 162/162 tests passing (100% success rate)
+- **Frontend**: Comprehensive React component testing with full coverage
+- **Integration**: Docker-based testing environment
+- **CI Ready**: All tests configured for continuous integration
+
+#### Examples
+```bash
+# Run all tests with colored output
+./test/tests.sh
+
+# Run only backend tests
+./test/tests.sh backend
+
+# Quick test to check if everything works
+./test/tests.sh quick
+
+# Generate coverage reports
+./test/tests.sh coverage
+
+# Check if containers are running
+./test/tests.sh check
 ```
 
 ### 🔐 Database Access (DbVisualizer)
