@@ -2,12 +2,45 @@ import request from 'supertest';
 import express from 'express';
 import apiRoutes from '../routes/apiRoutes';
 
+// Mock the controllers completely to prevent any real execution
+jest.mock('../controllers/NutritionController', () => {
+  return jest.fn().mockImplementation(() => ({
+    testConnection: jest.fn((req, res) => res.status(200).json({ success: true })),
+    analyzeNutrition: jest.fn((req, res) => res.status(200).json({ success: true }))
+  }));
+});
+
+jest.mock('../controllers/AuthController', () => {
+  return jest.fn().mockImplementation(() => ({
+    register: jest.fn((req, res) => res.status(200).json({ success: true })),
+    login: jest.fn((req, res) => res.status(200).json({ success: true })),
+    logout: jest.fn((req, res) => res.status(200).json({ success: true })),
+    getCurrentUser: jest.fn((req, res) => res.status(200).json({ success: true })),
+    checkAuthStatus: jest.fn((req, res) => res.status(200).json({ success: true })),
+    getSearchHistory: jest.fn((req, res) => res.status(200).json({ success: true })),
+    addSearchHistory: jest.fn((req, res) => res.status(200).json({ success: true })),
+    clearSearchHistory: jest.fn((req, res) => res.status(200).json({ success: true })),
+    deleteAccount: jest.fn((req, res) => res.status(200).json({ success: true }))
+  }));
+});
+
 describe('API Routes', () => {
   let app: express.Application;
 
   beforeEach(() => {
     app = express();
     app.use(express.json());
+    
+    // Add session middleware mock for auth routes
+    app.use((req, res, next) => {
+      req.session = {
+        isAuthenticated: false,
+        save: jest.fn((callback) => callback()),
+        destroy: jest.fn((callback) => callback())
+      } as any;
+      next();
+    });
+    
     app.use('/api', apiRoutes);
   });
 
@@ -84,9 +117,9 @@ describe('API Routes', () => {
   });
 
   describe('Nutrition Routes Structure', () => {
-    it('should have POST /api/nutrition/analyze route', async () => {
+    it('should have POST /api/calories route (legacy)', async () => {
       const response = await request(app)
-        .post('/api/nutrition/analyze')
+        .post('/api/calories')
         .send({});
 
       // Should not return 404 (route exists)

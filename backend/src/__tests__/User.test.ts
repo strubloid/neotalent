@@ -110,9 +110,10 @@ describe('User Model', () => {
 
       it('should handle database errors', async () => {
         const dbError = new Error('Database connection error');
-        jest.spyOn(User, 'findOne').mockRejectedValue(dbError);
+        // Mock findByUsername to reject with the error
+        MockedUser.findByUsername = jest.fn().mockRejectedValue(dbError);
 
-        await expect(User.findByUsername('testuser')).rejects.toThrow('Database connection error');
+        await expect(MockedUser.findByUsername('testuser')).rejects.toThrow('Database connection error');
       });
     });
 

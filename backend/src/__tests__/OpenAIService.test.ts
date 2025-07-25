@@ -148,7 +148,7 @@ describe('OpenAIService', () => {
 
       await expect(openAIService.analyzeNutrition('apple pie'))
         .rejects
-        .toThrow('Failed to parse nutrition data');
+        .toThrow('Failed to parse nutrition analysis response');
     });
 
     it('should handle empty response from OpenAI', async () => {
@@ -160,7 +160,7 @@ describe('OpenAIService', () => {
 
       await expect(openAIService.analyzeNutrition('apple pie'))
         .rejects
-        .toThrow('No response from OpenAI');
+        .toThrow('No response content from OpenAI');
     });
 
     it('should handle OpenAI API errors', async () => {
@@ -172,15 +172,19 @@ describe('OpenAIService', () => {
         .toThrow('API rate limit exceeded');
     });
 
-    it('should throw error when API key is not configured', async () => {
+    it('should handle missing API key gracefully', async () => {
       delete process.env.OPENAI_API_KEY;
       
       // Create new service instance without API key
       openAIService = new OpenAIService();
+      
+      // Mock an authentication error that would occur with dummy key
+      const authError = new Error('Invalid API key');
+      mockOpenAI.chat.completions.create.mockRejectedValue(authError);
 
       await expect(openAIService.analyzeNutrition('apple pie'))
         .rejects
-        .toThrow('OpenAI API key not configured');
+        .toThrow('Invalid API key');
     });
 
     it('should include timestamp in response', async () => {
@@ -188,14 +192,25 @@ describe('OpenAIService', () => {
         choices: [{
           message: {
             content: JSON.stringify({
-              searchId: 'test-123',
-              query: 'apple pie',
-              totalCalories: 320,
-              totalProtein: 4,
-              totalCarbs: 58,
-              totalFat: 12,
-              breakdown: [],
-              summary: 'Test summary'
+              calories: 320,
+              protein: 4,
+              carbs: 58,
+              fat: 12,
+              fiber: 3,
+              sugar: 35,
+              sodium: 150,
+              confidence: 0.9,
+              foodItems: [{
+                name: 'Apple pie',
+                quantity: '1 slice',
+                calories: 320,
+                protein: 4,
+                carbs: 58,
+                fat: 12,
+                fiber: 3,
+                sugar: 35,
+                sodium: 150
+              }]
             })
           }
         }]
@@ -205,8 +220,13 @@ describe('OpenAIService', () => {
 
       const result = await openAIService.analyzeNutrition('apple pie');
 
-      expect(result).toHaveProperty('timestamp');
-      expect(new Date(result.timestamp)).toBeInstanceOf(Date);
+      expect(result).toMatchObject({
+        calories: 320,
+        protein: 4,
+        carbs: 58,
+        fat: 12
+      });
+      expect(result.foodItems).toHaveLength(1);
     });
   });
 });

@@ -169,7 +169,8 @@ describe('NutritionController', () => {
 
       expect(response.body).toMatchObject({
         success: false,
-        message: 'Food input is required'
+        message: 'Validation failed',
+        details: 'Food input is required'
       });
     });
 
