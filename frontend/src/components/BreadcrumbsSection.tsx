@@ -53,8 +53,8 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
     if (!breadcrumbs || breadcrumbs.length === 0) {
       return (
         <div className="w-100 mt-4" style={{
-          background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-          borderTop: '1px solid #dee2e6',
+          background: '#f8f9fa',
+          borderTop: '3px solid #198754',
           borderBottom: '1px solid #dee2e6',
           paddingTop: '2rem',
           paddingBottom: '2rem'
@@ -62,17 +62,18 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
           <div className="container">
             <div className="row">
               <div className="col-12">
-                <div className="card border-0" style={{
-                  background: 'transparent',
-                  borderRadius: '15px'
+                <div style={{
+                  background: 'white',
+                  border: '1px solid #dee2e6',
+                  borderLeft: '4px solid #198754',
+                  padding: '3rem 2rem',
+                  textAlign: 'center'
                 }}>
-                  <div className="card-body text-center py-4">
-                    <i className="bi bi-clock-history fs-1 text-muted"></i>
-                    <h5 className="card-title mt-3">No Search History</h5>
-                    <p className="card-text text-muted">
-                      Your recent food searches will appear here for quick access.
-                    </p>
-                  </div>
+                  <i className="bi bi-clock-history fs-1 text-muted"></i>
+                  <h5 className="mt-3 mb-2">No Search History</h5>
+                  <p className="text-muted mb-0">
+                    Your recent food searches will appear here for quick access.
+                  </p>
                 </div>
               </div>
             </div>
@@ -83,8 +84,8 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
 
     return (
     <div className="w-100 mt-4" style={{
-      background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-      borderTop: '1px solid #dee2e6',
+      background: '#f8f9fa',
+      borderTop: '3px solid #198754',
       borderBottom: '1px solid #dee2e6',
       paddingTop: '2rem',
       paddingBottom: '2rem'
@@ -94,8 +95,9 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
           <div className="col-12">
             {/* Recent Searches Collapsible Section */}
           <div style={{
-            background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-            borderRadius: '15px',
+            background: 'white',
+            border: '1px solid #dee2e6',
+            borderLeft: '4px solid #198754',
             overflow: 'hidden',
             transition: 'all 0.3s ease'
           }}>
@@ -117,28 +119,54 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
               }}
             >
               <div className="d-flex align-items-center">
-                <i className="bi bi-clock-history me-2"></i>
-                <span className="fw-bold">Recent Searches</span>
-                <span className="badge bg-light text-dark ms-2">{breadcrumbs.length}</span>
+                <i className="bi bi-clock-history me-3" style={{ fontSize: '1.2rem' }}></i>
+                <div>
+                  <span className="fw-bold" style={{ fontSize: '1.1rem' }}>Recent Searches</span>
+                  {!isExpanded && (
+                    <div className="text-light opacity-75" style={{ fontSize: '0.85rem', marginTop: '2px' }}>
+                      {breadcrumbs.length} search{breadcrumbs.length !== 1 ? 'es' : ''} available
+                    </div>
+                  )}
+                </div>
+                <span className="badge bg-light text-dark ms-3" style={{ fontSize: '0.75rem', padding: '0.4rem 0.6rem' }}>
+                  {breadcrumbs.length}
+                </span>
               </div>
               <div className="d-flex align-items-center">
                 <button 
-                  className="btn btn-sm btn-outline-light me-2"
+                  className="btn btn-sm btn-outline-light me-3"
                   onClick={(e) => {
                     e.stopPropagation(); // Prevent triggering the toggle
                     onClearHistory();
+                  }}
+                  style={{
+                    borderColor: 'rgba(255,255,255,0.5)',
+                    color: 'white',
+                    fontSize: '0.8rem',
+                    padding: '0.4rem 0.8rem'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
                   }}
                 >
                   <i className="bi bi-trash me-1"></i>
                   Clear All
                 </button>
-                <i 
-                  className={`bi bi-chevron-${isExpanded ? 'up' : 'down'}`}
-                  style={{ 
-                    fontSize: '1.2rem',
-                    transition: 'transform 0.3s ease'
-                  }}
-                ></i>
+                <div className="d-flex align-items-center">
+                  <span className="me-2" style={{ fontSize: '0.9rem' }}>
+                    {isExpanded ? 'Collapse' : 'Expand'}
+                  </span>
+                  <i 
+                    className={`bi bi-chevron-${isExpanded ? 'up' : 'down'}`}
+                    style={{ 
+                      fontSize: '1.3rem',
+                      transition: 'transform 0.3s ease'
+                    }}
+                  ></i>
+                </div>
               </div>
             </div>
 
@@ -188,11 +216,12 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
                     {breadcrumbs.slice(currentIndex, currentIndex + 3).map((item, index) => (
                       <div 
                         key={item.searchId}
-                        className="p-3 rounded position-relative"
+                        className="p-3 position-relative"
                         style={{
                           background: 'white',
                           border: '2px solid #e9ecef',
-                          boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                          borderLeft: '4px solid #198754',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
                           cursor: 'pointer',
                           transition: 'all 0.3s ease',
                           height: '120px',
@@ -202,13 +231,15 @@ class BreadcrumbsSection extends Component<BreadcrumbsSectionProps, BreadcrumbsS
                         onClick={() => onBreadcrumbClick(item.searchId)}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.transform = 'translateY(-2px)';
-                          e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)';
-                          e.currentTarget.style.borderColor = '#198754';
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(25, 135, 84, 0.15)';
+                          e.currentTarget.style.borderLeftColor = '#146c43';
+                          e.currentTarget.style.borderLeftWidth = '6px';
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.transform = '';
-                          e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
-                          e.currentTarget.style.borderColor = '#e9ecef';
+                          e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+                          e.currentTarget.style.borderLeftColor = '#198754';
+                          e.currentTarget.style.borderLeftWidth = '4px';
                         }}
                       >
                         <div className="d-flex h-100">
