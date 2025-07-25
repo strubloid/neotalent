@@ -69,7 +69,6 @@ describe('ResultsCard', () => {
       expect(screen.getByText('Total Calories')).toBeInTheDocument();
       expect(screen.getByText('Estimated based on your input')).toBeInTheDocument();
     });
-    });
 
     it('shows macronutrient breakdown with correct percentages', () => {
       render(<ResultsCard {...defaultProps} />);
@@ -82,9 +81,8 @@ describe('ResultsCard', () => {
     it('displays additional nutrition information', () => {
       render(<ResultsCard {...defaultProps} />);
 
-      // Check for the section header using querySelector to avoid multiple elements
-      const additionalNutritionCard = document.querySelector('.card:nth-of-type(2) h6');
-      expect(additionalNutritionCard).toHaveTextContent('Additional Nutrition Information');
+      // Check for the section header - use simple text search
+      expect(screen.getByText('Additional Nutrition Information')).toBeInTheDocument();
     });
 
     it('shows the food breakdown table', () => {

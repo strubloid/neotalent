@@ -6,7 +6,7 @@
       "dom.iterable",
       "es6"
     ],
-    "types": ["node", "@testing-library/jest-dom"],
+    "types": ["node", "@testing-library/jest-dom", "jest"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -34,11 +34,6 @@
   ],
   "exclude": [
     "node_modules",
-    "build",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/*.spec.ts",
-    "**/*.spec.tsx",
-    "src/**/__tests__/**"
+    "build"
   ]
 }
