@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AuthModalsProps } from '../interfaces';
+import { AuthModalsProps } from '../../interfaces';
 
 interface AuthModalsState {
   loginForm: { username: string; password: string };

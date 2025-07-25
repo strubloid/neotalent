@@ -12,18 +12,28 @@
     "lint:fix": "eslint src/**/*.{ts,tsx} --fix",
     "type-check": "tsc --noEmit"
   },
-  "keywords": ["nutrition", "calorie-tracker", "frontend", "react", "typescript"],
+  "keywords": [
+    "nutrition",
+    "calorie-tracker",
+    "frontend",
+    "react",
+    "typescript"
+  ],
   "author": "NeoTalent Team",
   "license": "MIT",
   "dependencies": {
+    "bootstrap": "^5.3.2",
+    "bootstrap-icons": "^1.11.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
-    "web-vitals": "^3.4.0",
-    "bootstrap": "^5.3.2",
-    "bootstrap-icons": "^1.11.2"
+    "web-vitals": "^3.4.0"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.8.0",
     "@types/react": "^18.2.28",
     "@types/react-dom": "^18.2.13",
