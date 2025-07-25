@@ -6,15 +6,18 @@ class Navigation extends Component<NavigationProps> {
     const { user, isAuthenticated, onLogout, onDeleteAccount, onNavigateToRecentSearches, onNavigateToHome, currentView } = this.props;
 
     return (
-      <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
+      <nav className="navbar navbar-expand-lg navbar-dark" style={{
+        background: 'linear-gradient(135deg, #198754 0%, #157347 50%, #146c43 100%)',
+        boxShadow: '0 4px 20px rgba(25, 135, 84, 0.3)'
+      }}>
         <div className="container">
           <button 
             className="navbar-brand btn btn-link text-white"
             onClick={onNavigateToHome}
             style={{ border: 'none', background: 'none', textDecoration: 'none' }}
           >
-            <i className="bi bi-calculator me-2"></i>
-            NeoTalent Calorie Tracker
+            <i className="bi bi-heart-pulse me-2"></i>
+            Calorie Tracker
           </button>
         
         <button 

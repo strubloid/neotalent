@@ -101,7 +101,7 @@ class AuthModals extends Component<AuthModalsProps, AuthModalsState> {
               <div className="modal-header">
                 <h1 className="modal-title fs-5" id="loginModalLabel">
                   <i className="bi bi-box-arrow-in-right me-2"></i>
-                  Login to NeoTalent
+                  Login to Your Journey
                 </h1>
                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
@@ -145,10 +145,10 @@ class AuthModals extends Component<AuthModalsProps, AuthModalsState> {
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" disabled={loginLoading}>
+                  <button type="button" className="btn btn-success" data-bs-dismiss="modal" disabled={loginLoading}>
                     Cancel
                   </button>
-                  <button type="submit" className="btn btn-primary" disabled={loginLoading}>
+                  <button type="submit" className="btn btn-success" disabled={loginLoading}>
                     {loginLoading ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2" role="status"></span>
@@ -174,7 +174,7 @@ class AuthModals extends Component<AuthModalsProps, AuthModalsState> {
               <div className="modal-header">
                 <h1 className="modal-title fs-5" id="registerModalLabel">
                   <i className="bi bi-person-plus me-2"></i>
-                  Create NeoTalent Account
+                  Create Your Account
                 </h1>
                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
@@ -252,10 +252,10 @@ class AuthModals extends Component<AuthModalsProps, AuthModalsState> {
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" disabled={registerLoading}>
+                  <button type="button" className="btn btn-success" data-bs-dismiss="modal" disabled={registerLoading}>
                     Cancel
                   </button>
-                  <button type="submit" className="btn btn-primary" disabled={registerLoading}>
+                  <button type="submit" className="btn btn-success" disabled={registerLoading}>
                     {registerLoading ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2" role="status"></span>

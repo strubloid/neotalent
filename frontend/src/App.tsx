@@ -576,10 +576,10 @@ class App extends Component<{}, AppState> {
       return (
         <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
           <div className="text-center">
-            <div className="spinner-border text-primary mb-3" role="status">
+            <div className="spinner-border text-success mb-3" role="status">
               <span className="visually-hidden">Loading...</span>
             </div>
-            <h5>Loading NeoTalent Calorie Tracker...</h5>
+            <h5>✨ Loading your nutrition journey... 🍎</h5>
           </div>
         </div>
       );
@@ -605,21 +605,55 @@ class App extends Component<{}, AppState> {
                 <div className="container">
                   <div className="row">
                     <div className="col-12 text-center">
-                      <h1 className="display-4 mb-3">
-                        <i className="bi bi-calculator text-primary me-3"></i>
-                        NeoTalent Calorie Tracker
+                      <h1 className="display-4 mb-3" style={{
+                        background: 'linear-gradient(45deg, #198754, #20c997, #0f5132)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                        fontWeight: 'bold'
+                      }}>
+                        <i className="bi bi-heart-pulse text-danger me-3"></i>
+                         &nbsp;Calorie Tracker ✨
                       </h1>
-                      <p className="lead text-muted">
-                        Analyze your food and track calories with AI-powered nutrition insights
+                      <p className="lead text-muted" style={{
+                        fontStyle: 'italic',
+                        fontSize: '1.3rem',
+                        lineHeight: '1.6'
+                      }}>
+                        <span className="d-block">🌟 <em>Discover the magic in every bite</em> 🌟</span>
+                        <span className="d-block">🤖 <em>Where AI meets nutrition, and health becomes poetry</em> 🎯</span>
                       </p>
                       <div className="mt-4">
-                        <button className="btn btn-primary btn-lg me-3">
+                        <button 
+                          className="btn btn-primary btn-lg me-3"
+                          style={{
+                            background: 'linear-gradient(135deg, #198754 0%, #157347 100%)',
+                            border: 'none',
+                            boxShadow: '0 4px 15px rgba(25, 135, 84, 0.3)'
+                          }}
+                        >
                           <i className="bi bi-search me-2"></i>
                           Analyze Food
                         </button>
                         <button 
                           className="btn btn-outline-primary btn-lg"
                           onClick={this.handleNavigateToRecentSearches}
+                          style={{
+                            border: '2px solid #198754',
+                            color: '#198754',
+                            background: 'rgba(255, 255, 255, 0.9)',
+                            backdropFilter: 'blur(10px)'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'linear-gradient(135deg, #198754 0%, #157347 100%)';
+                            e.currentTarget.style.color = 'white';
+                            e.currentTarget.style.transform = 'translateY(-1px)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
+                            e.currentTarget.style.color = '#198754';
+                            e.currentTarget.style.transform = '';
+                          }}
                         >
                           <i className="bi bi-clock-history me-2"></i>
                           Recent Searches
@@ -649,7 +683,7 @@ class App extends Component<{}, AppState> {
               {nutritionResult && (
                 <div className="container mt-5">
                   <div className="row justify-content-center">
-                    <div className="col-lg-10">
+                    <div style={{ flex: '1 auto', maxWidth: '100%' }}>
                       <ResultsCard
                         result={nutritionResult}
                         onNewAnalysis={this.handleNewAnalysis}
@@ -678,7 +712,7 @@ class App extends Component<{}, AppState> {
               <div className="row">
                 <div className="col-12 text-center text-muted">
                   <p className="mb-0">
-                    &copy; 2025 NeoTalent Calorie Tracker. Powered by AI for better nutrition insights.
+                    &copy; 2025 Calorie Tracker. Crafted with a heart just for your wellness journey.
                   </p>
                 </div>
               </div>
