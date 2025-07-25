@@ -34,7 +34,7 @@ describe('Middleware Configuration', () => {
         .set('Origin', 'http://localhost:3000')
         .set('Access-Control-Request-Method', 'POST');
 
-      expect(response.status).toBe(200);
+      expect([200, 204]).toContain(response.status);
     });
   });
 

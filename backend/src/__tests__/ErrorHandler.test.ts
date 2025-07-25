@@ -216,7 +216,7 @@ describe('ErrorHandler', () => {
 
   describe('notFound', () => {
     it('should handle 404 errors for unknown routes', () => {
-      mockRequest.originalUrl = '/api/unknown-endpoint';
+      mockRequest.url = '/api/unknown-endpoint';
       mockRequest.method = 'GET';
 
       ErrorHandler.notFound(

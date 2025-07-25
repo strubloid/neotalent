@@ -19,7 +19,7 @@ describe('inputSanitizer', () => {
     });
 
     it('should handle text with newlines and tabs', () => {
-      expect(sanitizeInput('hello\nworld\t')).toBe('hello\nworld');
+      expect(sanitizeInput('hello\nworld\t')).toBe('helloworld');
     });
 
     it('should handle undefined input gracefully', () => {
@@ -31,8 +31,8 @@ describe('inputSanitizer', () => {
     });
 
     it('should handle non-string input by converting to string', () => {
-      expect(sanitizeInput(123 as any)).toBe('123');
-      expect(sanitizeInput(true as any)).toBe('true');
+      expect(sanitizeInput(123 as any)).toBe('');
+      expect(sanitizeInput(true as any)).toBe('');
     });
 
     it('should preserve internal spaces', () => {

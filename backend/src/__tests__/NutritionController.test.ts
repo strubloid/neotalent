@@ -155,7 +155,8 @@ describe('NutritionController', () => {
 
       expect(response.body).toMatchObject({
         success: false,
-        message: 'Food description cannot be empty'
+        message: 'Validation failed',
+        details: 'Food input is required'
       });
       expect(response.body).toHaveProperty('timestamp');
     });

@@ -8,14 +8,23 @@ describe('OpenAIService', () => {
   let mockOpenAI: any;
 
   beforeEach(() => {
-    // Reset environment variables
-    delete process.env.OPENAI_API_KEY;
-    
-    openAIService = new OpenAIService();
+    // Set default API key for testing
+    process.env.OPENAI_API_KEY = 'test-api-key';
     
     // Get the mocked OpenAI instance
     const { OpenAI } = require('openai');
-    mockOpenAI = new OpenAI();
+    mockOpenAI = {
+      chat: {
+        completions: {
+          create: jest.fn()
+        }
+      }
+    };
+    
+    // Mock the OpenAI constructor to return our mock
+    OpenAI.mockImplementation(() => mockOpenAI);
+    
+    openAIService = new OpenAIService();
   });
 
   afterEach(() => {
@@ -23,14 +32,10 @@ describe('OpenAIService', () => {
   });
 
   describe('testConnection', () => {
-    beforeEach(() => {
-      process.env.OPENAI_API_KEY = 'test-api-key';
-    });
-
     it('should return success when API key is configured and connection works', async () => {
       // Mock successful API call
       mockOpenAI.chat.completions.create.mockResolvedValue({
-        choices: [{ message: { content: 'Test response' } }]
+        choices: [{ message: { content: 'OpenAI connection successful' } }]
       });
 
       const result = await openAIService.testConnection();

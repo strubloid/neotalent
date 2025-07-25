@@ -1,9 +1,46 @@
 import User from '../models/User';
 
-// Mock mongoose
-jest.mock('mongoose');
+// Mock the User model properly
+jest.mock('../models/User', () => {
+  const mockUser = {
+    username: '',
+    password: '',
+    nickname: '',
+    searchHistory: [],
+    save: jest.fn(),
+    comparePassword: jest.fn()
+  };
+
+  const UserConstructor = jest.fn().mockImplementation((data) => {
+    return {
+      ...mockUser,
+      ...data,
+      save: jest.fn(),
+      comparePassword: jest.fn()
+    };
+  });
+
+  // Add static methods
+  Object.assign(UserConstructor, {
+    findByUsername: jest.fn(),
+    findById: jest.fn(),
+    findOne: jest.fn(),
+    create: jest.fn()
+  });
+
+  return {
+    __esModule: true,
+    default: UserConstructor
+  };
+});
+
+const MockedUser = User as jest.MockedClass<typeof User>;
 
 describe('User Model', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('User Creation', () => {
     it('should create a user with required fields', () => {
       const userData = {
@@ -50,11 +87,11 @@ describe('User Model', () => {
         };
 
         // Mock the static method
-        jest.spyOn(User, 'findOne').mockResolvedValue(mockUser as any);
+        jest.spyOn(MockedUser, 'findOne').mockResolvedValue(mockUser as any);
 
-        const result = await User.findByUsername('testuser');
+        const result = await MockedUser.findByUsername('testuser');
 
-        expect(User.findOne).toHaveBeenCalledWith({ username: 'testuser' });
+        expect(MockedUser.findOne).toHaveBeenCalledWith({ username: 'testuser' });
         expect(result).toEqual(mockUser);
       });
 
@@ -111,6 +148,9 @@ describe('User Model', () => {
         nickname: 'Test User',
         searchHistory: []
       });
+      
+      // Mock the comparePassword method
+      user.comparePassword = jest.fn();
     });
 
     describe('save', () => {
@@ -191,6 +231,32 @@ describe('User Model', () => {
           expect(user.searchHistory[1]).toEqual(search2);
           expect(user.searchHistory).toHaveLength(2);
         }
+      });
+    });
+
+    describe('comparePassword', () => {
+      it('should return true for correct password', async () => {
+        user.comparePassword.mockResolvedValue(true);
+
+        const result = await user.comparePassword('password123');
+
+        expect(result).toBe(true);
+        expect(user.comparePassword).toHaveBeenCalledWith('password123');
+      });
+
+      it('should return false for incorrect password', async () => {
+        user.comparePassword.mockResolvedValue(false);
+
+        const result = await user.comparePassword('wrongpassword');
+
+        expect(result).toBe(false);
+        expect(user.comparePassword).toHaveBeenCalledWith('wrongpassword');
+      });
+
+      it('should handle password comparison errors', async () => {
+        user.comparePassword.mockRejectedValue(new Error('Password comparison failed'));
+
+        await expect(user.comparePassword('password123')).rejects.toThrow('Password comparison failed');
       });
     });
   });

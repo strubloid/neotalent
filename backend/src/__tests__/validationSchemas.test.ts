@@ -21,7 +21,7 @@ describe('validationSchemas', () => {
       const result = validateNutritionRequest(invalidRequest);
       
       expect(result.error).toBeDefined();
-      expect(result.error?.details[0].message).toContain('food');
+      expect(result.error?.details[0].message).toContain('Food input is required');
     });
 
     it('should reject missing food property', () => {
@@ -30,7 +30,7 @@ describe('validationSchemas', () => {
       const result = validateNutritionRequest(invalidRequest);
       
       expect(result.error).toBeDefined();
-      expect(result.error?.details[0].message).toContain('food');
+      expect(result.error?.details[0].message).toContain('Food input is required');
     });
 
     it('should reject food with only whitespace', () => {
