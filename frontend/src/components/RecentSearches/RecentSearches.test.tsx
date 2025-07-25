@@ -144,12 +144,14 @@ describe('RecentSearches', () => {
     it('does not expand when clear button is clicked', () => {
       render(<RecentSearches {...defaultProps} />);
       
+      // Reset mock to get accurate count for this test
+      mockOnClearHistory.mockReset();
+      
       const clearButton = screen.getByText('Clear All');
       fireEvent.click(clearButton);
       
-      // After clearing, onClearHistory should be called but component state unchanged during test
-      // The test should verify the callback was called rather than DOM state
-      expect(mockOnClearHistory).toHaveBeenCalledTimes(2); // Called once in previous test + once here
+      // After clearing, onClearHistory should be called
+      expect(mockOnClearHistory).toHaveBeenCalledTimes(1);
     });
   });
 
