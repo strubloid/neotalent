@@ -1,6 +1,8 @@
 import request from 'supertest';
 import express from 'express';
 import AuthController from '../controllers/AuthController';
+import User from '../models/User';
+import { SessionHelper } from '../services/SessionHelper';
 
 // Add Jest types
 /// <reference types="jest" />
@@ -9,6 +11,8 @@ import AuthController from '../controllers/AuthController';
 jest.mock('../models/User');
 jest.mock('../services/SessionHelper');
 
+const MockedUser = User as jest.Mocked<typeof User>;
+
 describe('AuthController', () => {
   let app: express.Application;
   let authController: AuthController;
@@ -16,11 +20,26 @@ describe('AuthController', () => {
   beforeEach(() => {
     app = express();
     app.use(express.json());
+    app.use((req, res, next) => {
+      req.session = {
+        isAuthenticated: false,
+        save: jest.fn((callback) => callback()),
+        destroy: jest.fn((callback) => callback())
+      } as any;
+      next();
+    });
+    
     authController = new AuthController();
     
     // Mock routes for testing
     app.post('/api/auth/register', authController.register.bind(authController));
     app.post('/api/auth/login', authController.login.bind(authController));
+    app.post('/api/auth/logout', authController.logout.bind(authController));
+    app.get('/api/auth/profile', authController.getProfile.bind(authController));
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('POST /api/auth/register', () => {
@@ -68,6 +87,83 @@ describe('AuthController', () => {
         message: 'Username, password, and nickname are required'
       });
     });
+
+    test('should return 409 if username already exists', async () => {
+      const existingUser = {
+        _id: 'existing-user-id',
+        username: 'testuser',
+        nickname: 'Existing User'
+      };
+
+      MockedUser.findByUsername.mockResolvedValue(existingUser as any);
+
+      const response = await request(app)
+        .post('/api/auth/register')
+        .send({
+          username: 'testuser',
+          password: 'password123',
+          nickname: 'TestUser'
+        })
+        .expect(409);
+
+      expect(response.body).toEqual({
+        success: false,
+        message: 'Username already exists'
+      });
+    });
+
+    test('should create user successfully with valid data', async () => {
+      const newUser = {
+        _id: 'new-user-id',
+        username: 'newuser',
+        nickname: 'New User',
+        save: jest.fn().mockResolvedValue({
+          _id: 'new-user-id',
+          username: 'newuser',
+          nickname: 'New User'
+        })
+      };
+
+      MockedUser.findByUsername.mockResolvedValue(null);
+      MockedUser.mockImplementation(() => newUser as any);
+
+      const response = await request(app)
+        .post('/api/auth/register')
+        .send({
+          username: 'newuser',
+          password: 'password123',
+          nickname: 'New User'
+        })
+        .expect(201);
+
+      expect(response.body).toMatchObject({
+        success: true,
+        message: 'User registered successfully'
+      });
+      expect(response.body.user).toMatchObject({
+        username: 'newuser',
+        nickname: 'New User'
+      });
+      expect(response.body.user).not.toHaveProperty('password');
+    });
+
+    test('should handle database errors during registration', async () => {
+      MockedUser.findByUsername.mockRejectedValue(new Error('Database error'));
+
+      const response = await request(app)
+        .post('/api/auth/register')
+        .send({
+          username: 'testuser',
+          password: 'password123',
+          nickname: 'TestUser'
+        })
+        .expect(500);
+
+      expect(response.body).toMatchObject({
+        success: false,
+        message: 'Internal server error'
+      });
+    });
   });
 
   describe('POST /api/auth/login', () => {
@@ -91,6 +187,209 @@ describe('AuthController', () => {
         .expect(400);
 
       expect(response.body.success).toBe(false);
+    });
+
+    test('should return 401 if user does not exist', async () => {
+      MockedUser.findByUsername.mockResolvedValue(null);
+
+      const response = await request(app)
+        .post('/api/auth/login')
+        .send({
+          username: 'nonexistent',
+          password: 'password123'
+        })
+        .expect(401);
+
+      expect(response.body).toEqual({
+        success: false,
+        message: 'Invalid username or password'
+      });
+    });
+
+    test('should return 401 if password is incorrect', async () => {
+      const existingUser = {
+        _id: 'user-id',
+        username: 'testuser',
+        password: 'correctpassword',
+        nickname: 'Test User'
+      };
+
+      MockedUser.findByUsername.mockResolvedValue(existingUser as any);
+
+      const response = await request(app)
+        .post('/api/auth/login')
+        .send({
+          username: 'testuser',
+          password: 'wrongpassword'
+        })
+        .expect(401);
+
+      expect(response.body).toEqual({
+        success: false,
+        message: 'Invalid username or password'
+      });
+    });
+
+    test('should login successfully with correct credentials', async () => {
+      const existingUser = {
+        _id: 'user-id',
+        username: 'testuser',
+        password: 'password123',
+        nickname: 'Test User'
+      };
+
+      MockedUser.findByUsername.mockResolvedValue(existingUser as any);
+
+      const response = await request(app)
+        .post('/api/auth/login')
+        .send({
+          username: 'testuser',
+          password: 'password123'
+        })
+        .expect(200);
+
+      expect(response.body).toMatchObject({
+        success: true,
+        message: 'Login successful'
+      });
+      expect(response.body.user).toMatchObject({
+        username: 'testuser',
+        nickname: 'Test User'
+      });
+      expect(response.body.user).not.toHaveProperty('password');
+    });
+
+    test('should handle database errors during login', async () => {
+      MockedUser.findByUsername.mockRejectedValue(new Error('Database error'));
+
+      const response = await request(app)
+        .post('/api/auth/login')
+        .send({
+          username: 'testuser',
+          password: 'password123'
+        })
+        .expect(500);
+
+      expect(response.body).toMatchObject({
+        success: false,
+        message: 'Internal server error'
+      });
+    });
+  });
+
+  describe('POST /api/auth/logout', () => {
+    test('should logout successfully', async () => {
+      const response = await request(app)
+        .post('/api/auth/logout')
+        .expect(200);
+
+      expect(response.body).toEqual({
+        success: true,
+        message: 'Logout successful'
+      });
+    });
+
+    test('should handle session destruction errors', async () => {
+      // Mock session destroy to throw error
+      app.use((req, res, next) => {
+        req.session = {
+          destroy: jest.fn((callback) => callback(new Error('Session error')))
+        } as any;
+        next();
+      });
+
+      const response = await request(app)
+        .post('/api/auth/logout')
+        .expect(500);
+
+      expect(response.body).toMatchObject({
+        success: false,
+        message: 'Internal server error'
+      });
+    });
+  });
+
+  describe('GET /api/auth/profile', () => {
+    test('should return user profile when authenticated', async () => {
+      const mockUser = {
+        _id: 'user-id',
+        username: 'testuser',
+        nickname: 'Test User',
+        searchHistory: []
+      };
+
+      // Mock authenticated session
+      app.use((req, res, next) => {
+        req.session = {
+          isAuthenticated: true,
+          userId: 'user-id'
+        } as any;
+        next();
+      });
+
+      jest.spyOn(SessionHelper, 'isAuthenticated').mockReturnValue(true);
+      jest.spyOn(SessionHelper, 'getUserFromSession').mockReturnValue({
+        userId: 'user-id',
+        username: 'testuser',
+        nickname: 'Test User'
+      });
+
+      MockedUser.findById.mockResolvedValue(mockUser as any);
+
+      const response = await request(app)
+        .get('/api/auth/profile')
+        .expect(200);
+
+      expect(response.body).toMatchObject({
+        success: true,
+        user: {
+          username: 'testuser',
+          nickname: 'Test User'
+        }
+      });
+      expect(response.body.user).not.toHaveProperty('password');
+    });
+
+    test('should return 401 when not authenticated', async () => {
+      jest.spyOn(SessionHelper, 'isAuthenticated').mockReturnValue(false);
+
+      const response = await request(app)
+        .get('/api/auth/profile')
+        .expect(401);
+
+      expect(response.body).toEqual({
+        success: false,
+        message: 'Authentication required'
+      });
+    });
+
+    test('should return 404 when user not found', async () => {
+      // Mock authenticated session
+      app.use((req, res, next) => {
+        req.session = {
+          isAuthenticated: true,
+          userId: 'user-id'
+        } as any;
+        next();
+      });
+
+      jest.spyOn(SessionHelper, 'isAuthenticated').mockReturnValue(true);
+      jest.spyOn(SessionHelper, 'getUserFromSession').mockReturnValue({
+        userId: 'user-id',
+        username: 'testuser',
+        nickname: 'Test User'
+      });
+
+      MockedUser.findById.mockResolvedValue(null);
+
+      const response = await request(app)
+        .get('/api/auth/profile')
+        .expect(404);
+
+      expect(response.body).toEqual({
+        success: false,
+        message: 'User not found'
+      });
     });
   });
 });
