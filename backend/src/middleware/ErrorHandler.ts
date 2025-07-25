@@ -75,8 +75,8 @@ class ErrorHandler {
             };
         }
 
-        // Add development details if in development mode
-        if (process.env.NODE_ENV === 'development') {
+        // Add development details if in development mode (but not during tests)
+        if (process.env.NODE_ENV === 'development' && !process.env.JEST_WORKER_ID) {
             errorResponse.details = {
                 message: err.message,
                 stack: err.stack,

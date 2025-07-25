@@ -150,7 +150,10 @@ describe('ErrorHandler', () => {
 
     it('should include development details in development mode', () => {
       const originalEnv = process.env.NODE_ENV;
+      const originalJestWorker = process.env.JEST_WORKER_ID;
+      
       process.env.NODE_ENV = 'development';
+      delete process.env.JEST_WORKER_ID; // Simulate non-test environment
       
       const error = new Error('Test error') as any;
       error.stack = 'Error stack trace';
@@ -172,6 +175,9 @@ describe('ErrorHandler', () => {
       );
       
       process.env.NODE_ENV = originalEnv;
+      if (originalJestWorker) {
+        process.env.JEST_WORKER_ID = originalJestWorker;
+      }
     });
 
     it('should not include development details in production', () => {
