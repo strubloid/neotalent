@@ -4,6 +4,7 @@
   "description": "AI-powered calorie estimation web application",
   "main": "backend/dist/server.js",
   "scripts": {
+    "setup": "bash env.sh",
     "start": "docker-compose up -d",
     "stop": "docker-compose down",
     "build": "docker-compose build",
