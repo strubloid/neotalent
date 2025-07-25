@@ -124,7 +124,8 @@ describe('AuthController', () => {
       };
 
       MockedUser.findByUsername.mockResolvedValue(null);
-      MockedUser.mockImplementation(() => newUser as any);
+      // Fix: Use proper constructor mocking
+      (MockedUser as any).mockImplementation(() => newUser);
 
       const response = await request(app)
         .post('/api/auth/register')
