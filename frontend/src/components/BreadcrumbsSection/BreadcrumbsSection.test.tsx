@@ -98,13 +98,16 @@ describe('BreadcrumbsSection', () => {
       
       const header = screen.getByText('Recent Searches');
       
-      // Expand
+      // Expand first to make content accessible
       fireEvent.click(header);
-      expect(screen.getByText(/Delicious apple pie/)).toBeInTheDocument();
       
-      // Collapse
+      // Now find the collapsible content
+      const collapsibleContent = screen.getByText(/Delicious apple pie/).closest('div[style*="max-height"]');
+      expect(collapsibleContent).toHaveStyle('max-height: 700px');
+      
+      // Collapse again
       fireEvent.click(header);
-      expect(screen.queryByText(/Delicious apple pie/)).not.toBeInTheDocument();
+      expect(collapsibleContent).toHaveStyle('max-height: 0px');
     });
 
     it('calls onClearHistory when clear button is clicked', () => {
@@ -122,8 +125,9 @@ describe('BreadcrumbsSection', () => {
       const clearButton = screen.getByText('Clear All');
       fireEvent.click(clearButton);
       
-      // Should still be collapsed - content not visible
-      expect(screen.queryByText(/Delicious apple pie/)).not.toBeInTheDocument();
+      // Should still be collapsed - check the collapsible container has max-height 0
+      const collapsibleContainer = document.querySelector('div[style*="max-height"]');
+      expect(collapsibleContainer).toHaveStyle('max-height: 0px');
     });
   });
 
