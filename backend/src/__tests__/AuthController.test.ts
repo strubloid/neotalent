@@ -2,6 +2,9 @@ import request from 'supertest';
 import express from 'express';
 import AuthController from '../controllers/AuthController';
 
+// Add Jest types
+/// <reference types="jest" />
+
 // Mock the User model
 jest.mock('../models/User');
 jest.mock('../services/SessionHelper');
