@@ -557,15 +557,44 @@ class App extends Component<{}, AppState> {
     alert('Logged out successfully');
   };
 
-  handleDeleteAccount = () => {
+  handleDeleteAccount = async () => {
     if (window.confirm('Are you sure you want to delete your account? This cannot be undone.')) {
-      this.setState({
-        user: null,
-        isAuthenticated: false,
-        breadcrumbs: []
-      });
-      this.clearAnalysisState(); // Clear nutrition results, errors, and form
-      alert('Account deleted successfully');
+      try {
+        // Make API call to delete account
+        const response = await fetch('/api/auth/account', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Clear local state on successful deletion
+          this.setState({
+            user: null,
+            isAuthenticated: false,
+            breadcrumbs: []
+          });
+          this.clearAnalysisState(); // Clear nutrition results, errors, and form
+          
+          // Initialize session storage with empty search history
+          try {
+            sessionStorage.setItem('calorie-tracker-search-history', JSON.stringify([]));
+          } catch (error) {
+            console.error('Error initializing session storage during account deletion:', error);
+          }
+          
+          alert('Account deleted successfully');
+        } else {
+          alert('Failed to delete account: ' + (data.message || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Delete account error:', error);
+        alert('Failed to delete account. Please try again.');
+      }
     }
   };
 

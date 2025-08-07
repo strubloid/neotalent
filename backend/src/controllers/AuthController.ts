@@ -212,7 +212,40 @@ class AuthController {
      */
     async deleteAccount(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
-            // For now, just return success (no actual deletion)
+            // Check if user is authenticated
+            if (!req.session || !req.session.isAuthenticated || !req.session.userId) {
+                res.status(401).json({
+                    success: false,
+                    message: 'Authentication required'
+                });
+                return;
+            }
+
+            // Find and delete user from database
+            const deletedUser = await User.findByIdAndDelete(req.session.userId);
+            
+            if (!deletedUser) {
+                res.status(404).json({
+                    success: false,
+                    message: 'User not found'
+                });
+                return;
+            }
+
+            // Destroy session after successful deletion
+            if (req.session && req.session.destroy) {
+                req.session.destroy((err: any) => {
+                    if (err) {
+                        console.error('Session destruction error after account deletion:', err);
+                    }
+                });
+            }
+
+            console.log('✅ User account deleted successfully:', {
+                userId: deletedUser._id,
+                username: deletedUser.username
+            });
+
             res.json({
                 success: true,
                 message: 'Account deleted successfully'
