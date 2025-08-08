@@ -241,4 +241,4 @@ MIT License - See LICENSE file for details.
 
 ---
 
-**🎯 Ready to analyze your nutrition? Start with `npm run setup` then `npm start`!**
+**🎯 Ready to analyze your nutrition? Start with `cd frontend && npm i && cd ../backend && npm i` then `docker-compose up`!**
