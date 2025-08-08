@@ -2,24 +2,26 @@ import { Request, Response, NextFunction } from 'express';
 import { validateNutritionRequest } from '../utils/validationSchemas';
 import { sanitizeInput } from '../utils/inputSanitizer';
 import { OpenAIService } from '../services/OpenAIService';
+import { DeepseekAIService } from '../services/DeepseekAIService';
 import { NutritionData } from '../interfaces';
 
 /**
  * Nutrition Analysis Controller
  */
 class NutritionController {
-    private openAIService: OpenAIService;
+    private aiService: OpenAIService | DeepseekAIService;
 
     constructor() {
-        this.openAIService = new OpenAIService();
+        this.aiService = new OpenAIService();
+        // this.aiService = new DeepseekAIService();
     }
 
     /**
-     * Test OpenAI connection
+     * Test AI service connection
      */
     public async testConnection(req: Request, res: Response): Promise<void> {
         try {
-            const result = await this.openAIService.testConnection();
+            const result = await this.aiService.testConnection();
             
             const statusCode = result.success ? 200 : 503;
             res.status(statusCode).json({
@@ -27,13 +29,20 @@ class NutritionController {
                 timestamp: new Date().toISOString()
             });
         } catch (error: any) {
-            console.error('OpenAI test error:', error);
+            console.error('AI service test error:', error);
+            
+            // Check which service we're using for proper error reporting
+            const isUsingDeepseek = this.aiService instanceof DeepseekAIService;
+            const apiKeyConfigured = isUsingDeepseek ? 
+                !!process.env.DEEPSEEK_API_KEY : 
+                !!process.env.OPENAI_API_KEY;
             
             res.status(500).json({
                 success: false,
                 error: error.message,
                 code: error.code,
-                configured: !!process.env.OPENAI_API_KEY,
+                configured: apiKeyConfigured,
+                service: isUsingDeepseek ? 'Deepseek AI' : 'OpenAI',
                 timestamp: new Date().toISOString()
             });
         }
@@ -68,9 +77,8 @@ class NutritionController {
                 return;
             }
 
-            // Analyze nutrition
-            // Get nutrition analysis from OpenAI
-            const nutritionData = await this.openAIService.analyzeNutrition(foodDescription);
+            // Analyze nutrition using the configured AI service
+            const nutritionData = await this.aiService.analyzeNutrition(foodDescription);
             
             res.json({
                 success: true,

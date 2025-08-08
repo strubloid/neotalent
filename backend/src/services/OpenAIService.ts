@@ -12,7 +12,7 @@ export class OpenAIService {
 
     constructor() {
         const apiKey = process.env.OPENAI_API_KEY;
-        
+        console.log('🔑 Open AI Service');
         if (!apiKey) {
             console.log('⚠️ OpenAIService: No API key found, service will have limited functionality');
         }

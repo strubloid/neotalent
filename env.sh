@@ -71,6 +71,24 @@ check_openai_key() {
     return 1
 }
 
+# Function to check if Deepseek API key is set
+check_deepseek_key() {
+    local env_file="$1"
+    
+    if [[ -f "$env_file" ]]; then
+        local current_key=$(grep "^DEEPSEEK_API_KEY=" "$env_file" | cut -d'=' -f2)
+        if [[ "$current_key" == "your-deepseek-api-key-here" || "$current_key" == "your_deepseek_api_key_here" || -z "$current_key" ]]; then
+            print_warning "Deepseek API key in $env_file is not configured!"
+            echo -e "   ${YELLOW}📝 Please edit $env_file and set your Deepseek API key${NC}"
+            return 1
+        else
+            print_success "Deepseek API key is configured in $env_file"
+            return 0
+        fi
+    fi
+    return 1
+}
+
 # Main setup function
 main() {
     print_header "AI Calorie Tracker Environment Setup"
@@ -111,6 +129,7 @@ main() {
     echo ""
     
     local needs_openai_key=false
+    local needs_deepseek_key=false
     
     # Check all .env files for OpenAI configuration
     for env_file in .env backend/.env frontend/.env; do
@@ -118,20 +137,35 @@ main() {
             if ! check_openai_key "$env_file" 2>/dev/null; then
                 needs_openai_key=true
             fi
+            if ! check_deepseek_key "$env_file" 2>/dev/null; then
+                needs_deepseek_key=true
+            fi
         fi
     done
     
     echo ""
     
-    if [[ "$needs_openai_key" == true ]]; then
-        print_warning "IMPORTANT: OpenAI API Key Required!"
+    if [[ "$needs_openai_key" == true ]] || [[ "$needs_deepseek_key" == true ]]; then
+        print_warning "IMPORTANT: AI API Keys Configuration!"
         echo ""
-        echo -e "${YELLOW}📋 To get your OpenAI API key:${NC}"
-        echo -e "   1. Visit https://platform.openai.com/api-keys"
-        echo -e "   2. Create a new API key"
-        echo -e "   3. Copy the key and update the OPENAI_API_KEY in your .env files"
-        echo ""
-        echo -e "${YELLOW}💡 The application will work without the API key, but nutrition analysis features will be limited.${NC}"
+        
+        if [[ "$needs_openai_key" == true ]]; then
+            echo -e "${YELLOW}📋 To get your OpenAI API key:${NC}"
+            echo -e "   1. Visit https://platform.openai.com/api-keys"
+            echo -e "   2. Create a new API key"
+            echo -e "   3. Copy the key and update the OPENAI_API_KEY in your .env files"
+            echo ""
+        fi
+        
+        if [[ "$needs_deepseek_key" == true ]]; then
+            echo -e "${YELLOW}📋 To get your Deepseek API key:${NC}"
+            echo -e "   1. Visit https://platform.deepseek.com/"
+            echo -e "   2. Create an account and get your API key"
+            echo -e "   3. Copy the key and update the DEEPSEEK_API_KEY in your .env files"
+            echo ""
+        fi
+        
+        echo -e "${YELLOW}💡 You can use either OpenAI or Deepseek for nutrition analysis. The application will work without API keys, but nutrition analysis features will be limited.${NC}"
     else
         print_success "All environment files are properly configured!"
     fi
