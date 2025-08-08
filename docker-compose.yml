@@ -7,7 +7,7 @@ services:
     container_name: calorie-tracker-mongodb
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - "27018:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: calorietracker
       MONGO_INITDB_ROOT_PASSWORD: tracker123
